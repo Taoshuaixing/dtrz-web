@@ -1,0 +1,55 @@
+<button nz-button nzType="primary" (click)="showModal()" style="margin-right: 8px;">
+    <span>{{ btnName }}</span>
+</button>
+<nz-modal [(nzVisible)]="isVisible" nzTitle="编辑" nzOkText="保存" nzCancelText="取消" (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOk()" [nzOkLoading]="isOkLoading" [nzWidth]="800">
+    <!-- <div se-container="1"> -->
+    <form nz-form [formGroup]="validateForm">
+        <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="userName">登录账户</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="登录账户不能为空">
+                <input nz-input formControlName="userName" [(ngModel)]="userName" placeholder="403账户或本系统账户" />
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="password">密码</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+                <input nz-input formControlName="password" type="password" placeholder="若通过403账户登录，则不需要填写密码"
+                    [(ngModel)]="password" />
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="postId">岗位</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="岗位不能为空">
+                <nz-select nzShowSearch nzAllowClear formControlName="postId" [(ngModel)]="postId"
+                    nzPlaceHolder="请选择岗位">
+                    <nz-option [nzLabel]="data.postName" [nzValue]="data.id" *ngFor="let data of posts"></nz-option>
+                </nz-select>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *ngFor="let item of roleTypes">
+            <nz-form-label [nzSm]="6" [nzXs]="24">{{item.sysName}}权限</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+                <nz-checkbox-group formControlName="role_{{item.sysCode}}" [(ngModel)]="item.data"
+                    (ngModelChange)="roleAndMenu()">
+                </nz-checkbox-group>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24">菜单管理</nz-form-label>
+            <nz-form-control [nzSm]="16" [nzXs]="24">
+                <!-- <nz-tree formControlName="menus" [nzData]="menuTypes" nzCheckable nzMultiple
+                    [nzCheckedKeys]="defaultCheckedKeys" [nzExpandedKeys]="defaultExpandedKeys"
+                    [nzSelectedKeys]="defaultSelectedKeys" (nzClick)="nzEvent($event)"
+                    (nzExpandChange)="nzEvent($event)" (nzCheckBoxChange)="nzEvent($event)">
+                </nz-tree> -->
+                <nz-tree #nzTreeComponent [nzData]="menuTypes" nzCheckable [nzCheckedKeys]="defaultCheckedKeys">
+                </nz-tree>
+                <!-- <nz-checkbox-group formControlName="menus" [(ngModel)]="menuTypes">
+                </nz-checkbox-group> -->
+            </nz-form-control>
+        </nz-form-item>
+    </form>
+    <!-- </div> -->
+</nz-modal>

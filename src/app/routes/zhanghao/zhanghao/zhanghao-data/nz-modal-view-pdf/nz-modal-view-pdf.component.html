@@ -1,0 +1,21 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="title"
+  (nzOnCancel)="handleCancel()"
+  [nzOkLoading]="isOkLoading"
+  [nzWidth]="1000"
+  [nzStyle]="{ top: '65px' }"
+  [nzFooter]="null"
+>
+  <div [style]="{ height: 'calc(100vh - 185px)', width: '1000px', margin: '-24px 0 -24px -24px' }">
+    <ng2-pdfjs-viewer
+      #pdfViewerOnDemand
+      [externalWindow]="true"
+      [openFile]="false"
+      [viewBookmark]="false"
+      zoom="auto,18,127"
+      [download]="false"
+    ></ng2-pdfjs-viewer>
+    <ng2-pdfjs-viewer #pdfViewerAutoLoad></ng2-pdfjs-viewer>
+  </div>
+</nz-modal>

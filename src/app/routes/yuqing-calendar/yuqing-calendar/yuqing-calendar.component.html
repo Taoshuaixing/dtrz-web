@@ -1,0 +1,34 @@
+<nz-layout>
+  <nz-sider class="menu-sidebar" nzCollapsible [(nzCollapsed)]="isCollapsed" [nzWidth]="sidebar_width + 'px'"
+    [nzTrigger]="null">
+    <ul nz-menu nzTheme="" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+      <li [acl]="{ ability: ['yuqing-calendar-view'] }" nz-menu-item nz-tooltip nzTooltipPlacement="right"
+        [nzTooltipTitle]="isCollapsed ? '舆情日历' : ''" nzSelected nzMatchRouter>
+        <i nz-icon nzType="calendar"></i>
+        <span> <a routerLink="/yuqing-calendar/yuqing-calendar-view">舆情日历</a></span>
+      </li>
+      <li [acl]="{ ability: ['yuqing-calendar-future'] }" nz-menu-item nz-tooltip nzTooltipPlacement="right"
+        [nzTooltipTitle]="isCollapsed ? '未来舆情' : ''" nzSelected nzMatchRouter>
+        <i nz-icon nzType="rise"></i>
+        <span> <a routerLink="/yuqing-calendar/yuqing-calendar-future">未来舆情</a></span>
+      </li>
+
+      <li [acl]="{ ability: ['yuqing-calendar-history-today'] }" nz-menu-item nz-tooltip nzTooltipPlacement="right"
+        [nzTooltipTitle]="isCollapsed ? '历史上的今天' : ''" nzSelected nzMatchRouter>
+        <i nz-icon nzType="clock-circle"></i>
+        <span> <a routerLink="/yuqing-calendar/yuqing-calendar-history-today">历史上的今天</a></span>
+      </li>
+
+      <li [acl]="{ ability: ['yuqing-calendar-history-review'] }" nz-menu-item nz-tooltip nzTooltipPlacement="right"
+        [nzTooltipTitle]="isCollapsed ? '舆情回顾' : ''" nzSelected nzMatchRouter>
+        <i nz-icon nzType="history"></i>
+        <span> <a routerLink="/yuqing-calendar/yuqing-calendar-history-review">舆情回顾</a></span>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-content>
+    <div class="inner-content" [ngStyle]="{ width: content_width + 'px' }" style="background: white">
+      <router-outlet></router-outlet>
+    </div>
+  </nz-content>
+</nz-layout>

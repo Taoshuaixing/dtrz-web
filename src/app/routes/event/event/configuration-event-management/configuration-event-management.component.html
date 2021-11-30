@@ -1,0 +1,58 @@
+<nz-layout nz-row [nzGutter]="16">
+  <nz-sider nz-col nzLg="4" nzMd="12" nzSm="24" style="background: white" nzWidth="230">
+    <div>
+      <button style="margin-left: 10px" nz-button nzType="primary" nzType="primary" (click)="download($event)">
+        下载
+      </button>
+      <app-sort-modal [sortItems]="arr" [sortFieldName]="'eventClassifyName'" (emitter)="sortEmitter($event)">
+      </app-sort-modal>
+      <h2>一级分类{{ arr?.length }}个</h2>
+
+      <ul nz-menu nzMode="inline">
+        <li nzMatchRouter nz-menu-item *ngFor="let item of arr; let i = index">
+          <a
+            routerLink="../configuration-event-management/configuration-event-right"
+            [queryParams]="{ parentId: item.id }"
+          >
+            <!-- <i nz-icon></i> -->
+            {{ item.eventClassifyName }}
+
+            <button nz-button nzTrigger="click" nz-dropdown [nzDropdownMenu]="menu" nzType="link">
+              <i nz-icon nzType="down"></i>
+            </button>
+          </a>
+
+          <nz-dropdown-menu #menu="nzDropdownMenu">
+            <ul nz-menu>
+              <li>
+                <!-- 一级修改 -->
+                <app-nz-modal-async-classification
+                  [actionClassifyName]="item.eventClassifyName"
+                  [classifiLevel]="item.classifyLevel"
+                  [classifiId]="item.id"
+                  [isAdd]="false"
+                  nz-menu-item
+                  (hide_emitter)="getEmitter($event)"
+                >
+                </app-nz-modal-async-classification>
+              </li>
+              <li nz-menu-item (click)="deleteFirstLevel(item.id)">删除</li>
+            </ul>
+          </nz-dropdown-menu>
+        </li>
+      </ul>
+      <nz-spin *ngIf="loading"></nz-spin>
+      <app-nz-modal-async-classification
+        [classifiLevel]="1"
+        [isAdd]="true"
+        btnName="添加一级分类"
+        (hide_emitter)="getEmitter($event)"
+      >
+      </app-nz-modal-async-classification>
+    </div>
+  </nz-sider>
+  <!-- <div nz-col nzLg="1" nzMd="12" nzSm="24"></div> -->
+  <nz-content nz-col nzLg="20" nzMd="12" nzSm="24" style="background: white">
+    <router-outlet></router-outlet>
+  </nz-content>
+</nz-layout>

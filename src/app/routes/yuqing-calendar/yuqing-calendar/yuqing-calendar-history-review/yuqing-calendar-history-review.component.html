@@ -1,0 +1,89 @@
+<nz-card nzTitle="舆情日历" [nzExtra]="extraTemplate">
+  <nz-tabset [nzSize]="'large'">
+    <nz-tab *ngFor="let tab of classifyList" [nzTitle]="tab.eventClassifyName" (nzClick)="tabTo(tab.id)"> </nz-tab>
+  </nz-tabset>
+
+  <ng-template #extraTemplate>
+    <nz-select
+      nzMode="multiple"
+      nzAllowClear
+      nzShowSearch
+      [(ngModel)]="templateIds"
+      (ngModelChange)="change($event)"
+      style="width: 300px; margin-right: 10px"
+      nzPlaceHolder="事件模板"
+    >
+      <nz-option *ngFor="let sub of eventTemplateList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+    </nz-select>
+
+    <nz-select
+      nzAllowClear
+      nzShowSearch
+      [(ngModel)]="postChangeFlag"
+      (ngModelChange)="change($event)"
+      style="width: 120px; margin-right: 10px"
+      nzPlaceHolder="事件来源"
+    >
+      <nz-option *ngFor="let sub of eventMapList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+    </nz-select>
+  </ng-template>
+
+  <nz-layout>
+    <nz-sider nzTheme="dark" [nzWidth]="100" style="height: 650px">
+      <!-- <span *ngIf="!loading && showDate.date.length === 0" class="no-data">无数据</span> -->
+      <nz-spin [nzSpinning]="loading">
+        <div>
+          <ul nz-menu nzMode="inline" nzTheme="dark" class="nav">
+            <li *ngIf="!loading && showDate.date.length === 0" nzMatchRouter nz-menu-item>
+              <a
+                routerLink="history-review-event-classify"
+                [queryParams]="{
+                  searchMonth: nodata_date,
+                  classifyId: this.eventClassifyId,
+                  startDateFieldId: this.startDateFieldId,
+                  postChangeFlag: this.postChangeFlag,
+                  templateIds: this.templateIds
+                }"
+              >
+                无数据
+              </a>
+            </li>
+            <li nzMatchRouter nz-menu-item *ngFor="let item of showDate.date; let i = index">
+              <a
+                routerLink="history-review-event-classify"
+                [queryParams]="{
+                  searchMonth: item,
+                  classifyId: this.eventClassifyId,
+                  startDateFieldId: this.startDateFieldId,
+                  postChangeFlag: this.postChangeFlag,
+                  templateIds: this.templateIds
+                }"
+              >
+                {{ item }}
+              </a>
+            </li>
+          </ul>
+
+          <div class="btn-page-group" *ngIf="!loading">
+            <div nz-row>
+              <div nz-col nzSpan="12" class="btn-page">
+                <a *ngIf="showDate.currentPage > 1" (click)="getData('previous')" title="上一页"
+                  ><i nz-icon nzType="caret-left" nzTheme="outline"></i
+                ></a>
+              </div>
+              <div nz-col nzSpan="12" class="btn-page">
+                <a *ngIf="showDate.totalPage > showDate.currentPage" (click)="getData('next')" title="下一页"
+                  ><i nz-icon nzType="caret-right" nzTheme="outline"></i
+                ></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nz-spin>
+    </nz-sider>
+
+    <nz-content style="background: white">
+      <router-outlet></router-outlet>
+    </nz-content>
+  </nz-layout>
+</nz-card>

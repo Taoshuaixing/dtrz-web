@@ -1,0 +1,21 @@
+
+:host ::ng-deep .ant-card-head {
+  min-height: 48px;
+  margin-bottom: -1px;
+  padding: 0 24px;
+  color: #252525;
+  font-weight: 500;
+  font-size: 16px;
+  background-color: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  border-radius: 2px 2px 0 0;
+}
+
+:host ::ng-deep .ant-card-extra {
+  float: right;
+  margin-left: auto;
+  padding: 3px 0 0 5px;
+  color: #626675;
+  font-weight: normal;
+  font-size: 14px;
+}

@@ -1,0 +1,57 @@
+<nz-card>
+
+  <div nz-row style="margin-bottom: 20px">
+    <button nz-button nzType="primary" (click)="downloadTemplate()" style="margin-right: 20px"><i nz-icon nzType="file-excel"></i>模板下载</button>
+
+    <nz-upload class="upload-list-inline" [nzAction]="actionUrl" [nzData]="{postId:postId,userId:userId}"  [nzLimit]="1" [nzShowUploadList]="showUploadList"
+               (nzChange)="uploadChange($event)" [nzBeforeUpload]="beforeUpload" [nzDisabled]="this.uploadLoading">
+      <button nz-button nzType="primary"  ><i nz-icon nzType="upload"></i>关键词导入</button>
+    </nz-upload>
+  </div>
+
+  <nz-table
+    #rowSelectionTable
+    nzBordered
+    nzShowSizeChanger
+    [nzFrontPagination]="false"
+    [nzLoading]="this.loading"
+    [nzTotal]="total"
+    [nzData]="listOfAllData"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+    (nzPageIndexChange)="search()"
+    (nzPageSizeChange)="search()"
+    (nzCurrentPageDataChange)="currentPageDataChange($event)"
+  >
+    <thead>
+    <tr>
+      <th style="width: 80px" [nzAlign]="'center'">序号</th>
+      <th style="width: 150px" [nzAlign]="'center'">文件名称</th>
+      <th style="width: 150px" [nzAlign]="'center'">处理结果</th>
+      <th style="width: 150px" [nzAlign]="'center'">操作时间</th>
+      <th style="width: 250px" [nzAlign]="'center'">描述</th>
+      <th style="width: 100px" [nzAlign]="'center'">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+      <td [nzAlign]="'center'">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+      <td [nzAlign]="'center'">{{ data.filename }}</td>
+      <td [nzAlign]="'center'" *ngIf="data.status == 0">待处理</td>
+      <td [nzAlign]="'center'" *ngIf="data.status == 1">完成</td>
+      <td [nzAlign]="'center'" *ngIf="data.status == -1"><span style="color: red">异常</span></td>
+      <td [nzAlign]="'center'">{{ data.createTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+      <td [nzAlign]="'left'">
+        <ellipsis lines="1" tooltip>
+          {{ data.msg }}
+        </ellipsis>
+      </td>
+      <td [nzAlign]="'center'">
+          <span>
+            <a style="margin-right: 10px" (click)="del(data.id)"> 删除 </a>
+          </span>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-card>

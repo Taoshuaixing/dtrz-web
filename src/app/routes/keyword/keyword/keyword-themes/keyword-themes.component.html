@@ -1,0 +1,78 @@
+<div>
+  <nz-card nzTitle="主题列表">
+
+    <app-nz-modal-edit
+      (editorOk)="getEditorEmitter(null, $event)"
+      [isAdd]="true"
+      [parentId]=""
+      btnName="添加一级"
+      [onBeforeSave]="check"
+    >
+    </app-nz-modal-edit>
+
+    <nz-input-group [nzSuffix]="suffixIcon" style="width: 200px;margin-bottom: 20px">
+      <input type="text" nz-input placeholder="Search" [(ngModel)]="themesSearchValue"  />
+    </nz-input-group>
+    <ng-template #suffixIcon>
+      <i nz-icon nzType="search"></i>
+    </ng-template>
+    <nz-tree
+      [nzData]="themesNodes"
+      [nzSearchValue]="themesSearchValue"
+      (nzClick)="nzEvent($event)"
+      (nzExpandChange)="nzEvent($event)"
+      (nzSearchValueChange)="nzEvent($event)"
+      [nzTreeTemplate]="nzTreeTemplate"
+    >
+    </nz-tree>
+
+    <ng-template #nzTreeTemplate let-node let-origin="origin">
+      <span class="custom-node">
+        <span >
+          <i *ngIf="node.level===0" nz-icon [nzType]="node.isExpanded ? 'folder-open' : 'folder'" nzTheme="fill" style="color: #ebce83;"></i>
+
+          <i *ngIf="node.level===1" nz-icon nzType="file" ></i>
+
+          <span class="folder-name" [innerHTML]=" node.title | highlightPipe:  themesSearchValue"></span>
+
+          <span class="folder-desc">
+
+            <app-nz-modal-edit
+              (editorOk)="getEditorEmitter(node, $event)"
+              [isAdd]="true"
+              [parentId]="node.key"
+              btnName="新增"
+              showIcon="true"
+              [onBeforeSave]="check"
+              *ngIf="node.level===0"
+            >
+            </app-nz-modal-edit>
+
+            <app-nz-modal-edit
+              (editorOk)="getEditorEmitter( node,$event)"
+              [isAdd]="false"
+              [parentId]=""
+              [inputId]="node.key"
+              [inputName]="node.title"
+              btnName="编辑"
+              showIcon="true"
+              [onBeforeSave]="check"
+            >
+            </app-nz-modal-edit>
+
+            <a *ngIf="node.isLeaf" (click)="del(node)" style="margin-right: 10px;">
+              <i nz-icon nzType="delete" nzTheme="outline"></i>
+            </a>
+
+          </span>
+
+        </span>
+
+      </span>
+    </ng-template>
+
+
+  </nz-card>
+
+</div>
+

@@ -1,0 +1,119 @@
+
+<a style="margin-left: 20px" (click)="showModal('')" *ngIf="btnName === '添加'">
+  <i nz-icon nzType="plus" nzTheme="outline"></i><span>{{ btnName }}</span>
+</a>
+
+<a style="margin-right: 20px" (click)="showModal('')" *ngIf="btnName === '编辑'">
+  <i nz-icon nzType="edit" nzTheme="outline"></i>
+</a>
+
+<nz-drawer
+  [(nzVisible)]="isVisible"
+  [nzTitle]="'编辑数据'"
+  nzOkText="确定"
+  nzCancelText="取消"
+  (nzOnClose)="cancel()"
+  [nzClosable]="true"
+  [nzMask]="true"
+  [nzWidth]="800"
+  [nzFooter]="footerTpl"
+>
+  <nz-content>
+    <nz-card style="width: 100%">
+      <div class="field-row" nz-row nzGutter="16">
+        <label  nz-col [nzSm]="4" [nzXs]="24"><span style="color: red;margin-right: 5px">*</span>关键词1</label>
+        <span nz-col [nzSm]="20" [nzXs]="24">
+          <textarea rows="3" nz-input  [(ngModel)]="keyword1"></textarea>
+        </span>
+      </div>
+
+      <div class="field-row" nz-row nzGutter="16" >
+        <label nz-col [nzSm]="4" [nzXs]="24">关键词2</label>
+        <span nz-col [nzSm]="20" [nzXs]="24">
+          <textarea rows="3" nz-input  [(ngModel)]="keyword2"></textarea>
+        </span>
+      </div>
+
+      <div class="field-row" nz-row nzGutter="16" >
+        <label nz-col [nzSm]="4" [nzXs]="24">关键词3</label>
+        <span nz-col [nzSm]="20" [nzXs]="24">
+          <textarea rows="3" nz-input  [(ngModel)]="keyword3"></textarea>
+        </span>
+      </div>
+
+      <div class="field-row" nz-row nzGutter="16" >
+        <label nz-col [nzSm]="4" [nzXs]="24">删除词</label>
+        <span nz-col [nzSm]="20" [nzXs]="24">
+          <textarea rows="3" nz-input  [(ngModel)]="delKeyword"></textarea>
+        </span>
+      </div>
+
+      <div class="field-row" nz-row nzGutter="16" >
+        <label nz-col [nzSm]="4" [nzXs]="24">管控类型</label>
+        <span nz-col [nzSm]="20" [nzXs]="24">
+
+          <nz-select
+            nzAllowClear
+            nzShowSearch
+            [(ngModel)]="controlTypeVal"
+          >
+            <nz-option *ngFor="let sub of controlTypeList" [nzValue]="sub.name" [nzLabel]="sub.name"></nz-option>
+          </nz-select>
+        </span>
+      </div>
+
+      <div class="field-row" nz-row nzGutter="16" >
+        <label nz-col [nzSm]="4" [nzXs]="24">管控期限</label>
+        <span nz-col [nzSm]="20" [nzXs]="24">
+
+          <nz-select
+            nzAllowClear
+            nzShowSearch
+            [(ngModel)]="controlTimeVal"
+          >
+            <nz-option *ngFor="let sub of controlTimeList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+          </nz-select>
+        </span>
+      </div>
+
+      <div class="field-row" nz-row nzGutter="16" >
+        <label nz-col [nzSm]="4" [nzXs]="24">主题</label>
+        <span nz-col [nzSm]="20" [nzXs]="24">
+
+          <nz-tree-select
+            [nzExpandedKeys]="expandThemesKeys"
+            [(ngModel)]="themesId"
+            [nzShowSearch]="true"
+            [nzDropdownStyle]="{ 'max-height': '300px' }"
+            [nzNodes]="themesNodes"
+          >
+          </nz-tree-select>
+        </span>
+      </div>
+
+      <div class="field-row" nz-row nzGutter="16" >
+        <label nz-col [nzSm]="4" [nzXs]="24">指令</label>
+        <span nz-col [nzSm]="20" [nzXs]="24">
+
+          <nz-select
+            nzAllowClear
+            nzShowSearch
+            [(ngModel)]="instructVal"
+          >
+            <nz-option *ngFor="let sub of instructList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+          </nz-select>
+        </span>
+      </div>
+
+    </nz-card>
+  </nz-content>
+  <ng-template #footerTpl>
+    <div nz-row>
+      <nz-spin *ngIf="loading"></nz-spin>
+      <span nz-col [nzOffset]="6" [nzSpan]="18">
+        <button nz-button nzType="primary" [disabled]="loading" (click)="submit()">保存</button>
+        <button nz-button nzType="default" [disabled]="loading" (click)="cancel()">关闭</button>
+      </span>
+    </div>
+  </ng-template>
+</nz-drawer>

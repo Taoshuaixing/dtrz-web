@@ -1,0 +1,34 @@
+<button *ngIf="isSelection" nz-button type="button" nzType="danger" style="margin-right: 10px;" (click)="showModal()"><i nz-icon
+    nzType="file-excel"></i>样本导出并选用</button>
+
+<button *ngIf="!isSelection" nz-button type="button" nzType="primary" style="margin-right: 10px;" (click)="showModal()"><i nz-icon
+  nzType="file-excel"></i>样本导出</button>    
+
+<nz-modal [(nzVisible)]="isVisible" nzTitle="样本导出" nzOkText="导出" [nzOkLoading]="isOkLoading" nzCancelText="取消"
+  (nzOnCancel)="handleCancel()" (nzOnOk)="export()" [nzOkLoading]="isOkLoading" [nzWidth]="800">
+  <nz-card nzTitle="请选择导出项">
+    <div nz-row>
+      <div nz-col nzMd="6">
+        <label nz-checkbox [(ngModel)]="allChecked" [nzIndeterminate]="indeterminate"
+          (nzCheckedChange)="checkAll($event)">
+          全选
+        </label>
+      </div>
+      <nz-divider nzDashed></nz-divider>
+    </div>
+    <div nz-row>
+      <div *ngFor="let it of fieldList" nz-col nzMd="6">
+        <label nz-checkbox [(ngModel)]="it.checked" (nzCheckedChange)="refreshStatus()">{{ it.fieldName }} </label>
+      </div>
+    </div>
+    <nz-divider nzDashed></nz-divider>
+
+    <div nz-row>
+      <div nz-col nzMd="6">
+        <label nz-checkbox [(ngModel)]="withAttach"> 包含附件 </label>
+      </div>
+    </div>
+  </nz-card>
+
+
+</nz-modal>

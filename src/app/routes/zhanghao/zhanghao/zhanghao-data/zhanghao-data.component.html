@@ -1,0 +1,536 @@
+<nz-card [nzBordered]="false">
+  <form nz-form (ngSubmit)="search(true)" class="search__form">
+    <ng-container *ngFor="let items of fieldListForSearch; let i = index">
+      <div
+        *ngIf="i === 0 || (i !== 0 && expandForm)"
+        nz-row
+        [nzGutter]="{ xs: 8, sm: 8, md: 8, lg: 24, xl: 48, xxl: 48 }"
+      >
+        <div *ngFor="let item of items.children" nz-col nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label>{{ item.fieldName }}</nz-form-label>
+            <nz-form-control>
+              <input
+                *ngIf="item.fieldType === 1 || item.fieldType === 2"
+                nz-input
+                [(ngModel)]="item.val"
+                name="{{ item.fieldName }}"
+              />
+              <span *ngIf="item.fieldType === 4">
+                <nz-input-number [(ngModel)]="item.start" [nzStep]="1" name="{{ item.fieldName + '1' }}">
+                </nz-input-number>
+                ~
+                <nz-input-number [(ngModel)]="item.end" [nzStep]="1" name="{{ item.fieldName + '2' }}">
+                </nz-input-number>
+              </span>
+              <nz-select
+                *ngIf="item.fieldType === 5 || item.fieldType === 6"
+                nzAllowClear
+                nzShowSearch
+                [(ngModel)]="item.val"
+                name="{{ item.fieldName }}"
+              >
+                <nz-option *ngFor="let sub of item.targetTableData" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+              </nz-select>
+
+              <nz-checkbox-group
+                *ngIf="item.fieldType === 51"
+                name="{{ item.fieldName }}"
+                [(ngModel)]="item.checkItems"
+              >
+              </nz-checkbox-group>
+
+              <nz-range-picker
+                *ngIf="item.fieldType === 3 && !item.showTime"
+                [(ngModel)]="item.val"
+                name="{{ item.fieldName }}"
+              >
+              </nz-range-picker>
+              <nz-range-picker
+                *ngIf="item.fieldType === 3 && item.showTime"
+                [(ngModel)]="item.val"
+                name="{{ item.fieldName }}"
+                [nzShowTime]="true"
+                [nzDisabledTime]="commonService.disabledRangeTime"
+                [nzShowTime]="{ nzHideDisabledOptions: true, nzFormat: 'HH:mm:ss' }"
+                [nzDefaultPickerValue]="commonService.nzDefaultPickerValue"
+              ></nz-range-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </ng-container>
+    <div nz-row class="row">
+      <div nz-col nzMd="8">
+        <app-zhanghao-data-modal-export
+          [sortValue]="sortValue"
+          [sortKey]="sortKey"
+          [shareFlag]="shareFlag"
+          [fieldListForSearch]="fieldListForSearch"
+          [selectedId]="selectedId"
+        >
+        </app-zhanghao-data-modal-export>
+        <button
+          *ngIf="!readonly"
+          [disabled]="loading"
+          (click)="deleteZhanghaoList()"
+          nz-button
+          type="button"
+          nzType="primary"
+          nzDanger
+        >
+          <!--          <i nz-icon nzType="delete"  nzTheme="outline"></i>-->
+          <i nz-icon nzType="delete" nzTheme="outline"></i> 删除
+        </button>
+        <button
+          *ngIf="shareFlag === 1"
+          [disabled]="loading"
+          (click)="cancelShareZhanghaoList()"
+          type="button"
+          nz-button
+          nzType="primary"
+          nzDanger
+        >
+          取消分享
+        </button>
+      </div>
+      <div nz-col nzMd="12" class="text-right">
+        <nz-switch
+          name="highLightFlag"
+          [(ngModel)]="highLightFlag"
+          nzCheckedChildren="高亮"
+          nzUnCheckedChildren="关闭"
+          style="margin-right: 21px"
+        >
+        </nz-switch>
+        <button nz-button type="submit" [nzType]="'primary'">搜索</button>
+        <button nz-button (click)="resetSe()" class="mx-sm">重置</button>
+        <a *ngIf="fieldListForSearch.length > 1" (click)="expandForm = !expandForm">
+          {{ expandForm ? '收起' : '展开' }}
+          <i nz-icon [nzType]="expandForm ? 'up' : 'down'"></i>
+        </a>
+      </div>
+      <div nz-col nzMd="4" class="text-right">
+        <app-nz-modal-update-detail *ngIf="!readonly" [parent]="this" [onPage]="callPage" btnName="添加">
+        </app-nz-modal-update-detail>
+        <a nz-dropdown [nzDropdownMenu]="menu"> <i nz-icon nzType="setting" style="margin-right: 6px"></i>设置 </a>
+        <nz-dropdown-menu #menu="nzDropdownMenu">
+          <ul nz-menu nzSelectable>
+            <li nz-menu-item>
+              <app-zhanghao-data-field-setting
+                *ngIf="adminFlag === 1; else elseSettings"
+                [parent]="this"
+                [onWaitSearch]="waitSearch"
+              >
+              </app-zhanghao-data-field-setting>
+
+              <ng-template #elseSettings>
+                <ng-container *aclIf="['dagl_post', 'dagl_admin']">
+                  <app-zhanghao-data-field-setting-post
+                    *ngIf="shareFlag <= 1"
+                    [parent]="this"
+                    [onWaitSearch]="waitSearch"
+                  >
+                  </app-zhanghao-data-field-setting-post>
+
+                  <app-zhanghao-data-field-setting-share-me
+                    *ngIf="shareFlag === 2"
+                    [parent]="this"
+                    [onWaitSearch]="waitSearch"
+                  >
+                  </app-zhanghao-data-field-setting-share-me>
+                </ng-container>
+              </ng-template>
+
+              <app-zhanghao-data-field-setting-share-me
+                *aclIf="['dagl_editor']"
+                [parent]="this"
+                [onWaitSearch]="waitSearch"
+              >
+              </app-zhanghao-data-field-setting-share-me>
+            </li>
+            <li nz-menu-item>
+              <app-zhanghao-data-search-setting [shareFlag]="shareFlag" [parent]="this" [onWaitSearch]="waitSearch">
+              </app-zhanghao-data-search-setting>
+            </li>
+            <!--                <ng-container *ngIf="!readonly" >-->
+            <!--                  <li nz-menu-item  >-->
+            <!--                    <app-zhanghao-data-sign-setting [parent]="this" [onWaitSearch]="waitSearch">-->
+            <!--                    </app-zhanghao-data-sign-setting>-->
+            <!--                  </li>-->
+            <!--                </ng-container>-->
+          </ul>
+        </nz-dropdown-menu>
+      </div>
+    </div>
+  </form>
+</nz-card>
+<!--<nz-divider></nz-divider>-->
+<div class="back-from" *ngIf="from">
+  <button nz-button nzSize="large" nzType="link" (click)="backFrom($event)">
+    <i nz-icon>
+      <svg
+        t="1609330251187"
+        class="icon"
+        viewBox="0 0 1024 1024"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        p-id="22536"
+        width="32"
+        height="32"
+      >
+        <path
+          d="M512 1024c-281.6 0-512-230.4-512-512s230.4-512 512-512 512 230.4 512 512-230.4 512-512 512z"
+          fill="#F46A6A"
+          p-id="22537"
+        ></path>
+        <path
+          d="M366.153143 262.509714l-5.046857 4.169143-120.246857 120.32 120.246857 120.246857a36.571429 36.571429 0 0 0 55.954285-46.665143l-4.242285-5.046857-31.890286-32.036571h223.670857a90.258286 90.258286 0 0 1 9.216 180.077714l-9.216 0.512H325.558857a36.571429 36.571429 0 0 0-6.582857 72.557714l6.582857 0.585143h279.04a163.401143 163.401143 0 0 0 11.702857-326.436571l-11.702857-0.365714-223.670857-0.073143 31.890286-31.890286a36.571429 36.571429 0 0 0 4.242285-46.665143l-4.242285-5.12a36.571429 36.571429 0 0 0-46.665143-4.169143z"
+          fill="#FFFFFF"
+          p-id="22538"
+        ></path>
+      </svg>
+    </i>
+  </button>
+</div>
+
+<nz-tabset>
+  <nz-tab *ngFor="let tab of tabs" [nzTitle]="titleTemplate" (nzClick)="tabTo(tab)">
+    <ng-template #titleTemplate><i nz-icon [nzType]="tab.icon"></i>{{ tab.name }}</ng-template>
+    <div *ngIf="showType === 'data'">
+      <div nz-row class="row">
+        <div nz-col nzMd="16" style="margin-bottom: 10px">
+          <ng-container *ngIf="!readonly">
+            <nz-cascader
+              style="width: 200px; margin-right: 10px"
+              nzPlaceHolder="请选择标记数据"
+              [nzOptions]="nzOptions"
+              [(ngModel)]="signValues"
+              (ngModelChange)="onChanges($event)"
+              nzShowSearch="true"
+            ></nz-cascader>
+            <button nzType="primary" nz-button (click)="changeNzOptions()">标记</button>
+
+            <!-- <ng-container *aclIf="['dagl_post', 'dagl_admin']">
+              <nz-select
+                nzShowSearch
+                style="width: 200px; margin-right: 10px; margin-left: 20px"
+                nzMode="multiple"
+                [(ngModel)]="otherPostValues"
+                nzAllowClear
+                nzPlaceHolder="请选择分享的岗位"
+              >
+                <nz-option [nzValue]="option.id" [nzLabel]="option.postName" *ngFor="let option of otherPostList">
+                </nz-option>
+              </nz-select>
+              <button nzType="primary" nz-button (click)="share()">分享</button>
+              <button *ngIf="this.from === 'batchImport'" nzType="danger" nz-button (click)="shareBatch()">
+                <i nz-icon nzType="double-right" nzTheme="outline"></i>
+                一键分享本批次
+              </button>
+            </ng-container> -->
+          </ng-container>
+        </div>
+
+        <div nz-col nzMd="8" class="text-right">
+          <span class="search-total">共计 {{ total }} 条账号</span>
+        </div>
+      </div>
+
+      <nz-table
+        #rowSelectionTable
+        nzShowSizeChanger
+        nzBordered
+        [nzData]="listOfAllData"
+        [nzFrontPagination]="false"
+        [nzLoading]="loading"
+        [nzTotal]="total"
+        [(nzPageIndex)]="pageIndex"
+        [(nzPageSize)]="pageSize"
+        [nzPageSizeOptions]="[10, 20, 30, 40, 50, 100, 200]"
+        [nzScroll]="{ x: tableWidth + 'px', y: '450px' }"
+        (nzPageIndexChange)="search()"
+        (nzPageSizeChange)="search(true)"
+        (nzCurrentPageDataChange)="currentPageDataChange($event)"
+      >
+        <thead (nzSortOrderChange)="sort($event)">
+          <tr>
+            <th
+              nzWidth="60px"
+              nzLeft="0px"
+              nzShowCheckbox
+              [(nzChecked)]="isAllDisplayDataChecked"
+              [nzIndeterminate]="isIndeterminate"
+              (nzCheckedChange)="checkAll($event)"
+            ></th>
+            <th [nzAlign]="'center'" nzWidth="65px" nzLeft="60px">序号</th>
+            <th [nzAlign]="'center'" nzWidth="150px" nzLeft="125px" nzShowSort [nzSortFn]="true" nzColumnKey="name">
+              账号名称
+            </th>
+            <ng-container *ngFor="let item of fieldListForList">
+              <th [nzAlign]="'center'" [nzWidth]="item.width + 'px'">
+                <span>{{ item.fieldName }}</span>
+              </th>
+            </ng-container>
+            <th [nzAlign]="'center'" nzWidth="120px" nzShowSort [nzSortFn]="true" nzColumnKey="createdTime">
+              创建时间
+            </th>
+            <th [nzAlign]="'center'" nzWidth="120px" *ngIf="shareFlag === 1">分享时间</th>
+            <th [nzAlign]="'center'" nzWidth="120px" *ngIf="adminFlag === 1 || shareFlag">
+              <span *ngIf="shareFlag === 1 && !adminFlag"> 分享岗位 </span>
+              <span *ngIf="shareFlag === 2 || adminFlag === 1"> 岗位来源 </span>
+            </th>
+            <th [nzAlign]="'center'" nzWidth="100px" nzRight="0px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+            <td
+              nzWidth="60px"
+              nzLeft="0px"
+              nzShowCheckbox
+              [(nzChecked)]="mapOfCheckedId[data.recUuid]"
+              (nzCheckedChange)="refreshStatus()"
+            ></td>
+            <td [nzAlign]="'center'" nzWidth="65px" nzLeft="60px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+            <td [nzAlign]="'nzLeft'" nzWidth="150px" nzLeft="125px">
+              <ellipsis *ngIf="highLightFlag === false" lines="1" tooltip> {{ data['name'] }}</ellipsis>
+              <span
+                *ngIf="highLightFlag === true"
+                [innerHTML]="data['name'] | highlightPipe: findSearchVal('账号名称')"
+              ></span>
+            </td>
+            <ng-container *ngFor="let item of fieldListForList">
+              <td [nzAlign]="findShowCss(item.fieldType)">
+                <ellipsis *ngIf="highLightFlag === false" lines="1" tooltip>{{ data[item.fieldName] }}</ellipsis>
+                <span
+                  *ngIf="highLightFlag === true"
+                  [innerHTML]="data[item.fieldName] | highlightPipe: findSearchVal(item.fieldName)"
+                ></span>
+              </td>
+            </ng-container>
+            <td [nzAlign]="'center'" nzWidth="120px">
+              <ellipsis lines="1" tooltip>{{ data['createdTime'] | date: 'yyyy-MM-dd HH:mm:ss' }}</ellipsis>
+            </td>
+            <td [nzAlign]="'center'" nzWidth="120px" *ngIf="shareFlag === 1">
+              <ellipsis lines="1" tooltip>{{ data['shareUpdatedTime'] | date: 'yyyy-MM-dd HH:mm:ss' }}</ellipsis>
+            </td>
+            <td [nzAlign]="'center'" nzWidth="120px" *ngIf="adminFlag === 1 || shareFlag">
+              <span *ngIf="shareFlag === 1 && !adminFlag">
+                <ellipsis *ngIf="highLightFlag === false" lines="1" tooltip>{{ data['sharePostName'] }}</ellipsis>
+                <span
+                  *ngIf="highLightFlag === true"
+                  [innerHTML]="data['sharePostName'] | highlightPipe: findSearchVal('sharePostName')"
+                ></span>
+              </span>
+              <span *ngIf="shareFlag === 2 || adminFlag === 1">
+                {{ data['postName'] }}
+              </span>
+            </td>
+            <td [nzAlign]="'center'" nzWidth="100px" nzRight="0px">
+              <ng-container *ngIf="!readonly">
+                <a style="margin-right: 30px" (click)="showModal(data.recUuid, 0)">
+                  <i nz-icon nzType="edit" nzTheme="outline"></i>
+                </a>
+                <a (click)="deleteRec(data.recUuid)" style="color: red">
+                  <i nz-icon nzType="close" nzTheme="outline"></i>
+                </a>
+              </ng-container>
+
+              <ng-container *ngIf="readonly">
+                <a (click)="showModalView(data.recUuid, 0)">
+                  <!-- <i  nz-icon nzType="view" nzTheme="outline"></i> -->
+                  查看
+                </a>
+              </ng-container>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+
+    <div *ngIf="showType === 'media'">
+      <div nz-row class="row">
+        <div nz-col nzMd="16" style="margin-bottom: 10px">
+          <nz-radio-group
+            [(ngModel)]="extensionNameValue"
+            nzButtonStyle="solid"
+            (ngModelChange)="extensionNameSearch()"
+          >
+            <label nz-radio-button nzValue="">全部</label>
+            <label nz-radio-button [nzValue]="fileType.image">图片</label>
+            <label nz-radio-button [nzValue]="fileType.vedio">视频</label>
+            <label nz-radio-button [nzValue]="fileType.excel">Excel</label>
+            <label nz-radio-button [nzValue]="fileType.word">Word</label>
+            <label nz-radio-button [nzValue]="fileType.pdf">PDF</label>
+          </nz-radio-group>
+        </div>
+
+        <div nz-col nzMd="8" class="text-right">
+          <span class="search-total">共计 {{ total }} 个附件</span>
+        </div>
+      </div>
+
+      <nz-card>
+        <nz-layout style="margin: 20px">
+          <nz-content>
+            <nz-list
+              style="width: 100%"
+              [nzLoading]="loading"
+              [nzDataSource]="listOfAllData"
+              [nzRenderItem]="item"
+              [nzGrid]="{ gutter: 24, xxl: 4, xl: 6, lg: 6, md: 12, sm: 24, xs: 24 }"
+              [nzPagination]="pagination"
+            >
+              <ng-template #item let-item>
+                <nz-list-item>
+                  <nz-card
+                    nzHoverable
+                    *ngIf="item !== null"
+                    [nzCover]="coverTpl"
+                    [nzActions]="[actionEdit, actionDownload]"
+                  >
+                    <nz-card-meta [nzTitle]="nzTitle"></nz-card-meta>
+                  </nz-card>
+                  <ng-template #nzTitle>
+                    <label title="{{ item.originalName }}"> {{ item.originalName }} </label>
+                  </ng-template>
+
+                  <ng-template #actionEdit>
+                    <ng-container *ngIf="!readonly">
+                      <a (click)="showModal(item.recUuid, 1)">
+                        <i nz-icon nzType="edit" nzTheme="outline"></i>
+                      </a>
+                    </ng-container>
+
+                    <ng-container *ngIf="readonly">
+                      <a (click)="showModalView(item.recUuid, 1)">
+                        <i nz-icon nzType="edit" nzTheme="outline"></i>
+                      </a>
+                    </ng-container>
+                  </ng-template>
+
+                  <ng-template #actionDownload>
+                    <a (click)="download(item.attachmentId, item.originalName, item.extensionName)"
+                      ><i nz-icon nzType="download" nzTheme="outline"></i
+                    ></a>
+                  </ng-template>
+
+                  <ng-template #coverTpl>
+                    <div class="img-responsive" (click)="imgClick(item)">
+                      <img
+                        nz-image
+                        *ngIf="fileType.imageH5.indexOf(item?.extensionName) >= 0"
+                        class="a-img"
+                        alt="{{ item.originalName }}"
+                        [nzSrc]="imgsrc + item?.attachmentId"
+                      />
+                      <img
+                        *ngIf="
+                          fileType.image.indexOf(item?.extensionName) >= 0 &&
+                          fileType.imageH5.indexOf(item?.extensionName) < 0
+                        "
+                        class="a-img"
+                        alt="{{ item.originalName }}"
+                        [src]="'./assets/image.svg'"
+                      />
+
+                      <img
+                        *ngIf="fileType.excel.indexOf(item?.extensionName) >= 0"
+                        class="a-img"
+                        alt="{{ item.originalName }}"
+                        [src]="'./assets/excel.svg'"
+                      />
+                      <img
+                        *ngIf="fileType.word.indexOf(item?.extensionName) >= 0"
+                        class="a-img"
+                        alt="{{ item.originalName }}"
+                        [src]="'./assets/word.svg'"
+                      />
+                      <img
+                        *ngIf="fileType.pdf.indexOf(item?.extensionName) >= 0"
+                        class="a-img"
+                        alt="{{ item.originalName }}"
+                        [src]="'./assets/pdf.svg'"
+                      />
+                      <img
+                        *ngIf="fileType.txt.indexOf(item?.extensionName) >= 0"
+                        class="a-img"
+                        alt="{{ item.originalName }}"
+                        [src]="'./assets/txt.svg'"
+                      />
+
+                      <ng-container *ngIf="fileType.audioH5.indexOf(item?.extensionName) >= 0">
+                        <audio controls style="width: 100%">
+                          <source [src]="imgsrc + item?.attachmentId" type="audio/mpeg" />
+                        </audio>
+                        <img
+                          class="a-img"
+                          style="height: 55%"
+                          alt="{{ item.originalName }}"
+                          [src]="'./assets/mp3.svg'"
+                        />
+                      </ng-container>
+                      <ng-container
+                        *ngIf="
+                          fileType.audio.indexOf(item?.extensionName) >= 0 &&
+                          fileType.audioH5.indexOf(item?.extensionName) < 0
+                        "
+                      >
+                        <img class="a-img" alt="{{ item.originalName }}" [src]="'./assets/mp3.svg'" />
+                      </ng-container>
+
+                      <ng-container *ngIf="fileType.vedioH5.indexOf(item?.extensionName) >= 0">
+                        <video
+                          (click)="launchFullscreen($event)"
+                          style="width: 100%"
+                          [src]="imgsrc + item?.attachmentId"
+                          controls="controls"
+                          title="{{ item.originalName }}"
+                        ></video>
+                        <!-- <img class="a-img" style="height: 30%;" alt="{{ item.originalName }}" [src]="'./assets/mp4.svg'" /> -->
+                      </ng-container>
+                      <ng-container
+                        *ngIf="
+                          fileType.vedio.indexOf(item?.extensionName) >= 0 &&
+                          fileType.vedioH5.indexOf(item?.extensionName) < 0
+                        "
+                      >
+                        <img class="a-img" alt="{{ item.originalName }}" [src]="'./assets/mp4.svg'" />
+                      </ng-container>
+
+                      <img
+                        *ngIf="fileTypeArr.indexOf(item?.extensionName) < 0"
+                        class="a-img"
+                        alt="{{ item.originalName }}"
+                        [src]="'./assets/unknown.svg'"
+                      />
+                    </div>
+                  </ng-template>
+                </nz-list-item>
+              </ng-template>
+              <ng-template #pagination>
+                <nz-pagination
+                  [nzTotal]="total"
+                  [(nzPageIndex)]="mediaPageIndex"
+                  [(nzPageSize)]="mediaPageSize"
+                  [nzHideOnSinglePage]="true"
+                  (nzPageIndexChange)="search()"
+                  (nzCurrentPageDataChange)="currentPageDataChange($event)"
+                ></nz-pagination>
+              </ng-template>
+            </nz-list>
+          </nz-content>
+        </nz-layout>
+      </nz-card>
+    </div>
+  </nz-tab>
+</nz-tabset>
+
+<app-nz-modal-update-detail [parent]="this" [shareFlag]="shareFlag" [onPage]="callPage" btnName="修改" #editDrawer>
+</app-nz-modal-update-detail>
+
+<app-nz-modal-view-detail [parent]="this" [shareFlag]="shareFlag" [onPage]="callPage" #viewDrawer>
+</app-nz-modal-view-detail>
+
+<app-nz-modal-view-pdf [parent]="this" [onPage]="callPage" #viewPdf> </app-nz-modal-view-pdf>

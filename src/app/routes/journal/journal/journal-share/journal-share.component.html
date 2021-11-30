@@ -1,0 +1,197 @@
+
+<nz-card>
+
+  <form nz-form  class="search__form" style="margin-bottom: 10px">
+
+    <div nz-row [nzGutter]="{ xs: 8, sm: 8, md: 8, lg: 24, xl: 48, xxl: 48 }" >
+      <div  nz-col nzSm="24" nzMd="8" >
+        <nz-form-item>
+          <nz-form-label>日志名称</nz-form-label>
+          <nz-form-control>
+            <input
+              nz-input
+              [(ngModel)]="searchJournalName"
+              name="journalName"
+              [ngModelOptions]="{standalone: true}"
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div  nz-col nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label>所属模板</nz-form-label>
+          <nz-form-control>
+            <nz-select
+              nzAllowClear
+              nzShowSearch
+              [(ngModel)]="templateId"
+              (ngModelChange)="onChange($event)"
+              [ngModelOptions]="{standalone: true}"
+            >
+              <nz-option *ngFor="let sub of templateList" [nzValue]="sub.id" [nzLabel]="sub.templateName"></nz-option>
+            </nz-select>
+
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div  nz-col nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label>岗位</nz-form-label>
+          <nz-form-control>
+            <nz-select
+              nzAllowClear
+              nzShowSearch
+              [(ngModel)]="searchPostId"
+              (ngModelChange)="onChange($event)"
+              [ngModelOptions]="{standalone: true}"
+            >
+              <nz-option *ngFor="let sub of postList" [nzValue]="sub.id" [nzLabel]="sub.postName"></nz-option>
+            </nz-select>
+
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+    </div>
+
+    <div nz-row [nzGutter]="{ xs: 8, sm: 8, md: 8, lg: 24, xl: 48, xxl: 48 }" >
+
+      <div  nz-col nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label >分享时间</nz-form-label>
+          <nz-form-control>
+            <nz-range-picker
+              [nzDisabledDate]="disabledDate"
+              [nzFormat]="dateFormat"
+              [(ngModel)]="dateRange"
+              (ngModelChange)="dateRangeOnChange($event)"
+              [ngModelOptions]="{standalone: true}"
+              style="margin-right: 10px;"
+            ></nz-range-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div  nz-col nzSm="24" nzMd="8">
+        <nz-form-item>
+          <nz-form-label>班次</nz-form-label>
+          <nz-form-control>
+            <nz-checkbox-group [(ngModel)]="dutyOptions" [ngModelOptions]="{standalone: true}"></nz-checkbox-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+    </div>
+
+    <div nz-row [nzGutter]="{ xs: 8, sm: 8, md: 8, lg: 24, xl: 48, xxl: 48 }" >
+      <div  nz-col nzSm="24" nzMd="8">
+        <button nz-button type="button" nzType="primary" (click)="downLoadWord()">
+          <i nz-icon nzType="file-word" nzTheme="outline"></i>Word下载
+        </button>
+
+        <button
+          *ngIf="shareFlag === 1"
+          [disabled]="loading"
+          (click)="cancelShareList()"
+          type="button"
+          nz-button
+          nzType="primary"
+          nzDanger
+        >
+          取消分享
+        </button>
+      </div>
+
+      <div  nz-col nzSm="24" nzMd="8">
+      </div>
+
+      <div  nz-col nzSm="24" nzMd="8" class="text-right">
+
+        <button  nz-button nzType="primary" style="margin-right: 10px" (click)="getData()">检索</button>
+
+        <button nz-button (click)="resetSe()" class="mx-sm" style="margin-right: 20px">重置</button>
+
+      </div>
+
+    </div>
+
+  </form>
+
+
+  <nz-table
+    #rowSelectionTable
+    nzBordered
+    nzShowSizeChanger
+    [nzData]="listOfAllData"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+    (nzCurrentPageDataChange)="currentPageDataChange($event)"
+  >
+    <thead>
+    <tr>
+      <th
+        nzWidth="50px"
+        nzLeft="0px"
+        nzShowCheckbox
+        [(nzChecked)]="isAllDisplayDataChecked"
+        [nzIndeterminate]="isIndeterminate"
+        (nzCheckedChange)="checkAll($event)"
+      ></th>
+      <th [nzAlign]="'center'" nzWidth="50px">序号</th>
+      <th [nzAlign]="'center'" nzWidth="60px">班次</th>
+      <th [nzAlign]="'center'" nzWidth="150px">日志名称</th>
+      <th [nzAlign]="'center'" nzWidth="150px">所属模板名称</th>
+      <th [nzAlign]="'center'" nzWidth="320px">日志内容</th>
+      <th [nzAlign]="'center'" nzWidth="60px">状态</th>
+      <th [nzAlign]="'center'" nzWidth="120px">创建时间</th>
+      <ng-container *ngIf="shareFlag===1">
+        <th [nzAlign]="'center'" nzWidth="120px">分享时间</th>
+        <th [nzAlign]="'center'" nzWidth="120px">分享岗位</th>
+      </ng-container>
+      <ng-container *ngIf="shareFlag===2">
+        <th [nzAlign]="'center'" nzWidth="120px">岗位来源</th>
+      </ng-container>
+      <th [nzAlign]="'center'" nzWidth="110px">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of rowSelectionTable.data;  let i = index">
+      <td
+        nzWidth="60px"
+        nzLeft="0px"
+        nzShowCheckbox
+        [(nzChecked)]="mapOfCheckedId[data.id]"
+        (nzCheckedChange)="refreshStatus()"
+      ></td>
+      <td [nzAlign]="'center'">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+      <td [nzAlign]="'center'">
+        <span *ngIf="data.journal.template.duty == 'm'"><nz-tag [nzColor]="'#87d068'">白班</nz-tag></span>
+        <span *ngIf="data.journal.template.duty == 'n'"><nz-tag [nzColor]="'#fa8c16'">夜班</nz-tag></span>
+      </td>
+      <td [nzAlign]="'center'"><ellipsis lines="1" tooltip>{{ data.journal.journalName }}</ellipsis></td>
+      <td [nzAlign]="'center'">{{ data.journal.template.templateName }}</td>
+      <td [nzAlign]="'center'"><ellipsis lines="1" tooltip>{{ data.content }}</ellipsis></td>
+      <td [nzAlign]="'center'">
+        <span *ngIf="data.journal.step == 1"><nz-tag [nzColor]="'#9eb9ff'">编辑中</nz-tag></span>
+        <span *ngIf="data.journal.step == 2"><nz-tag [nzColor]="'#d4bffa'">排版中</nz-tag></span>
+        <span *ngIf="data.journal.step == 3"><nz-tag [nzColor]="'#fabdde'">已完成</nz-tag></span>
+      </td>
+      <td [nzAlign]="'center'">{{ data.journal.createdTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+
+      <ng-container *ngIf="shareFlag===1">
+        <td [nzAlign]="'center'" >{{ data.createdTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td [nzAlign]="'center'">{{ data.sharePostName}}</td>
+      </ng-container>
+      <ng-container *ngIf="shareFlag===2">
+        <td [nzAlign]="'center'" >{{ data.originPostName}}</td>
+      </ng-container>
+
+      <td [nzAlign]="'center'">
+        <a (click)="edit(data)">查看</a>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-card>

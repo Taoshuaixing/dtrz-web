@@ -1,0 +1,86 @@
+
+<!--<a  (click)="showModal()" >-->
+<!--  查看-->
+<!--</a>-->
+
+
+<nz-drawer
+  [(nzVisible)]="isVisible"
+  [nzTitle]="'查看事件数据'"
+  nzOkText="确定"
+  nzCancelText="取消"
+  (nzOnClose)="cancel()"
+  [nzClosable]="true"
+  [nzMask]="true"
+  [nzWidth]="800"
+  [nzFooter]="footerTpl"
+>
+  <nz-content>
+    <nz-content>
+      <nz-card style="width: 100%">
+        <div class="field-row" nz-row nzGutter="16" style="border-bottom: dotted 1px gray;">
+          <label nz-col [nzSm]="6" [nzXs]="24" >事件名称:</label>
+          <span nz-col [nzSm]="12" [nzXs]="24">
+            <span>{{eventName}}</span>
+          </span>
+        </div>
+
+        <div class="field-row" nz-row nzGutter="16" style="border-bottom: dotted 1px gray;">
+          <label nz-col [nzSm]="6" [nzXs]="24" >事件分类:</label>
+          <span nz-col [nzSm]="12" [nzXs]="24">
+            <span>{{eventClassifyName}}</span>
+          </span>
+        </div>
+
+        <div class="field-row" nz-row nzGutter="16" style="border-bottom: dotted 1px gray;" >
+          <label nz-col [nzSm]="6" [nzXs]="24" >是否关联专项统计:</label>
+          <span nz-col [nzSm]="12" [nzXs]="24">
+            <span>{{eventStatName}}</span>
+          </span>
+        </div>
+
+        <ng-container *ngFor="let item of fieldList">
+          <div  class="field-row" nz-row nzGutter="16" style="border-bottom: dotted 1px gray;" >
+            <label nz-col [nzSm]="6" [nzXs]="24">{{item.fieldName }}:</label>
+            <span nz-col [nzSm]="12" [nzXs]="24">
+  
+  
+                <span *ngIf="item.fieldType === 1">{{item.val}}</span>
+                <span *ngIf="item.fieldType === 2">{{item.valMulti}}</span>
+                <span *ngIf="item.fieldType === 3">{{item.valDate | date: 'yyyy-MM-dd HH:mm:ss'}}</span>
+                <span *ngIf="item.fieldType === 4">{{item.valNum}}</span>
+                <ng-container *ngIf="item.fieldType === 5 " >
+                  <span *ngFor="let sub of item.targetTableData">
+                    <nz-tag nzColor="#2db7f5" style="margin:0px 5px 5px 5px;" *ngIf="item.valId === sub.id" >{{sub.name}}</nz-tag>
+                  </span>
+                </ng-container>
+  
+                <ng-container *ngIf="item.fieldType === 6 " >
+                  <span *ngFor="let sub of item.targetTableData">
+                    <nz-tag nzColor="#2db7f5" style="margin:0px 5px 5px 5px;" *ngIf="item.valIdMulti && item.valIdMulti.indexOf(sub.id)>=0 " >{{sub.name}}</nz-tag>
+                  </span>
+                </ng-container>
+
+              </span>
+          </div>
+        </ng-container>
+        
+
+
+
+      </nz-card>
+    </nz-content>
+  </nz-content>
+
+  <ng-template #footerTpl>
+    <div nz-row>
+      <nz-spin *ngIf="loading"></nz-spin>
+      <span nz-col [nzOffset]="6" [nzSpan]="18">
+            <button nz-button nzType="default" [disabled]="loading" (click)="cancel()">关闭</button>
+            <button  nz-button nzType="link"  [disabled]="isFirst || loading" (click)="getData('previous')"><i nz-icon nzType="arrow-up"></i>上一条</button>
+            <button  nz-button nzType="link" [disabled]="isLast || loading" (click)="getData('next')"><i nz-icon nzType="arrow-down"></i>下一条</button>
+          </span>
+    </div>
+  </ng-template>
+
+</nz-drawer>

@@ -1,0 +1,95 @@
+
+<nz-card>
+  <div style="margin-bottom: 10px">
+    <div nz-row [nzGutter]="18">
+      <div nz-col class="gutter-row" [nzSpan]="7">
+        <div class="inner-box">
+          <nz-input-group [nzSuffix]="inputClearTplName">
+            <input type="text" nz-input [(ngModel)]="searchName" placeholder="请输入名称" />
+          </nz-input-group>
+          <ng-template #inputClearTplName>
+            <i
+              nz-icon
+              class="ant-input-clear-icon"
+              nzTheme="fill"
+              nzType="close-circle"
+              *ngIf="searchName"
+              (click)="searchName = null"
+            ></i>
+          </ng-template>
+        </div>
+      </div>
+      <div nz-col class="gutter-row" [nzSpan]="10">
+        <div class="inner-box">
+          <button
+            style="margin-right: 10px"
+            nz-button
+            type="submit"
+            [nzType]="'primary'"
+            [nzLoading]="loading"
+            (click)="getData()"
+          >
+            检索
+          </button>
+          <app-nz-modal-edit
+            (editorOk)="getEditorEmitter(null, $event)"
+            [isAdd]="true"
+            [parentId]=""
+            btnName="添加指令"
+            [onBeforeSave]="check"
+          >
+          </app-nz-modal-edit>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nz-table
+    #rowSelectionTable
+    nzBordered
+    nzShowSizeChanger
+    [nzData]="listOfAllData"
+    [nzFrontPagination]="false"
+    [nzTotal]="total"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+    (nzPageIndexChange)="getData()"
+    (nzPageSizeChange)="getData()"
+  >
+    <thead>
+    <tr>
+      <th [nzAlign]="'center'">序号</th>
+      <th [nzAlign]="'center'">指令名称</th>
+      <th [nzAlign]="'center'">创建时间</th>
+      <th [nzAlign]="'center'">创建用户</th>
+      <th [nzAlign]="'center'">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of rowSelectionTable.data;  let i = index">
+      <td [nzAlign]="'center'">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+      <td [nzAlign]="'center'">{{ data.name }}</td>
+      <td [nzAlign]="'center'">{{ data.createTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+      <td [nzAlign]="'center'">{{ data.createUserName }}</td>
+      <td [nzAlign]="'center'">
+
+        <app-nz-modal-edit
+          (editorOk)="getEditorEmitter( data,$event)"
+          [isAdd]="false"
+          [parentId]=""
+          [inputId]="data.id"
+          [inputName]="data.name"
+          btnName="修改"
+          [onBeforeSave]="check"
+        >
+        </app-nz-modal-edit>
+
+        <a (click)="del(data.id)">
+          <i nz-icon nzType="delete" nzTheme="outline"></i> <span>删除</span>
+        </a>
+
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-card>

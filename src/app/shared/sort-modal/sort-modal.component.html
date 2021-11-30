@@ -1,0 +1,24 @@
+<a nzSize="small" (click)="showModal()" style="margin-left:10px ; color: chocolate;">
+  <!-- 三级 -->
+  <i class="anticon anticon-swap" nz-icon> </i><span>调整顺序</span>
+</a>
+
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="拖动鼠标调整顺序"
+  nzOkText="确定"
+  nzCancelText="取消"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  style="max-width: 500px;"
+  [nzWidth]="500"
+>
+  <div class="wrapper">
+    <ul class="container" dragula="DRAGULA_FACTS" [(dragulaModel)]="curSortItems">
+      <li *ngFor="let item of curSortItems" style="margin: 5px;">
+        <nz-tag>{{ item.name }}</nz-tag>
+      </li>
+    </ul>
+  </div>
+</nz-modal>

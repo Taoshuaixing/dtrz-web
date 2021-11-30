@@ -1,0 +1,85 @@
+<div style=" margin-bottom: 10px;">
+  <div nz-row [nzGutter]="18">
+
+    <div nz-col class="gutter-row" [nzSpan]="4">
+      <div class="inner-box">
+        <app-nz-modal-edit
+          (editorOk)="getEditorEmitter(null,$event)"
+          [isAdd]="true"
+          btnName="添加导入模板"
+          btnSize="default"
+          [onBeforeSave]="check"
+        >
+        </app-nz-modal-edit>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nz-collapse >
+  <ng-container *ngFor="let item of listOfAllData;  let i = index" >
+    <nz-collapse-panel  [nzHeader]="item.name" nzActive="true" nzShowArrow="true" [nzExtra]="extraTemplateEdit">
+
+      <ng-template #extraTemplateEdit>
+
+        <app-yangben-place-config-setting [parent]="item"  [onWaitSearch]="waitSearch">
+        </app-yangben-place-config-setting>
+
+
+        <app-nz-modal-edit
+          (editorOk)="getEditorEmitter(item,$event)"
+          [isAdd]="false"
+          [inputId]="item.id"
+          [inputName]= "item.name"
+          btnName="编辑"
+          btnSize="small"
+          [onBeforeSave]="check"
+        >
+        </app-nz-modal-edit>
+
+        <button nz-button nzType="primary" nzDanger  (click)="$event.stopPropagation();del(item.id)" nzSize="small">
+          删除
+        </button>
+      </ng-template>
+
+      <ng-container *ngIf="item.yangbenTemplatePlaceFields.length>0" >
+        <nz-card>
+          <div nz-row>
+            <div *ngFor="let it of item.yangbenTemplatePlaceFields" nz-col nzMd="3">
+
+              <label>{{ it.fieldName }} </label>
+
+              <ng-container *ngIf="(it.fieldType === 5 || it.fieldType === 6) && it.targetTable=== null">
+
+                <ng-container *ngIf="it.selectCnt">
+                  <nz-badge [nzCount]="it.selectCnt" >
+                    <app-yangben-template-option-field-setting
+                      [templateId]="item.id" [fieldId]="it.fieldId"
+                      [yangbenOptionConfigParentId]="it.yangbenOptionConfigId"
+                      (editorOk)="getOptionEditorEmitter(it,$event)"
+                    >
+                    </app-yangben-template-option-field-setting>
+                  </nz-badge>
+                </ng-container>
+
+                <ng-container *ngIf="!it.selectCnt">
+                  <app-yangben-template-option-field-setting
+                    [templateId]="item.id" [fieldId]="it.fieldId"
+                    [yangbenOptionConfigParentId]="it.yangbenOptionConfigId"
+                    (editorOk)="getOptionEditorEmitter(it,$event)"
+                  >
+                  </app-yangben-template-option-field-setting>
+                </ng-container>
+
+              </ng-container>
+            </div>
+          </div>
+        </nz-card>
+      </ng-container>
+
+    </nz-collapse-panel>
+  </ng-container>
+
+</nz-collapse>
+
+

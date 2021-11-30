@@ -1,0 +1,79 @@
+.events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.events .ant-badge-status {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  text-overflow: ellipsis;
+  font-size: 12px;
+}
+
+.notes-month {
+  text-align: center;
+  font-size: 28px;
+}
+
+.notes-month section {
+  font-size: 28px;
+}
+
+.ul {
+  padding: 0px;
+  list-style-type: none;
+}
+
+.statistical-summary {
+  display: inline-block;
+  width: 50px;
+  height: 30px;
+  margin-right: 5px;
+  padding: 3px 0 0 5px;
+  color: white;
+  font-size: 16px;
+  background-color: #1890ff;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+.active {
+  background: #fadb14;
+  border-radius: 4px;
+}
+:host ::ng-deep .ant-picker-calendar-header {
+  display: none !important;
+}
+
+:host ::ng-deep .ant-picker-calendar-full .ant-picker-panel .ant-picker-cell-selected .ant-picker-calendar-date,
+.ant-picker-calendar-full .ant-picker-panel .ant-picker-cell-selected:hover .ant-picker-calendar-date,
+.ant-picker-calendar-full .ant-picker-panel .ant-picker-cell-selected .ant-picker-calendar-date-today,
+.ant-picker-calendar-full .ant-picker-panel .ant-picker-cell-selected:hover .ant-picker-calendar-date-today {
+  background: #f0f0f0 !important;
+}
+
+:host ::ng-deep .ant-card-head {
+  min-height: 48px;
+  margin-bottom: -1px;
+  padding: 0 24px;
+  color: #252525;
+  font-weight: 500;
+  font-size: 16px;
+  background-color: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  border-radius: 2px 2px 0 0;
+}
+
+:host ::ng-deep .ant-card-extra {
+  float: right;
+  margin-left: auto;
+  padding: 3px 0 0 5px;
+  color: #626675;
+  font-weight: normal;
+  font-size: 14px;
+}
+
+:host ::ng-deep .ant-picker-cell-disabled .ant-picker-cell-inner {
+  display: none;
+}

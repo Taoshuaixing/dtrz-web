@@ -1,0 +1,41 @@
+.logo {
+  height: 32px;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.left-layout {
+  height: 100vh;
+}
+
+nz-sider {
+  position: fixed;
+  height: 100%;
+  overflow: auto;
+
+  /* left: 0; */
+}
+
+.right-layout {
+  margin-left: 200px;
+}
+
+.layout {
+  height: 100vh;
+}
+
+.ant-layout-sider {
+  background: white;
+}
+
+::ng-deep .ant-anchor-ink-ball {
+  height: 0;
+}
+
+.topMenu {
+  top: 230px;
+}
+
+.topMenuRoll {
+  top: 10px;
+}

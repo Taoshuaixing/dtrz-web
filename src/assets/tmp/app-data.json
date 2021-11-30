@@ -1,0 +1,28 @@
+{
+  "app": {
+    "name": "Alain",
+    "description": "Ng-zorro admin panel front-end framework"
+  },
+  "user": {
+    "name": "Admin",
+    "avatar": "./assets/tmp/img/avatar.jpg",
+    "email": "cipchk@qq.com"
+  },
+  "menu": [
+    {
+      "text": "人物列表",
+      "link": "/dashboard",
+      "i18n": "menu.person.list",
+      "icon": "anticon-dashboard",
+      "children": []
+    },
+    {
+      "text": "添加人物",
+      "link": "/person/add-person",
+      "i18n": "menu.person.add",
+      "icon": "anticon-rocket",
+      "shortcutRoot": true,
+      "children": []
+    }
+  ]
+}

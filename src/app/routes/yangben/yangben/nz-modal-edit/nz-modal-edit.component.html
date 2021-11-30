@@ -1,0 +1,39 @@
+<ng-container *ngIf=" ! showIcon">
+  <button *ngIf="btnName !='修改'"  nz-button nzType="primary" (click)="$event.stopPropagation();showModal()" style="margin-right: 8px;" [nzSize]="btnSize">
+    <span>{{ btnName }}</span>
+  </button>
+
+  <a *ngIf="btnName==='修改'" (click)="showModal()" style="margin-right: 10px;">
+    <i nz-icon nzType="edit" nzTheme="outline"></i> <span>{{ btnName }}</span>
+  </a>
+</ng-container>
+
+<ng-container *ngIf="showIcon">
+  <a *ngIf="btnName==='新增' " (click)="showModal()" style="margin-right: 10px;">
+    <i nz-icon nzType="plus" nzTheme="outline"></i>
+  </a>
+
+  <a *ngIf="btnName==='编辑' " (click)="showModal()" style="margin-right: 10px;">
+    <i nz-icon nzType="edit" nzTheme="outline"></i>
+  </a>
+</ng-container>
+
+
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="btnName"
+  nzOkText="保存"
+  nzCancelText="取消"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  [nzWidth]="800"
+>
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <nz-form-control nzErrorTip="名称不能为空">
+        <input nz-input formControlName="inputName" placeholder="请输入名称" nzSize="default" [(ngModel)]="inputName" />
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>

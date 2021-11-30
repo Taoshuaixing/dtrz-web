@@ -1,0 +1,63 @@
+<div>
+  <!--  <nz-tree-->
+  <!--    [nzData]="nodes"-->
+  <!--    nzCheckable-->
+  <!--    nzMultiple-->
+  <!--    [nzExpandAll]="true"-->
+  <!--    [nzCheckedKeys]="defaultCheckedKeys"-->
+  <!--    [nzExpandedKeys]="defaultExpandedKeys"-->
+  <!--    [nzSelectedKeys]="defaultSelectedKeys"-->
+  <!--    (nzClick)="nzEvent($event)"-->
+  <!--    (nzCheckBoxChange)="nzEvent($event)"-->
+  <!--  >-->
+  <!--  </nz-tree>-->
+  <!--  <nz-tree [nzData]="nodes" nzDraggable nzBlockNode (nzClick)="nzEvent($event)">-->
+  <!--  </nz-tree>-->
+  <nz-tree [nzData]="nodes" (nzClick)="activeNode($event)" [nzTreeTemplate]="nzTreeTemplate"></nz-tree>
+  <ng-template #nzTreeTemplate let-node>
+    <span class="custom-node" [class.active]="activedNode?.key === node.key" *ngIf="node.key !== 0">
+      <i
+        style="padding-right: 5px;"
+        (click)="$event.stopPropagation(); showModal(node)"
+        nz-icon
+        nzTheme="outline"
+        nzType="edit"
+      ></i>
+      <i
+        nz-icon
+        nz-popconfirm
+        (click)="$event.stopPropagation()"
+        [nzPopconfirmTitle]="'确定删除 ' + node['origin']['name'] + ' ?'"
+        (nzOnConfirm)="confirm(node)"
+        class="deleteI"
+        nzType="delete"
+        nzTheme="outline"
+      ></i>
+      <span class="folder-name">{{ node.title }}</span
+      ><span class="cnt" *ngIf="node['origin'].cnt > 0">({{ node['origin'].cnt }})</span>
+    </span>
+    <span class="custom-node-all" [class.active]="activedNode?.key === node.key" *ngIf="node.key === 0">
+      <span class="folder-name">{{ node.title }}</span
+      ><span class="cnt" *ngIf="node['origin'].cnt > 0">({{ node['origin'].cnt }})</span>
+    </span>
+  </ng-template>
+  <nz-modal [(nzVisible)]="isVisible" [nzTitle]="'修改'" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+    <p>
+      标题：<input
+        nz-input
+        style="display: inline-block;width: 87%;"
+        placeholder="请填写"
+        [(ngModel)]="modification['name']"
+      />
+    </p>
+  </nz-modal>
+  <ul style="list-style:none;">
+    <li *ngIf="addFlg">
+      <input [(ngModel)]="newType" nz-input nzSize="default" placeholder="添加新分类名称" style="width: 150px" />
+      <button (click)="addTypeBtn()" nz-button nzType="primary" style="margin-top: 8px;width: 120px;">确认</button>
+    </li>
+    <button (click)="addFlg = true" *ngIf="!addFlg" nz-button nzType="primary" style="margin-top: 8px;width: 120px;">
+      <i nz-icon nzType="plus" nzTheme="outline"></i>添加分类
+    </button>
+  </ul>
+</div>

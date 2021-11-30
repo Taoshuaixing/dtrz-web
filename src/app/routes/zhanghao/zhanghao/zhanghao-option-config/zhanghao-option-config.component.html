@@ -1,0 +1,177 @@
+<nz-layout>
+  <nz-sider nzWidth="180px" nzTheme="light">
+    <nz-anchor [nzAffix]="true" [nzOffsetTop]="133">
+      <ng-container *ngFor="let item of listOfAllData">
+        <nz-link *ngIf="!item.parent && !item.targetTable" [nzHref]="'#a' + item.id" [nzTitle]="item.name"></nz-link>
+      </ng-container>
+    </nz-anchor>
+  </nz-sider>
+  <nz-content>
+    <div style="margin-bottom: 10px">
+      <div *ngIf="adminFlag === 1" nz-row [nzGutter]="18">
+        <div nz-col class="gutter-row" [nzSpan]="8">
+          <div class="inner-box">
+            <app-nz-modal-edit
+              (editorOk)="getEditorEmitter(null, $event)"
+              [isAdd]="true"
+              [parentId]=""
+              btnName="增加对象"
+              btnSize="default"
+              [onBeforeSave]="check"
+            >
+            </app-nz-modal-edit>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <nz-collapse>
+      <ng-container *ngFor="let item of listOfAllData; let i = index">
+        <nz-collapse-panel
+          *ngIf="!item.parent && !item.targetTable"
+          [nzHeader]="item.name"
+          nzActive="true"
+          nzShowArrow="true"
+          [nzExtra]="extraTemplateEdit"
+        >
+          <a [id]="'a' + item.id"></a>
+          <div style="margin-bottom: 10px">
+            <div nz-row [nzGutter]="18">
+              <div nz-col class="gutter-row" [nzSpan]="7">
+                <div class="inner-box">
+                  <nz-input-group [nzSuffix]="inputClearTplName">
+                    <input type="text" nz-input [(ngModel)]="item.searchName" placeholder="请输入名称" />
+                  </nz-input-group>
+                  <ng-template #inputClearTplName>
+                    <i
+                      nz-icon
+                      class="ant-input-clear-icon"
+                      nzTheme="fill"
+                      nzType="close-circle"
+                      *ngIf="item.searchName"
+                      (click)="item.searchName = null"
+                    ></i>
+                  </ng-template>
+                </div>
+              </div>
+              <div nz-col class="gutter-row" [nzSpan]="10">
+                <div class="inner-box">
+                  <button
+                    style="margin-right: 10px"
+                    nz-button
+                    type="submit"
+                    [nzType]="'primary'"
+                    [nzLoading]="loading"
+                    (click)="getData_one(item)"
+                  >
+                    检索
+                  </button>
+                  <app-nz-modal-edit
+                    *ngIf="adminFlag === 1"
+                    (editorOk)="getEditorEmitter(item, $event)"
+                    [isAdd]="true"
+                    [parentId]="item.id"
+                    btnName="增加"
+                    [onBeforeSave]="check"
+                  >
+                  </app-nz-modal-edit>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #extraTemplateEdit>
+            <ng-container *ngIf="adminFlag === 1">
+              <!-- 编辑 -->
+              <app-nz-modal-edit
+                (editorOk)="getEditorEmitter(item, $event)"
+                [isAdd]="false"
+                [parentId]=""
+                [inputId]="item.id"
+                [inputName]="item.name"
+                btnName="修改对象"
+                btnSize="small"
+                [onBeforeSave]="check"
+              >
+              </app-nz-modal-edit>
+
+              <button
+                nz-button
+                nzType="primary"
+                nzDanger
+                (click)="$event.stopPropagation(); del(item.id)"
+                nzSize="small"
+              >
+                删除
+              </button>
+            </ng-container>
+          </ng-template>
+
+          <nz-table
+            #rowSelectionTable
+            nzBordered
+            nzShowSizeChanger
+            [nzData]="item.children"
+            [nzFrontPagination]="false"
+            [nzLoading]="loading"
+            [nzTotal]="item.total"
+            [(nzPageIndex)]="item.pageIndex"
+            [(nzPageSize)]="item.pageSize"
+            (nzPageIndexChange)="getData_one(item)"
+            (nzPageSizeChange)="getData_one(item, true)"
+          >
+            <thead>
+              <tr>
+                <th [nzAlign]="'center'">序号</th>
+                <th [nzAlign]="'center'">名称</th>
+                <th [nzAlign]="'center'">账号数量</th>
+                <th [nzAlign]="'center'">编辑时间</th>
+                <th *ngIf="adminFlag === 1" [nzAlign]="'center'">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+                <td [nzAlign]="'center'">{{ i + 1 + (item.pageIndex - 1) * item.pageSize }}</td>
+                <td [nzAlign]="'center'">{{ data.name }}</td>
+                <td [nzAlign]="'center'">
+                  <a
+                    *ngIf="wenziFlag === 0 && data.zhanghaoCnt > 0"
+                    routerLink="/zhanghao/zhanghao-data"
+                    [queryParams]="{
+                      shareFlag: -1,
+                      optionId: data.id,
+                      fieldId: item.field?.id,
+                      fieldType: item.field?.fieldType,
+                      from: 'option',
+                      adminFlag: adminFlag
+                    }"
+                  >
+                    <!-- 管理员 -->
+                    {{ data.zhanghaoCnt }}
+                  </a>
+
+                  <span *ngIf="data.zhanghaoCnt === 0">0</span>
+                </td>
+                <td [nzAlign]="'center'">{{ data.createdTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+                <td *ngIf="adminFlag === 1" [nzAlign]="'center'">
+                  <app-nz-modal-edit
+                    btnName="修改"
+                    [isAdd]="false"
+                    [parentId]="item.id"
+                    (editorOk)="getEditorEmitter(item, $event)"
+                    [inputId]="data.id"
+                    [inputName]="data.name"
+                    [onBeforeSave]="check"
+                  >
+                  </app-nz-modal-edit>
+
+                  <a (click)="del(data.id)"> <i nz-icon nzType="delete" nzTheme="outline"></i> <span>删除</span> </a>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-collapse-panel>
+      </ng-container>
+    </nz-collapse>
+  </nz-content>
+</nz-layout>

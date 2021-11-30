@@ -1,0 +1,76 @@
+
+<nz-card>
+
+  <div class="area-head">
+    <button nz-button nzType="primary" routerLink="../journal-template-detail" [queryParams]="{ tempId: null }">
+      添加模板
+    </button>
+
+    <div class="area-filter">
+      <span class="area-count">({{ total }}个模板)</span>
+      <span>
+      <nz-checkbox-group [(ngModel)]="usedOptions" [disabled]="loading" (ngModelChange)="getData()">
+      </nz-checkbox-group>
+    </span>
+    </div>
+  </div>
+
+  <nz-table
+    #rowSelectionTable
+    nzBordered
+    nzShowSizeChanger
+    [nzData]="listOfAllData"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+    (nzCurrentPageDataChange)="currentPageDataChange($event)"
+  >
+    <thead>
+    <tr>
+      <th [nzAlign]="'center'" nzWidth="65px">序号</th>
+      <th [nzAlign]="'center'" nzWidth="65px">班次</th>
+      <th [nzAlign]="'center'" nzWidth="150px">模板名称</th>
+      <th [nzAlign]="'center'" nzWidth="300px">日志内容</th>
+      <th [nzAlign]="'center'" nzWidth="100px">是否启用</th>
+      <th [nzAlign]="'center'" nzWidth="120px">创建时间</th>
+      <th [nzAlign]="'center'" nzWidth="100px">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of rowSelectionTable.data;  let i = index">
+      <td [nzAlign]="'center'">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+      <td [nzAlign]="'center'" *ngIf="data.duty === '0'">
+        <nz-tag [nzColor]="'default'">通用</nz-tag>
+      </td>
+      <td [nzAlign]="'center'" *ngIf="data.duty === 'm'">
+        <nz-tag [nzColor]="'green'">白班</nz-tag>
+      </td>
+      <td [nzAlign]="'center'" *ngIf="data.duty === 'n'">
+        <nz-tag [nzColor]="'orange'">夜班</nz-tag>
+      </td>
+      <td [nzAlign]="'center'">{{ data.templateName }}</td>
+      <td [nzAlign]="'center'">{{ data.content }}</td>
+      <td [nzAlign]="'center'">
+        <nz-switch
+          [(ngModel)]="data.usedFlag"
+          (ngModelChange)="switch(data.id,$event)"
+          nzCheckedChildren="启用"
+          nzUnCheckedChildren="停用"
+        >
+        </nz-switch>
+      </td>
+      <td [nzAlign]="'center'">{{ data.createdTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+      <td [nzAlign]="'center'">
+
+        <a routerLink="../journal-template-detail" [queryParams]="{ tempId: data.id}" style="margin-right: 30px">
+          <i nz-icon nzType="edit" nzTheme="outline"></i>
+        </a>
+
+        <a (click)="del(data.id)">
+          <i nz-icon nzType="delete" nzTheme="outline"></i>
+        </a>
+
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-card>

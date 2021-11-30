@@ -1,0 +1,18 @@
+<nz-layout>
+  <nz-sider class="menu-sidebar" nzCollapsible [nzWidth]="sidebar_width + 'px'" nzBreakpoint="md" [nzTrigger]="null">
+    <ul nz-menu nzMode="inline">
+      <li nz-submenu nzTitle="配置" nzIcon="setting" nzOpen>
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/settings/position-and-staffing">人员配置</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-content>
+    <div class="inner-content" [ngStyle]="{ width: content_width + 'px' }" style="background: white">
+      <router-outlet></router-outlet>
+    </div>
+  </nz-content>
+</nz-layout>

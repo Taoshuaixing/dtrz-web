@@ -1,0 +1,443 @@
+<nz-card [nzBordered]="false">
+  <form nz-form class="search__form">
+    <ng-container *ngFor="let items of fieldListForSearch; let i = index">
+      <div
+        *ngIf="i < 2 || (i !== 0 && expandForm)"
+        nz-row
+        [nzGutter]="{ xs: 8, sm: 8, md: 8, lg: 24, xl: 48, xxl: 48 }"
+      >
+        <div *ngFor="let item of items.children" nz-col nzSm="24" nzMd="8">
+          <nz-form-item>
+            <nz-form-label>{{ item.fieldName }}</nz-form-label>
+            <nz-form-control>
+              <input
+                *ngIf="item.fieldType === 1 || item.fieldType === 2"
+                nz-input
+                [(ngModel)]="item.val"
+                name="{{ item.fieldName }}"
+              />
+              <span *ngIf="item.fieldType === 4">
+                <nz-input-number [(ngModel)]="item.start" [nzStep]="1" name="{{ item.fieldName + '1' }}">
+                </nz-input-number>
+                ~
+                <nz-input-number [(ngModel)]="item.end" [nzStep]="1" name="{{ item.fieldName + '2' }}">
+                </nz-input-number>
+              </span>
+              <nz-select
+                *ngIf="item.fieldType === 5 || item.fieldType === 6"
+                nzAllowClear
+                nzShowSearch
+                [(ngModel)]="item.val"
+                name="{{ item.fieldName }}"
+              >
+                <nz-option *ngFor="let sub of item.targetTableData" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+              </nz-select>
+              <nz-range-picker
+                [nzShowTime]="true"
+                [nzShowTime]="{ nzHideDisabledOptions: true, nzFormat: 'HH:mm:ss' }"
+                *ngIf="item.fieldType === 3"
+                [(ngModel)]="item.val"
+                name="{{ item.fieldName }}"
+              >
+              </nz-range-picker>
+
+              <nz-checkbox-group
+                *ngIf="item.fieldType === 51"
+                name="{{ item.fieldName }}"
+                [(ngModel)]="item.checkItems"
+              >
+              </nz-checkbox-group>
+
+              <nz-tree-select
+                *ngIf="item.fieldType === 53"
+                name="{{ item.fieldName }}"
+                [nzExpandedKeys]="expandEventClassifyKeys"
+                [(ngModel)]="eventClassifyId"
+                [nzShowSearch]="true"
+                [nzDropdownStyle]="{ 'max-height': '300px' }"
+                [nzNodes]="eventClassifyNodes"
+                (ngModelChange)="onChange($event)"
+              >
+              </nz-tree-select>
+
+              <nz-select
+                *ngIf="item.fieldType === 54"
+                nzAllowClear
+                nzShowSearch
+                [(ngModel)]="postChangeFlag"
+                (ngModelChange)="onChange($event)"
+                [ngModelOptions]="{ standalone: true }"
+              >
+                <nz-option *ngFor="let sub of eventMapList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+              </nz-select>
+
+              <nz-select
+                *ngIf="item.fieldType === 55"
+                nzAllowClear
+                nzShowSearch
+                [(ngModel)]="templateId"
+                (ngModelChange)="onChange($event)"
+                [ngModelOptions]="{ standalone: true }"
+              >
+                <nz-option *ngFor="let sub of eventTmplateList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </ng-container>
+    <div nz-row class="row">
+      <div nz-col nzMd="8">
+        <app-yangben-event-modal-export
+          *ngIf="!readOnly"
+          [fieldListForSearch]="fieldListForSearch"
+          [eventName]="eventName"
+          [eventClassifyId]="eventClassifyId"
+          [eventTemplateId]="eventTemplateId"
+          [selectedId]="selectedId"
+        ></app-yangben-event-modal-export>
+
+        <button
+          *ngIf="!readOnly"
+          type="button"
+          [disabled]="delLoading"
+          (click)="deleteYangbenList()"
+          nz-button
+          nzType="primary"
+          nzDanger
+        >
+          <i nz-icon nzType="delete" nzTheme="outline"></i> 删除
+        </button>
+      </div>
+
+      <div nz-col nzMd="12" class="text-right">
+        <nz-switch
+          name="highLightFlag"
+          [(ngModel)]="highLightFlag"
+          nzCheckedChildren="高亮"
+          nzUnCheckedChildren="关闭"
+          style="margin-right: 21px"
+        >
+        </nz-switch>
+        <button nz-button (click)="search(true)" [nzType]="'primary'">搜索</button>
+        <button nz-button (click)="resetSe()" class="mx-sm">重置</button>
+
+        <ng-container *ngIf="rowCnt > 2">
+          <a (click)="expandForm = !expandForm">
+            {{ expandForm ? '收起' : '展开' }}
+            <i nz-icon [nzType]="expandForm ? 'up' : 'down'"></i>
+          </a>
+        </ng-container>
+      </div>
+      <div nz-col nzMd="4" class="text-right">
+        <app-nz-modal-event-update-detail
+          *ngIf="!readOnly"
+          [parent]="this"
+          [onPage]="callPage"
+          btnName="添加"
+          [recUuid]=""
+          [eventTemplateId]="eventTemplateId"
+        >
+        </app-nz-modal-event-update-detail>
+
+        <a *ngIf="!readOnly" nz-dropdown [nzDropdownMenu]="menu">
+          <i nz-icon nzType="setting" style="margin-right: 6px"></i>设置
+        </a>
+        <nz-dropdown-menu #menu="nzDropdownMenu">
+          <ul nz-menu nzSelectable>
+            <li nz-menu-item>
+              <app-yangben-event-field-setting
+                [parent]="this"
+                [eventTemplateId]="eventTemplateId"
+                [onWaitSearch]="waitSearch"
+              >
+              </app-yangben-event-field-setting>
+            </li>
+            <li nz-menu-item>
+              <app-yangben-event-search-setting
+                [parent]="this"
+                [eventTemplateId]="eventTemplateId"
+                [onWaitSearch]="waitSearch"
+              >
+              </app-yangben-event-search-setting>
+            </li>
+          </ul>
+        </nz-dropdown-menu>
+      </div>
+    </div>
+  </form>
+</nz-card>
+
+<nz-card>
+  <div nz-row class="row">
+    <div nz-col nzMd="21" style="margin-bottom: 10px">
+      <ng-container *ngIf="!readOnly">
+        <nz-button-group>
+          <button
+            nz-button
+            type="primary"
+            (click)="changeCurrentStatus(1)"
+            style="margin-right: 20px; background-color: #52c41a; border: #52c41a; color: white"
+          >
+            启用事件
+          </button>
+
+          <button nz-button type="primary" nzType="danger" (click)="changeCurrentStatus(3)" style="margin-right: 20px">
+            停用事件
+          </button>
+
+          <button nz-button nzType="primary" (click)="postChange()" style="margin-right: 20px">转岗位事件</button>
+        </nz-button-group>
+
+        <nz-cascader
+          style="width: 200px"
+          [nzOptions]="nzOptions"
+          [(ngModel)]="signValues"
+          (ngModelChange)="onChanges($event)"
+          nzShowSearch="true"
+          nzPlaceHolder="选项配置标记"
+        ></nz-cascader>
+        <button nz-button [nzType]="'primary'" (click)="changeNzOptions()" style="margin-right: 20px">标记</button>
+
+        <nz-tree-select
+          nzPlaceHolder="事件分类标记"
+          [nzExpandedKeys]="expandEventClassifyKeys"
+          [(ngModel)]="signEventClassifyId"
+          [nzShowSearch]="true"
+          [nzDropdownStyle]="{ 'max-height': '300px' }"
+          [nzNodes]="eventClassifyNodes"
+          (ngModelChange)="signEventClassifyChange($event)"
+          style="width: 200px"
+        >
+        </nz-tree-select>
+        <button nz-button [nzType]="'primary'" (click)="changeEventClassify()" style="margin-right: 20px">标记</button>
+      </ng-container>
+    </div>
+    <div nz-col nzMd="3" class="text-right">
+      <span class="search-total">共计 {{ total }} 条事件</span>
+    </div>
+  </div>
+
+  <nz-table
+    #rowSelectionTable
+    nzShowSizeChanger
+    nzBordered
+    [nzData]="listOfAllData"
+    [nzFrontPagination]="false"
+    [nzLoading]="loading"
+    [nzTotal]="total"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+    (nzCurrentPageDataChange)="currentPageDataChange($event)"
+    [nzScroll]="{ x: tableWidth + 'px', y: '600px;' }"
+    (nzPageIndexChange)="search()"
+    (nzPageSizeChange)="search(true)"
+  >
+    <thead (nzSortOrderChange)="sort($event)">
+      <tr>
+        <th
+          nzWidth="50px"
+          nzLeft="0px"
+          nzShowCheckbox
+          [(nzChecked)]="isAllDisplayDataChecked"
+          [nzIndeterminate]="isIndeterminate"
+          (nzCheckedChange)="checkAll($event)"
+        ></th>
+        <th [nzAlign]="'center'" nzWidth="65px" nzLeft="50px">序号</th>
+        <th [nzAlign]="'center'" nzWidth="300px" nzLeft="115px" nzShowSort [nzSortFn]="true" nzColumnKey="name">
+          事件名称
+        </th>
+        <th [nzAlign]="'center'" nzWidth="100px" nzLeft="415px">当前状态</th>
+        <ng-container *ngFor="let item of fieldListForList">
+          <th [nzAlign]="'center'" [nzWidth]="item.width + 'px'">
+            <span>{{ item.fieldName }}</span>
+          </th>
+        </ng-container>
+
+        <!-- <th [nzAlign]="'center'" nzWidth="155px" nzRight="220px">是否关联专项统计</th> -->
+
+        <ng-container *ngIf="currentSys === 'dt'">
+          <th [nzAlign]="'center'" nzWidth="100px" nzRight="340px">样本数量</th>
+          <th [nzAlign]="'center'" nzWidth="120px" nzRight="220px">
+            处置数量
+
+            <nz-filter-trigger [(nzVisible)]="visible" [nzActive]="searchValue.length > 0" [nzDropdownMenu]="menuCZ">
+              <i nz-icon nzType="search"></i>
+            </nz-filter-trigger>
+          </th>
+        </ng-container>
+
+        <ng-container *ngIf="currentSys != 'dt'">
+          <th [nzAlign]="'center'" nzWidth="100px" nzRight="220px">样本数量</th>
+        </ng-container>
+
+        <th [nzAlign]="'center'" nzWidth="120px" nzRight="100px" nzShowSort [nzSortFn]="true" nzColumnKey="createdTime">
+          创建时间
+        </th>
+        <th [nzAlign]="'center'" nzWidth="100px" nzRight="0px">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+        <td
+          nzWidth="50px"
+          nzLeft="0px"
+          nzShowCheckbox
+          [(nzChecked)]="mapOfCheckedId[data.recUuid]"
+          (nzCheckedChange)="refreshStatus()"
+        ></td>
+        <td [nzAlign]="'center'" nzWidth="65px" nzLeft="50px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td [nzAlign]="'nzLeft'" nzWidth="300px" nzLeft="115px">
+          <span *ngIf="highLightFlag === false">{{ data.name }}</span>
+          <span
+            *ngIf="highLightFlag === true"
+            [innerHTML]="data.name | highlightPipe: findSearchVal('事件名称')"
+          ></span>
+          <ul style="width: 100px; margin-left: -40px; list-style-type: none">
+            <li *ngIf="data.lev1" style="margin-bottom: 1px">
+              <nz-tag [nzColor]="'blue'">{{ data.lev1 }}</nz-tag>
+            </li>
+            <li *ngIf="data.lev2" style="margin-bottom: 1px">
+              <nz-tag [nzColor]="'orange'">{{ data.lev2 }}</nz-tag>
+            </li>
+            <li *ngIf="data.lev3" style="margin-bottom: 1px">
+              <nz-tag [nzColor]="'green'">{{ data.lev3 }}</nz-tag>
+            </li>
+          </ul>
+        </td>
+        <td [nzAlign]="'center'" nzWidth="100px" nzLeft="415px">
+          <nz-tag *ngIf="data.currentStatus === 1" [nzColor]="'green'">正在使用</nz-tag>
+          <nz-tag *ngIf="data.currentStatus === 2" [nzColor]="'default'">待启动</nz-tag>
+          <nz-tag *ngIf="data.currentStatus === 3" [nzColor]="'red'">已停用</nz-tag>
+
+          <nz-tag *ngIf="data.postChangeFlag === 1" [nzColor]="'blue'">图谱</nz-tag>
+        </td>
+        <ng-container *ngFor="let item of fieldListForList">
+          <td [nzAlign]="findShowCss(item.fieldType)">
+            <ellipsis *ngIf="highLightFlag === false" lines="1" tooltip>{{ data[item.fieldName] }}</ellipsis>
+            <span
+              *ngIf="highLightFlag === true"
+              [innerHTML]="data[item.fieldName] | highlightPipe: findSearchVal(item.fieldName)"
+            ></span>
+          </td>
+        </ng-container>
+
+        <ng-container *ngIf="currentSys === 'dt'">
+          <td [nzAlign]="'center'" nzWidth="100px" nzRight="340px">
+            <a
+              routerLink="/yangben/yangben-data"
+              [queryParams]="{
+                shareFlag: this.viewAllYangben ? -1 : 0,
+                eventId: data.id,
+                from: 'event',
+                adminFlag: this.adminFlag
+              }"
+            >
+              {{ data.yangbenCnt }}
+            </a>
+          </td>
+
+          <td [nzAlign]="'center'" nzWidth="120px" nzRight="220px">
+            <!-- 处置数量 -->
+            <a
+              routerLink="/yangben/yangben-data"
+              [queryParams]="{
+                shareFlag: this.viewAllYangben ? -1 : 0,
+                eventId: data.id,
+                from: 'event',
+                adminFlag: this.adminFlag,
+                chuzhiCntFieldId: chuzhiCntFieldId,
+                chuzhiTimeFieldId: chuzhiTimeFieldId,
+                chuzhiTime: this.commonService.dateRangeToStr(searchList.chuzhiTime),
+                chuzhiDuty: searchList.duty
+              }"
+            >
+              {{ data.yangbenChuzhiCnt }}
+            </a>
+          </td>
+        </ng-container>
+
+        <ng-container *ngIf="currentSys != 'dt'">
+          <td [nzAlign]="'center'" nzWidth="100px" nzRight="220px">
+            <a
+              *ngIf="wenziFlag === 0"
+              routerLink="/yangben/yangben-data"
+              [queryParams]="{
+                shareFlag: this.adminFlag === 1 ? -1 : 0,
+                eventId: data.id,
+                from: 'event',
+                adminFlag: this.adminFlag
+              }"
+            >
+              {{ data.yangbenCnt }}
+            </a>
+            <a
+              *ngIf="wenziFlag === 1"
+              routerLink="/yangben/yangben-selection"
+              [queryParams]="{ selectFlag: 'selected', eventId: data.id, from: 'event' }"
+            >
+              {{ data.yangbenCnt }}
+            </a>
+          </td>
+        </ng-container>
+
+        <!-- <td [nzAlign]="'center'" nzWidth="155px" nzRight="220px">
+          <span *ngIf="data.eventStatId">是</span>
+          <span *ngIf="!data.eventStatId">否</span>
+        </td> -->
+
+        <td [nzAlign]="'center'" nzWidth="120px" nzRight="100px">
+          {{ data['createdTime'] | date: 'yyyy-MM-dd HH:mm:ss' }}
+        </td>
+        <td [nzAlign]="'center'" nzWidth="100px" nzRight="0px">
+          <ng-container *ngIf="!readOnly">
+            <div>
+              <a style="margin-right: 30px" (click)="showEventModal(data.recUuid)">
+                <i nz-icon nzType="edit" nzTheme="outline"></i>
+              </a>
+
+              <a (click)="deleteRec(data)" style="color: red">
+                <i nz-icon nzType="close" nzTheme="outline"></i>
+              </a>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="readOnly">
+            <div>
+              <a (click)="showEventModalView(data.recUuid)"> 查看 </a>
+            </div>
+          </ng-container>
+
+          <div style="margin-top: 5px">
+            <a (click)="showYangbenImport(data)"> 样本导入 </a>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+
+    <nz-dropdown-menu #menuCZ="nzDropdownMenu">
+      <div class="ant-table-filter-dropdown">
+        <div class="search-box">
+          <nz-range-picker
+            [nzShowTime]="true"
+            [nzShowTime]="{ nzHideDisabledOptions: true, nzFormat: 'HH:mm:ss' }"
+            [nzDefaultPickerValue]="commonService.nzDefaultPickerValue"
+            [(ngModel)]="searchCZTime"
+            style="margin-right: 10px"
+          ></nz-range-picker>
+        </div>
+
+        <div class="search-box">
+          <nz-checkbox-group [(ngModel)]="dutyList"></nz-checkbox-group>
+
+          <button nz-button nzSize="small" nzType="primary" (click)="searchCZ()" class="search-button">搜索</button>
+        </div>
+      </div>
+    </nz-dropdown-menu>
+  </nz-table>
+</nz-card>
+
+<app-nz-modal-event-update-detail [parent]="this" [onPage]="callPage" btnName="修改" #editEventDrawer>
+</app-nz-modal-event-update-detail>
+
+<app-nz-modal-event-view-detail [parent]="this" [onPage]="callPage" btnName="查看" #viewEventDrawer>
+</app-nz-modal-event-view-detail>

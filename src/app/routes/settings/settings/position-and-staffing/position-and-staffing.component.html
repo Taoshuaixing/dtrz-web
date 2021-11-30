@@ -1,0 +1,49 @@
+<nz-layout nz-row [nzGutter]="16">
+    <nz-sider nz-col nzLg="3" nzMd="12" nzSm="24" nzTheme="light" style="background: white">
+        <div>
+            <h2>岗位{{ posts?.length }}个</h2>
+            <ul nz-menu nzMode="inline">
+                <li nzMatchRouter nz-menu-item *ngFor="let item of posts" id="item_{{ item.id }}">
+                    <a routerLink="./position-one" [queryParams]="{ postId: item.id }">
+                        {{ item.postName }}
+
+                        <button nz-button nzTrigger="click" nz-dropdown [nzDropdownMenu]="menu" nzType="link">
+                            <i nz-icon nzType="down"></i>
+                        </button>
+                    </a>
+                    <!-- <nz-spin *ngIf="loading"></nz-spin> -->
+                    <nz-dropdown-menu #menu="nzDropdownMenu">
+                        <ul nz-menu>
+                            <li nz-menu-item>
+                                <app-position-staffing-modal-edit [postName]="item.postName" [post]="item"
+                                    (hide_emitter)="getEmitter()">
+                                </app-position-staffing-modal-edit>
+                            </li>
+                            <li nz-menu-item (click)="delete(item.id)">删除</li>
+                        </ul>
+                    </nz-dropdown-menu>
+                </li>
+            </ul>
+
+            <div style="margin: 0 -10px;">
+                <ul style="list-style:none;">
+                    <li *ngIf="addFlg">
+                        <input [(ngModel)]="newType" nz-input nzSize="default" placeholder="添加岗位名称"
+                            style="width: 150px" />
+                        <button (click)="addPosition()" nz-button nzType="primary"
+                            style="margin-top: 8px;width: 120px;">
+                            确认
+                        </button>
+                    </li>
+                    <button *ngIf="!addFlg" (click)="addFlg = true" nz-button nzType="primary"
+                        style="margin-top: 8px;width: 120px;">
+                        <i class="anticon anticon-plus" nz-icon> </i>添加岗位
+                    </button>
+                </ul>
+            </div>
+        </div>
+    </nz-sider>
+    <nz-content nz-col nzLg="21" nzMd="12" nzSm="24">
+        <router-outlet></router-outlet>
+    </nz-content>
+</nz-layout>

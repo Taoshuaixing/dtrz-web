@@ -1,0 +1,10 @@
+
+.back-from {
+  position: fixed;
+  right: 5px;
+  top: 278px;
+  z-index: 2147483640;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}

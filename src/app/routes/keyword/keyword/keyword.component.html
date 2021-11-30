@@ -1,0 +1,24 @@
+<nz-layout>
+  <nz-sider class="menu-sidebar" nzCollapsible [nzWidth]="sidebar_width + 'px'" nzBreakpoint="md" [nzTrigger]="null">
+    <ul nz-menu nzMode="inline">
+      <li [acl]="{ ability: ['keyword-list'] }" nz-menu-item nzMatchRouter>
+        <a routerLink="/keyword/keyword-list"><i nz-icon nzType="profile"></i>关键词管理</a>
+      </li>
+      <li [acl]="{ ability: ['keyword-import'] }" nz-menu-item nzMatchRouter>
+        <a routerLink="/keyword/keyword-import"><i nz-icon nzType="import"></i>关键词导入</a>
+      </li>
+
+      <li [acl]="{ ability: ['keyword-instruct'] }" nz-menu-item nzMatchRouter>
+        <a routerLink="/keyword/keyword-instruct"><i nz-icon nzType="tool"></i>指令管理</a>
+      </li>
+      <li [acl]="{ ability: ['keyword-themes'] }" nz-menu-item nzMatchRouter>
+        <a routerLink="/keyword/keyword-themes"><i nz-icon nzType="star"></i>主题管理</a>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-content>
+    <div class="inner-content" [ngStyle]="{ width: content_width + 'px' }" style="background: white">
+      <router-outlet></router-outlet>
+    </div>
+  </nz-content>
+</nz-layout>

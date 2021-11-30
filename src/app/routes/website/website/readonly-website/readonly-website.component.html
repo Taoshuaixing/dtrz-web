@@ -1,0 +1,81 @@
+<page-header fixed [title]="website.title" [action]="action">
+  <!--  <nz-affix [nzOffsetTop]="0">-->
+  <!--    <div class="alain-default__content-title">-->
+
+  <ng-template #action>
+    <ng-container>
+      <button (click)="updateWebsite()" nz-button nzType="primary"><i nz-icon nzType="edit"></i>修改</button>
+
+      <button (click)="closeWin()" nz-button nzType="dashed"><i nz-icon nzType="step-backward"></i>返回</button>
+    </ng-container>
+  </ng-template>
+</page-header>
+<nz-card>
+  <nz-content>
+    <nz-spin [nzSpinning]="loading" [nzTip]="'正在处理数据...'">
+      <!-- <nz-card> -->
+      <nz-card [nzBordered]="true" class="mb-lg">
+        <div>
+          <div nz-row nzGutter="8">
+            <div nz-col nzSpan="18">
+              <nz-card [nzBordered]="false" class="mb-lg">
+                <div>
+                  <h2>{{ website.title }}</h2>
+                  <nz-tag *ngFor="let tag of categoriesArr">{{ tag }}</nz-tag>
+                </div>
+              </nz-card>
+              <nz-card nzTitle="基本信息栏" [nzBordered]="false" class="mb-lg">
+                <nz-row nzGutter="12">
+                  <nz-col nzLg="12" *ngFor="let item of userKeyValues" nzMd="12" nzSm="24" style="margin-bottom: 2px;">
+                    <nz-row [nzGutter]="[8, 16]">
+                      <nz-col [nzSpan]="6">
+                        <label style="color: #999;">【{{ item.label }}】 </label>
+                      </nz-col>
+                      <nz-col [nzSpan]="10">
+                        <span style="margin-left: 15px;">{{ item.val }}</span>
+                      </nz-col>
+                    </nz-row>
+                  </nz-col>
+                </nz-row>
+              </nz-card>
+              <nz-card nzTitle="网站概况" [nzBordered]="false" class="mb-lg">
+                <div [innerHTML]="website.brief"></div>
+              </nz-card>
+              <nz-card nzTitle="封堵历史" [nzBordered]="false" class="mb-lg">
+                <div
+                  class="ck-blurred ck ck-content ck-editor__editable ck-rounded-corners ck-editor__editable_inline ck-read-only"
+                  lang="zh-cn"
+                  dir="ltr"
+                  role="textbox"
+                  aria-label="富文本编辑器， main"
+                  contenteditable="false"
+                >
+                  <div [innerHTML]="website.contentHtml | safe"></div>
+                </div>
+              </nz-card>
+            </div>
+            <div nz-col nzSpan="1"></div>
+            <div nz-col nzSpan="4">
+              <nz-affix [nzOffsetTop]="160">
+                <div>
+                  <div *ngIf="website.avatar && !uploadFlg">
+                    <nz-card nzHoverable [nzCover]="cover">
+                      <ng-template #cover>
+                        <img alt="{{ imgsrc + website.avatar.id }}" src="{{ imgsrc + website.avatar.id }}" />
+                      </ng-template>
+                      <nz-card-meta [nzTitle]="website.title" [nzDescription]="''">
+                        <ng-template #nzTitle>
+                          <!--                      <a (click)="msg.success('标题：' + item2.id)">{{ item2.title }}</a>-->
+                        </ng-template>
+                      </nz-card-meta>
+                    </nz-card>
+                  </div>
+                </div>
+              </nz-affix>
+            </div>
+          </div>
+        </div>
+      </nz-card>
+    </nz-spin>
+  </nz-content>
+</nz-card>

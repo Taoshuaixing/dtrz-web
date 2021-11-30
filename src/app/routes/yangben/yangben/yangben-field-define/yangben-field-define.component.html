@@ -1,0 +1,64 @@
+<nz-card>
+  <div style="margin-bottom: 15px">
+    <button
+      [disabled]="loading"
+      nz-button
+      nzType="primary"
+      routerLink="../yangben-field-define-edit"
+      [queryParams]="{ tempId: null }"
+    >
+      增加自定义字段
+    </button>
+  </div>
+
+  <nz-table
+    #rowSelectionTable
+    nzBordered
+    nzShowSizeChanger
+    [nzData]="listOfAllData"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+    (nzCurrentPageDataChange)="currentPageDataChange($event)"
+  >
+    <thead>
+      <tr>
+        <th [nzAlign]="'center'">序号</th>
+        <th [nzAlign]="'center'">字段名称</th>
+        <th [nzAlign]="'center'">字段类型</th>
+        <th [nzAlign]="'center'">关联已有配置</th>
+        <th [nzAlign]="'center'">用于相似判断</th>
+        <th [nzAlign]="'center'">用于附件名称</th>
+        <th [nzAlign]="'center'">创建时间</th>
+        <th [nzAlign]="'center'">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+        <td [nzAlign]="'center'">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td [nzAlign]="'center'">{{ data.fieldName }}</td>
+        <td [nzAlign]="'center'" *ngIf="data.fieldType == 1">文本</td>
+        <td [nzAlign]="'center'" *ngIf="data.fieldType == 2">多行文本</td>
+        <td [nzAlign]="'center'" *ngIf="data.fieldType == 3">日期</td>
+        <td [nzAlign]="'center'" *ngIf="data.fieldType == 4">数值</td>
+        <td [nzAlign]="'center'" *ngIf="data.fieldType == 5">单选下拉列表</td>
+        <td [nzAlign]="'center'" *ngIf="data.fieldType == 6">复选框</td>
+        <td [nzAlign]="'center'">{{ data.yangbenOptionConfig?.name }}</td>
+        <td [nzAlign]="'center'">{{ data.compareFlag === 1 ? '是' : '' }}</td>
+        <td [nzAlign]="'center'">{{ data.attachNameFlag === 1 ? '是' : '' }}</td>
+        <td [nzAlign]="'center'">{{ data.createdTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td [nzAlign]="'center'">
+          <span *ngIf="data.fixFlag === 0">
+            <a style="margin-right: 10px" (click)="edit(data.id)">
+              <i nz-icon nzType="edit" nzTheme="outline"></i> <span>修改</span>
+            </a>
+
+            <a (click)="del(data.id)"> <i nz-icon nzType="delete" nzTheme="outline"></i> <span>删除</span> </a>
+          </span>
+          <span *ngIf="data.fixFlag != 0">
+            <nz-tag [nzColor]="'volcano'">固定字段</nz-tag>
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-card>

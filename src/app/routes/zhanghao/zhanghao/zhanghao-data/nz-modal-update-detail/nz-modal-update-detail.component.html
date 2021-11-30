@@ -1,0 +1,105 @@
+<!-- <a style=" margin-right: 30px"  (click)="showModal()" *ngIf="btnName==='修改'">
+  <i  nz-icon nzType="edit" nzTheme="outline"></i>
+</a> -->
+<a style="margin-right: 30px" (click)="showModal('', 0)" *ngIf="btnName === '添加'">
+  <i nz-icon nzType="plus" nzTheme="outline"></i><span>{{ btnName }}</span>
+</a>
+
+<nz-drawer
+  [(nzVisible)]="isVisible"
+  [nzTitle]="'编辑账号数据'"
+  nzOkText="确定"
+  nzCancelText="取消"
+  (nzOnClose)="cancel()"
+  [nzClosable]="true"
+  [nzMask]="true"
+  [nzWidth]="1000"
+  [nzFooter]="footerTpl"
+>
+  <nz-content>
+    <nz-card style="width: 100%">
+
+      <div class="field-row" nz-row nzGutter="16">
+        <label nz-col [nzSm]="4" [nzXs]="24" required="true">账号名称
+          <span style="color: red">*</span>
+        </label>
+        <span nz-col [nzSm]="20" [nzXs]="24">
+            <input  nz-input [(ngModel)]="zhanghaoName" />
+          </span>
+      </div>
+
+      <div class="field-row" nz-row nzGutter="16" *ngFor="let item of fieldList">
+        <label nz-col [nzSm]="4" [nzXs]="24">{{ item.fieldName }}</label>
+        <span nz-col [nzSm]="20" [nzXs]="24">
+          <input *ngIf="item.fieldType === 1" nz-input [(ngModel)]="item.val" />
+
+          <textarea rows="8" nz-input *ngIf="item.fieldType === 2" [(ngModel)]="item.valMulti"></textarea>
+
+          <nz-date-picker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"   *ngIf="item.fieldType === 3" [(ngModel)]="item.valDate"></nz-date-picker>
+
+          <nz-input-number *ngIf="item.fieldType === 4" [(ngModel)]="item.valNum" [nzStep]="1"></nz-input-number>
+
+          <nz-select *ngIf="item.fieldType === 5" nzAllowClear nzShowSearch [(ngModel)]="item.valId">
+            <nz-option *ngFor="let sub of item.targetTableData" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+          </nz-select>
+
+          <nz-select
+            *ngIf="item.fieldType === 6"
+            nzAllowClear
+            nzShowSearch
+            nzMode="multiple"
+            [(ngModel)]="item.valIdMulti"
+          >
+            <nz-option *ngFor="let sub of item.targetTableData" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+          </nz-select>
+        </span>
+      </div>
+      <div class="field-row" *ngIf="currentSys !== 'zb'">
+        <!-- <label>多媒体账号</label> -->
+        <div>
+          <ckeditor [(ngModel)]="html" [editor]="Editor" [config]="config"> </ckeditor>
+        </div>
+      </div>
+
+      <div class="clearfix" *ngIf="btnName === '修改'">
+        <nz-upload
+          [nzAction]="attachmentActionUrl"
+          [nzData]="{ recUuid: recUuid }"
+          [(nzFileList)]="fileList"
+          [nzRemove]="removeHandle"
+          (nzChange)="upLoadChange($event)"
+          [nzMultiple]="0"
+        >
+          <button nz-button><i nz-icon nzType="upload"></i>Upload</button>
+        </nz-upload>
+      </div>
+    </nz-card>
+  </nz-content>
+  <ng-template #footerTpl>
+    <div nz-row>
+      <nz-spin *ngIf="loading"></nz-spin>
+      <span nz-col [nzOffset]="6" [nzSpan]="18">
+        <button nz-button nzType="primary" [disabled]="loading" (click)="submit()">保存</button>
+        <button nz-button nzType="default" [disabled]="loading" (click)="cancel()">关闭</button>
+        <button
+          *ngIf="btnName === '修改' && showPreviousAndNestFlag === 0"
+          nz-button
+          nzType="link"
+          [disabled]="isFirst || loading"
+          (click)="getData('previous')"
+        >
+          <i nz-icon nzType="arrow-up"></i>上一条
+        </button>
+        <button
+          *ngIf="btnName === '修改' && showPreviousAndNestFlag === 0"
+          nz-button
+          nzType="link"
+          [disabled]="isLast || loading"
+          (click)="getData('next')"
+        >
+          <i nz-icon nzType="arrow-down"></i>下一条
+        </button>
+      </span>
+    </div>
+  </ng-template>
+</nz-drawer>

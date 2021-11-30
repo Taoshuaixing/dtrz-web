@@ -1,0 +1,601 @@
+<nz-layout>
+  <nz-header>
+    <page-header fixed [title]="action">
+      <ng-template #action>
+        <div>
+          <nz-steps>
+            <nz-step nzTitle="日志编辑" nzStatus="finish" nzIcon="edit"></nz-step>
+            <nz-step nzTitle="整体排版" nzStatus="wait" nzIcon="solution"></nz-step>
+            <nz-step nzTitle="确认完成" nzStatus="wait" nzIcon="check-circle"></nz-step>
+          </nz-steps>
+        </div>
+
+        <div nz-row style="margin-top: 10px">
+          <div nz-col nzSpan="12" class="text-left">
+            <ng-container *ngIf="!journalId">
+              <button
+                nz-button
+                nzType="primary"
+                [disabled]="loading"
+                (click)="downloadTemplate(templateId)"
+                style="margin-right: 10px"
+              >
+                模板下载
+              </button>
+
+              <nz-upload
+                class="upload-list-inline"
+                [nzAction]="actionUrl"
+                [nzData]="{ userId: userId, templateId: templateId }"
+                [nzLimit]="1"
+                [nzShowUploadList]="showUploadList"
+                (nzChange)="uploadChange($event)"
+                [nzBeforeUpload]="beforeUpload"
+                [nzDisabled]="this.uploadLoading"
+              >
+                <button nz-button nzType="primary"><i nz-icon nzType="upload"></i>一键导入</button>
+              </nz-upload>
+            </ng-container>
+
+            <ng-container *ngIf="step === 0">
+              <button nz-button nzType="primary" [disabled]="loading" (click)="deleteImportData()">撤销</button>
+            </ng-container>
+          </div>
+
+          <div nz-col nzSpan="12" class="text-right">
+            <span>
+              <button nz-button nzType="primary" nzDanger [disabled]="loading" (click)="reset()">重填</button>
+              <button nz-button nzType="primary" [disabled]="loading" (click)="submitForm(1, fromBy, tab)">暂存</button>
+              <button nz-button nzType="primary" [disabled]="loading" (click)="submitForm(2, fromBy, tab)">
+                下一步
+              </button>
+            </span>
+            <span style="margin-left: 10px">
+              <button nz-button nzType="dashed" [disabled]="loading" (click)="back(fromBy)">返回</button>
+            </span>
+          </div>
+        </div>
+      </ng-template>
+    </page-header>
+  </nz-header>
+
+  <nz-content>
+    <nz-spin nzTip="Loading..." [nzSpinning]="loading">
+      <nz-card [nzTitle]="templateName">
+        <form nz-form>
+          <nz-card>
+            <nz-form-item>
+              <nz-form-label [nzSm]="2" [nzXs]="24" nzRequired>日志名称</nz-form-label>
+
+              <nz-form-control [nzSm]="6" [nzXs]="24">
+                <input nz-input [ngModelOptions]="{ standalone: true }" [(ngModel)]="tab.journalName" />
+              </nz-form-control>
+
+              <nz-form-control [nzSm]="6" [nzXs]="24">
+                <span style="margin-left: 20px">
+                  <nz-tag [nzColor]="'blue'">{{ curDate | date: 'yyyy-MM-dd' }}</nz-tag>
+                </span>
+
+                <span style="margin-left: 10px">
+                  <span *ngIf="tab.duty == 'm'"><nz-tag [nzColor]="'#87d068'">白班</nz-tag></span>
+                  <span *ngIf="tab.duty == 'n'"><nz-tag [nzColor]="'#fa8c16'">夜班</nz-tag></span>
+                </span>
+                <span style="margin-left: 10px">
+                  <nz-tag [nzColor]="'blue'">{{ tab.postName }} </nz-tag>
+                </span>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label [nzSm]="2" [nzXs]="24">摘要</nz-form-label>
+              <nz-form-control [nzSm]="16" [nzXs]="24">
+                <simple-tiny
+                  [html]="summary"
+                  [setItemObject]="summaryObj"
+                  setItemAttr="richTextSummary"
+                  (editorOk)="callbackEmitter($event)"
+                ></simple-tiny>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-card>
+
+          <div *ngFor="let detail of tab.configTemplateDetails">
+            <nz-card [nzBordered]="true" [nzTitle]="detail.contentTitle">
+              <ng-container *ngIf="detail.children && detail.children.length === 0">
+                <ng-container *ngIf="detail.contentType === 1">
+                  <nz-form-item>
+                    <nz-form-control [nzSm]="18" [nzXs]="24">
+                      <nz-input-group class="ant-input-affix-wrapper-textarea-with-clear-btn">
+                        <textarea
+                          rows="4"
+                          nz-input
+                          [(ngModel)]="detail.textareaValue"
+                          [ngModelOptions]="{ standalone: true }"
+                          placeholder="请输入内容"
+                        ></textarea>
+                      </nz-input-group>
+                    </nz-form-control>
+                  </nz-form-item>
+                </ng-container>
+
+                <ng-container *ngIf="detail.contentType === 2">
+                  <nz-form-item>
+                    <nz-form-control [nzSm]="20" [nzXs]="24">
+                      <simple-tiny
+                        elementId="tiny_{{ detail.id }}"
+                        [html]="detail.richTextValue"
+                        [setItemObject]="detail"
+                        setItemAttr="richTextValue"
+                        (editorOk)="callbackEmitter($event)"
+                      ></simple-tiny>
+                    </nz-form-control>
+                  </nz-form-item>
+                </ng-container>
+
+                <ng-container *ngIf="detail.contentType === 3 || detail.contentType === 5 || detail.contentType === 6">
+                  <ng-container *ngFor="let control of detail.listOfControl; let i = index">
+                    <ng-container *ngIf="detail.mergeFlag === 0">
+                      <nz-form-item>
+                        <nz-form-control
+                          *ngIf="detail.mergeFlag === 0"
+                          [nzSm]="3"
+                          [nzXs]="24"
+                          style="margin-right: 10px"
+                        >
+                          <nz-input-group [nzAddOnAfter]="addOnAfterTemplate">
+                            <input
+                              nz-input
+                              [(ngModel)]="control.prefix"
+                              [nz-tooltip]="control.prefix"
+                              [ngModelOptions]="{ standalone: true }"
+                              placeholder="前缀内容"
+                            />
+                          </nz-input-group>
+                          <ng-template #addOnAfterTemplate>
+                            <a (click)="showModalOption('prefix', control, detail.contentTitle, '添加前缀')"
+                              ><i nz-icon [nzType]="'setting'"></i
+                            ></a>
+                          </ng-template>
+                        </nz-form-control>
+
+                        <nz-form-control
+                          *ngIf="detail.mergeFlag === 0"
+                          [nzSm]="12"
+                          [nzXs]="24"
+                          style="margin-right: 10px"
+                        >
+                          <nz-input-group nzSearch>
+                            <textarea
+                              rows="2"
+                              nz-input
+                              [(ngModel)]="control.content"
+                              [ngModelOptions]="{ standalone: true }"
+                              placeholder="内容可手动录入亦可点击按钮选择"
+                            ></textarea>
+                          </nz-input-group>
+                        </nz-form-control>
+
+                        <nz-form-control
+                          *ngIf="detail.mergeFlag === 0 && detail.contentType != 6"
+                          [nzSm]="1"
+                          [nzXs]="24"
+                        >
+                          <button nz-button nzType="primary" (click)="showModal(detail, i)">事件</button>
+                        </nz-form-control>
+
+                        <nz-form-control *ngIf="detail.mergeFlag === 0" [nzSm]="3" [nzXs]="24">
+                          <nz-input-group [nzAddOnAfter]="addOnAfterTemplate">
+                            <input
+                              nz-input
+                              [(ngModel)]="control.suffix"
+                              [nz-tooltip]="control.suffix"
+                              [ngModelOptions]="{ standalone: true }"
+                              placeholder="后缀内容"
+                            />
+                          </nz-input-group>
+                          <ng-template #addOnAfterTemplate>
+                            <a (click)="showModalOption('suffix', control, detail.contentTitle, '添加后缀')"
+                              ><i nz-icon [nzType]="'setting'"></i
+                            ></a>
+                          </ng-template>
+                        </nz-form-control>
+
+                        <nz-form-control [nzSm]="2" [nzXs]="24" style="margin-left: 20px">
+                          <nz-divider nzType="vertical"></nz-divider>
+
+                          <a nz-button nzType="link"
+                            ><i nz-icon nzType="plus" (click)="addField(detail, i, $event)"></i
+                          ></a>
+
+                          <a
+                            nz-button
+                            nzType="link"
+                            [disabled]="
+                              i === 0 && detail.listOfControl.length === 1 && detail.listOfControl[0].content === ''
+                            "
+                          >
+                            <i nz-icon nzType="minus" (click)="removeField(detail, control, $event)"></i>
+                          </a>
+                        </nz-form-control>
+                      </nz-form-item>
+                      <!--form-item start-->
+                      <ng-container *ngFor="let yb of control.yangben; let j = index">
+                        <nz-form-item *ngIf="j < 3 || (j !== 0 && control.expandForm)">
+                          <nz-form-label [nzSm]="1" [nzXs]="24" nzFor="fieldTypeValue">样本{{ j + 1 }}</nz-form-label>
+
+                          <nz-form-control [nzSm]="16" [nzXs]="24">
+                            <textarea
+                              rows="2"
+                              nz-input
+                              [(ngModel)]="yb.content"
+                              [ngModelOptions]="{ standalone: true }"
+                            ></textarea>
+                          </nz-form-control>
+
+                          <nz-form-control [nzSm]="2" [nzXs]="24" style="margin-left: 20px">
+                            <nz-divider nzType="vertical"></nz-divider>
+
+                            <a nz-button nzType="link"
+                              ><i nz-icon nzType="plus" (click)="addFieldYangben(detail, control, j)"></i
+                            ></a>
+
+                            <a nz-button nzType="link"
+                              ><i nz-icon nzType="minus" (click)="removeYangben(detail, control, j)"></i
+                            ></a>
+                          </nz-form-control>
+                        </nz-form-item>
+                      </ng-container>
+                      <!--form-item end-->
+                    </ng-container>
+                    <!-- mergeFlag === 0 end -->
+
+                    <ng-container *ngIf="detail.mergeFlag === 1">
+                      <nz-form-item *ngIf="i === 0">
+                        <nz-form-control [nzSm]="5" [nzXs]="24" style="margin-right: 10px">
+                          <nz-input-group [nzAddOnAfter]="addOnAfterTemplate">
+                            <input
+                              nz-input
+                              [(ngModel)]="control.prefix"
+                              [ngModelOptions]="{ standalone: true }"
+                              placeholder="前缀内容"
+                            />
+                          </nz-input-group>
+                          <ng-template #addOnAfterTemplate>
+                            <a (click)="showModalOption('prefix', control, detail.contentTitle, '添加前缀')"
+                              ><i nz-icon [nzType]="'setting'"></i
+                            ></a>
+                          </ng-template>
+                        </nz-form-control>
+                      </nz-form-item>
+
+                      <nz-form-item>
+                        <nz-form-control [nzSm]="12" [nzXs]="24" style="margin-right: 10px">
+                          <nz-input-group nzSearch>
+                            <textarea
+                              rows="2"
+                              nz-input
+                              [(ngModel)]="control.content"
+                              [ngModelOptions]="{ standalone: true }"
+                              placeholder="内容可手动录入亦可点击按钮选择"
+                            ></textarea>
+                          </nz-input-group>
+                        </nz-form-control>
+
+                        <nz-form-control [nzSm]="1" [nzXs]="24">
+                          <button nz-button nzType="primary" (click)="showModal(detail, i)">事件</button>
+                        </nz-form-control>
+
+                        <nz-form-control [nzSm]="2" [nzXs]="24" style="margin-left: 20px">
+                          <nz-divider nzType="vertical"></nz-divider>
+
+                          <a nz-button nzType="link"
+                            ><i nz-icon nzType="plus" (click)="addField(detail, i, $event)"></i
+                          ></a>
+
+                          <a
+                            nz-button
+                            nzType="link"
+                            [disabled]="
+                              i === 0 && detail.listOfControl.length === 1 && detail.listOfControl[0].content === ''
+                            "
+                          >
+                            <i nz-icon nzType="minus" (click)="removeField(detail, control, $event)"></i>
+                          </a>
+                        </nz-form-control>
+                      </nz-form-item>
+
+                      <nz-form-item *ngIf="i === detail.listOfControl.length - 1">
+                        <nz-form-control [nzSm]="5" [nzXs]="24">
+                          <nz-input-group [nzAddOnAfter]="addOnAfterTemplate">
+                            <input
+                              nz-input
+                              [(ngModel)]="control.suffix"
+                              [ngModelOptions]="{ standalone: true }"
+                              placeholder="后缀内容"
+                            />
+                          </nz-input-group>
+                          <ng-template #addOnAfterTemplate>
+                            <a (click)="showModalOption('suffix', control, detail.contentTitle, '添加后缀')"
+                              ><i nz-icon [nzType]="'setting'"></i
+                            ></a>
+                          </ng-template>
+                        </nz-form-control>
+                      </nz-form-item>
+                    </ng-container>
+
+                    <div nz-row>
+                      <div nz-col [nzSm]="16" [nzXs]="24"></div>
+                      <div
+                        *ngIf="control.yangben.length > 3"
+                        nz-col
+                        [nzSm]="4"
+                        [nzXs]="24"
+                        class="text-center"
+                        style="margin-bottom: 15px"
+                      >
+                        <a (click)="control.expandForm = !control.expandForm" style="color: #fa8c16">
+                          {{ control.expandForm ? '收起' : '展开' }}
+                          <i nz-icon [nzType]="control.expandForm ? 'up' : 'down'"></i>
+                        </a>
+                      </div>
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="detail.children && detail.children.length > 0">
+                <div *ngFor="let child of detail.children">
+                  <nz-card nzType="inner" [nzBordered]="true" [nzTitle]="child.contentTitle">
+                    <ng-container *ngIf="child.contentType === 1">
+                      <nz-form-item>
+                        <nz-form-control [nzSm]="18" [nzXs]="24">
+                          <nz-input-group class="ant-input-affix-wrapper-textarea-with-clear-btn">
+                            <textarea
+                              rows="4"
+                              nz-input
+                              [(ngModel)]="child.textareaValue"
+                              [ngModelOptions]="{ standalone: true }"
+                              placeholder="请输入内容"
+                            ></textarea>
+                          </nz-input-group>
+                        </nz-form-control>
+                      </nz-form-item>
+                    </ng-container>
+
+                    <ng-container *ngIf="child.contentType === 2">
+                      <nz-form-item>
+                        <nz-form-control [nzSm]="20" [nzXs]="24">
+                          <simple-tiny
+                            elementId="tiny_{{ child.id }}"
+                            [html]="child.richTextValue"
+                            [setItemObject]="child"
+                            setItemAttr="richTextValue"
+                            (editorOk)="callbackEmitter($event)"
+                          ></simple-tiny>
+                        </nz-form-control>
+                      </nz-form-item>
+                    </ng-container>
+
+                    <ng-container *ngIf="child.contentType === 3 || child.contentType === 5 || child.contentType === 6">
+                      <ng-container *ngFor="let childControl of child.listOfControl; let i = index">
+                        <ng-container *ngIf="child.mergeFlag === 0">
+                          <nz-form-item>
+                            <nz-form-control
+                              *ngIf="child.mergeFlag === 0"
+                              [nzSm]="3"
+                              [nzXs]="24"
+                              style="margin-right: 10px"
+                            >
+                              <nz-input-group [nzAddOnAfter]="addOnAfterTemplate">
+                                <input
+                                  nz-input
+                                  [(ngModel)]="childControl.prefix"
+                                  [nz-tooltip]="childControl.prefix"
+                                  [ngModelOptions]="{ standalone: true }"
+                                  placeholder="前缀内容"
+                                />
+                              </nz-input-group>
+                              <ng-template #addOnAfterTemplate>
+                                <a (click)="showModalOption('prefix', childControl, child.contentTitle, '添加前缀')"
+                                  ><i nz-icon [nzType]="'setting'"></i
+                                ></a>
+                              </ng-template>
+                            </nz-form-control>
+
+                            <nz-form-control
+                              *ngIf="child.mergeFlag === 0"
+                              [nzSm]="12"
+                              [nzXs]="24"
+                              style="margin-right: 10px"
+                            >
+                              <nz-input-group nzSearch>
+                                <textarea
+                                  rows="2"
+                                  nz-input
+                                  [(ngModel)]="childControl.content"
+                                  [ngModelOptions]="{ standalone: true }"
+                                  placeholder="内容可手动录入亦可点击按钮选择"
+                                ></textarea>
+                              </nz-input-group>
+                            </nz-form-control>
+
+                            <nz-form-control
+                              *ngIf="child.mergeFlag === 0 && child.contentType != 6"
+                              [nzSm]="1"
+                              [nzXs]="24"
+                            >
+                              <button nz-button nzType="primary" (click)="showModal(child, i)">事件</button>
+                            </nz-form-control>
+
+                            <nz-form-control *ngIf="child.mergeFlag === 0" [nzSm]="3" [nzXs]="24">
+                              <nz-input-group [nzAddOnAfter]="addOnAfterTemplate">
+                                <input
+                                  nz-input
+                                  [(ngModel)]="childControl.suffix"
+                                  [nz-tooltip]="childControl.suffix"
+                                  [ngModelOptions]="{ standalone: true }"
+                                  placeholder="后缀内容"
+                                />
+                              </nz-input-group>
+                              <ng-template #addOnAfterTemplate>
+                                <a (click)="showModalOption('suffix', childControl, child.contentTitle, '添加后缀')"
+                                  ><i nz-icon [nzType]="'setting'"></i
+                                ></a>
+                              </ng-template>
+                            </nz-form-control>
+
+                            <nz-form-control [nzSm]="2" [nzXs]="24" style="margin-left: 20px">
+                              <nz-divider nzType="vertical"></nz-divider>
+
+                              <a nz-button nzType="link"
+                                ><i nz-icon nzType="plus" (click)="addField(child, i, $event)"></i
+                              ></a>
+
+                              <a
+                                nz-button
+                                nzType="link"
+                                [disabled]="
+                                  i === 0 && child.listOfControl.length === 1 && child.listOfControl[0].content === ''
+                                "
+                              >
+                                <i nz-icon nzType="minus" (click)="removeField(child, childControl, $event)"></i>
+                              </a>
+                            </nz-form-control>
+                          </nz-form-item>
+                          <!--form-item start-->
+                          <ng-container *ngFor="let yb of childControl.yangben; let j = index">
+                            <nz-form-item *ngIf="j < 3 || (j !== 0 && childControl.expandForm)">
+                              <nz-form-label [nzSm]="1" [nzXs]="24" nzFor="fieldTypeValue"
+                                >样本{{ j + 1 }}</nz-form-label
+                              >
+
+                              <nz-form-control [nzSm]="16" [nzXs]="24">
+                                <textarea
+                                  rows="2"
+                                  nz-input
+                                  [(ngModel)]="yb.content"
+                                  [ngModelOptions]="{ standalone: true }"
+                                ></textarea>
+                              </nz-form-control>
+
+                              <nz-form-control [nzSm]="2" [nzXs]="24" style="margin-left: 20px">
+                                <nz-divider nzType="vertical"></nz-divider>
+
+                                <a nz-button nzType="link"
+                                  ><i nz-icon nzType="plus" (click)="addFieldYangben(child, childControl, j)"></i
+                                ></a>
+
+                                <a nz-button nzType="link"
+                                  ><i nz-icon nzType="minus" (click)="removeYangben(child, childControl, j)"></i
+                                ></a>
+                              </nz-form-control>
+                            </nz-form-item>
+                          </ng-container>
+                          <!--form-item end-->
+                        </ng-container>
+                        <!-- mergeFlag === 0 end -->
+
+                        <ng-container *ngIf="child.mergeFlag === 1">
+                          <nz-form-item *ngIf="i === 0">
+                            <nz-form-control [nzSm]="5" [nzXs]="24" style="margin-right: 10px">
+                              <nz-input-group [nzAddOnAfter]="addOnAfterTemplate">
+                                <input
+                                  nz-input
+                                  [(ngModel)]="childControl.prefix"
+                                  [ngModelOptions]="{ standalone: true }"
+                                  placeholder="前缀内容"
+                                />
+                              </nz-input-group>
+                              <ng-template #addOnAfterTemplate>
+                                <a (click)="showModalOption('prefix', childControl, child.contentTitle, '添加前缀')"
+                                  ><i nz-icon [nzType]="'setting'"></i
+                                ></a>
+                              </ng-template>
+                            </nz-form-control>
+                          </nz-form-item>
+
+                          <nz-form-item>
+                            <nz-form-control [nzSm]="12" [nzXs]="24" style="margin-right: 10px">
+                              <nz-input-group nzSearch>
+                                <textarea
+                                  rows="2"
+                                  nz-input
+                                  [(ngModel)]="childControl.content"
+                                  [ngModelOptions]="{ standalone: true }"
+                                  placeholder="事件名称可手动录入亦可点击按钮选择"
+                                ></textarea>
+                              </nz-input-group>
+                            </nz-form-control>
+
+                            <nz-form-control [nzSm]="1" [nzXs]="24">
+                              <button nz-button nzType="primary" (click)="showModal(child, i)">事件</button>
+                            </nz-form-control>
+
+                            <nz-form-control [nzSm]="2" [nzXs]="24" style="margin-left: 20px">
+                              <nz-divider nzType="vertical"></nz-divider>
+
+                              <a nz-button nzType="link"
+                                ><i nz-icon nzType="plus" (click)="addField(child, i, $event)"></i
+                              ></a>
+
+                              <a
+                                nz-button
+                                nzType="link"
+                                [disabled]="
+                                  i === 0 && child.listOfControl.length === 1 && child.listOfControl[0].content === ''
+                                "
+                              >
+                                <i nz-icon nzType="minus" (click)="removeField(child, childControl, $event)"></i>
+                              </a>
+                            </nz-form-control>
+                          </nz-form-item>
+
+                          <nz-form-item *ngIf="i === child.listOfControl.length - 1">
+                            <nz-form-control [nzSm]="5" [nzXs]="24">
+                              <nz-input-group [nzAddOnAfter]="addOnAfterTemplate">
+                                <input
+                                  nz-input
+                                  [(ngModel)]="childControl.suffix"
+                                  [ngModelOptions]="{ standalone: true }"
+                                  placeholder="后缀内容"
+                                />
+                              </nz-input-group>
+                              <ng-template #addOnAfterTemplate>
+                                <a (click)="showModalOption('suffix', childControl, child.contentTitle, '添加后缀')"
+                                  ><i nz-icon [nzType]="'setting'"></i
+                                ></a>
+                              </ng-template>
+                            </nz-form-control>
+                          </nz-form-item>
+                        </ng-container>
+
+                        <div nz-row>
+                          <div nz-col [nzSm]="16" [nzXs]="24"></div>
+                          <div
+                            *ngIf="childControl.yangben.length > 3"
+                            nz-col
+                            [nzSm]="4"
+                            [nzXs]="24"
+                            class="text-center"
+                            style="margin-bottom: 15px"
+                          >
+                            <a (click)="childControl.expandForm = !childControl.expandForm" style="color: #fa8c16">
+                              {{ childControl.expandForm ? '收起' : '展开' }}
+                              <i nz-icon [nzType]="childControl.expandForm ? 'up' : 'down'"></i>
+                            </a>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </ng-container>
+                  </nz-card>
+                </div>
+              </ng-container>
+            </nz-card>
+          </div>
+        </form>
+      </nz-card>
+    </nz-spin>
+    <app-journal-option-settings (hide_emitter)="setOption($event)" #optionSettings></app-journal-option-settings>
+    <app-nz-modal-journal-event (editorOk)="getEditorEmitter($event)" #editEventDrawer></app-nz-modal-journal-event>
+  </nz-content>
+</nz-layout>

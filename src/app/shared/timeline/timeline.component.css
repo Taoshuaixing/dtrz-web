@@ -1,0 +1,193 @@
+body .awbHide {
+  display: none;
+}
+
+.todayDate {
+  width: 110px;
+  height: 38px;
+  line-height: 38px;
+  color: #333;
+  font-size: 18px;
+  background-color: #f2f4f7;
+  margin-bottom: 15px;
+  text-align: center;
+  position: relative;
+  left: 90px;
+  border-radius: 4px;
+  border: 1px solid #e6e6e6;
+}
+.eventBody {
+  position: relative;
+  top: 0;
+  padding: 20px 0 0px;
+  margin: 0;
+}
+.origin {
+  width: 10px;
+  height: 10px;
+  border: 1px solid #ccc;
+  padding: 1px;
+  position: absolute;
+  top: 0px;
+  left: 140px;
+  /* z-index: 200; */
+  margin-left: -5px;
+  border-radius: 50%;
+}
+.origin > div {
+  width: 6px;
+  height: 6px;
+  background-color: #ccc;
+  border-radius: 50%;
+}
+.eventBody:before {
+  position: absolute;
+  top: 10px;
+  bottom: 0;
+  left: 140px;
+  /* z-index: 100; */
+  width: 1px;
+  content: '';
+  background-color: #ccc;
+}
+.pos-left {
+  position: relative;
+  /* z-index: 200; */
+  min-height: 28px;
+  margin-top: 30px;
+}
+.eventYear {
+  position: absolute;
+  top: 1px;
+}
+.eventCirc {
+  position: absolute;
+  top: 0px;
+  left: 140px;
+  /* z-index: 200; */
+  margin-left: -14px;
+}
+.circ {
+  width: 28px;
+  height: 28px;
+  padding: 2px;
+  border-radius: 50%;
+}
+.circ > div {
+  border-radius: 50%;
+  height: 100%;
+  text-align: center;
+  color: #fff;
+  line-height: 24px;
+}
+.dashedEvent {
+  width: 30px;
+  height: 1px;
+  border-bottom: 1px dashed #ccc;
+  position: absolute;
+  left: 28px;
+  top: 14px;
+}
+.dashedEvent:after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 30px;
+  /* z-index: 100; */
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.eventRow {
+  position: relative;
+  left: 205px;
+  top: 1px;
+  /*width: 598px;*/
+}
+.eventRowTitle {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  display: block;
+  text-align: left;
+  color: #383737;
+  font-weight: 600;
+}
+.eventRowTitle a,
+.eventYear {
+  font-size: 14px;
+  color: #585858;
+  line-height: 26px;
+}
+.eventRowTitle a:focus {
+  color: #333;
+}
+.eventRowTitle a:hover {
+  color: #333;
+  /* text-decoration: underline; */
+}
+
+.eventRowDetails {
+  line-height: 24px;
+  font-size: 14px;
+  color: #4a4747;
+  padding: 10px 15px;
+  background-color: #f7fcff;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: 1px solid #e6e6e6;
+}
+.detailContent .detailText {
+  padding: 0px 0px 5px;
+  text-align: justify;
+}
+.posImg {
+  text-align: center;
+  vertical-align: middle;
+  float: left;
+  background-color: #fff;
+  display: table;
+  text-align: center;
+}
+
+.posImg > span {
+  display: table-cell;
+  vertical-align: middle;
+  align-items: center;
+}
+
+.lineMore {
+  margin-right: 5px;
+}
+
+.eventMore {
+  height: 20px;
+}
+.eventBodyH {
+  padding-bottom: 30px;
+}
+.eventDot {
+  line-height: 6px;
+  position: relative;
+  top: 0px;
+  left: 139px;
+  /* z-index: 200; */
+  background-color: #fff;
+  display: inline-block;
+  color: #999;
+}
+.eventLoadMore {
+  text-align: center;
+  padding: 20px 30px 0;
+  background-color: #fff;
+  position: relative;
+  /* z-index: 900; */
+}
+.eventLoadMore > span {
+  line-height: 40px;
+  height: 40px;
+  display: inline-block;
+  color: #666;
+}

@@ -1,0 +1,9 @@
+<nz-spin [nzSpinning]="loading">
+  <div
+    style="overflow-y: auto;overflow-x: hidden;height: 650px; max-width: 700px; min-width: 400px"
+    [ngStyle]="{ width: timelineWidth + 'px' }"
+  >
+    <app-timeline *ngIf="!loading" [resultData]="resultData" [parent]="this"></app-timeline>
+  </div>
+</nz-spin>
+<nz-back-top></nz-back-top>

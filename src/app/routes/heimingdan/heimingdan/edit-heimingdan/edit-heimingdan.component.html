@@ -1,0 +1,162 @@
+<page-header fixed [title]="title" [action]="action">
+  <ng-template #action>
+    <ng-container>
+      <div class="d-flex align-items-center mb-lg">
+        <button (click)="deletePerson()" nz-button nzType="primary" nzDanger style="margin-right: 15px">
+          <i nz-icon nzType="delete" nzTheme="outline"></i> 删除
+        </button>
+        <button (click)="save()" nz-button nzType="primary" style="background-color: #2894ff; margin-right: 15px">
+          <i nz-icon nzType="save"></i>保存
+        </button>
+        <button (click)="closeWin()" nz-button nzType="dashed"><i nz-icon nzType="step-backward"></i>返回</button>
+      </div>
+    </ng-container>
+  </ng-template>
+</page-header>
+<nz-content>
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired nzFor="personName">重点人</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24" nzErrorTip="重点人名称不能为空">
+        <input nz-input formControlName="personName" readonly [(ngModel)]="personName" style="width: 95%" />
+        <!-- 选择或者添加重点人 -->
+        <app-hei-select-person-edit (hide_emitter)="getEmitterForSelectPerson($event)"> </app-hei-select-person-edit>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="nickName">账号昵称</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24">
+        <input nz-input formControlName="nickName" [(ngModel)]="nickName" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="accountEnID">账号英文ID</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24">
+        <input nz-input formControlName="accountEnID" [(ngModel)]="accountEnID" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="accountNumID">账号数字ID</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24">
+        <input nz-input formControlName="accountNumID" [(ngModel)]="accountNumID" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="platform">平台</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24">
+        <nz-select
+          formControlName="heiPlatform"
+          nzAllowClear
+          nzPlaceHolder="请选择平台"
+          [(ngModel)]="platform"
+          style="width: 95%"
+        >
+          <nz-option *ngFor="let option of listOfPlatform" [nzLabel]="option.label" [nzValue]="option.value">
+          </nz-option>
+        </nz-select>
+
+        <app-hei-status-platform-edit type="heiPlatform" (hide_emitter)="getEmitter()"> </app-hei-status-platform-edit>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="closeTime">关闭时间</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24">
+        <nz-date-picker formControlName="closeTime" [(ngModel)]="closeTime" nzShowTime> </nz-date-picker>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="status">状态</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24">
+        <nz-select
+          formControlName="heiStatus"
+          nzAllowClear
+          nzPlaceHolder="请选择状态"
+          [(ngModel)]="status"
+          style="width: 95%"
+        >
+          <nz-option *ngFor="let option of listOfStatus" [nzLabel]="option.label" [nzValue]="option.value"> </nz-option>
+        </nz-select>
+
+        <app-hei-status-platform-edit type="heiStatus" (hide_emitter)="getEmitter()"> </app-hei-status-platform-edit>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="strikeMode">打击方式</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24">
+        <!-- <nz-radio-group formControlName="strikeMode" [(ngModel)]="strikeMode">
+                    <label nz-radio [nzValue]="'自主'">自主</label>
+                    <label nz-radio [nzValue]="'通报'">通报</label>
+                </nz-radio-group> -->
+        <nz-select
+          formControlName="heiStrikeMode"
+          nzAllowClear
+          nzPlaceHolder="请选择打击方式"
+          [(ngModel)]="strikeMode"
+          style="width: 95%"
+        >
+          <nz-option *ngFor="let option of listOfStrikeMode" [nzLabel]="option.label" [nzValue]="option.value">
+          </nz-option>
+        </nz-select>
+
+        <app-hei-status-platform-edit type="heiStrikeMode" (hide_emitter)="getEmitter()">
+        </app-hei-status-platform-edit>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="registerTime">注册时间</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24">
+        <nz-date-picker formControlName="registerTime" nzShowTime [(ngModel)]="registerTime"></nz-date-picker>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="registerTel">注册手机号</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24">
+        <input nz-input formControlName="registerTel" [(ngModel)]="registerTel" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="registerName">注册人姓名</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24">
+        <input nz-input formControlName="registerName" [(ngModel)]="registerName" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="registerCardID">注册身份证号</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24">
+        <input nz-input formControlName="registerCardID" [(ngModel)]="registerCardID" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="registerEquipmentID">注册设备ID</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24">
+        <input nz-input formControlName="registerEquipmentID" [(ngModel)]="registerEquipmentID" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="blackTime">纳入黑名单时间</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24">
+        <nz-date-picker formControlName="blackTime" nzShowTime [(ngModel)]="blackTime"> </nz-date-picker>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="mark">备注</nz-form-label>
+      <nz-form-control [nzSm]="8" [nzXs]="24">
+        <textarea nz-input formControlName="mark" [(ngModel)]="mark" rows="3"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-content>

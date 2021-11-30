@@ -1,0 +1,61 @@
+<nz-layout>
+  <nz-sider class="menu-sidebar" nzCollapsible [nzWidth]="sidebar_width + 'px'" nzBreakpoint="md" [nzTrigger]="null">
+    <ul nz-menu nzMode="inline">
+      <li [acl]="{ ability: ['zhanghao-data-1', 'dagl_admin'], mode: 'allOf' }" nz-menu-item nzMatchRouter>
+        <a routerLink="/zhanghao/zhanghao-data" [queryParams]="{ shareFlag: OPT_SHARE_QUERY }">
+          <i nz-icon nzType="search"></i>账号综合查询</a
+        >
+      </li>
+      <!-- <ng-container *aclIf="['dagl_admin', 'dagl_post']"> -->
+      <li [acl]="{ ability: ['zhanghao-manage'] }" nz-submenu nzTitle="账号管理" nzIcon="appstore" nzOpen>
+        <ul>
+          <li [acl]="{ ability: ['zhanghao-data-import'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/zhanghao/zhanghao-data-import">账号导入管理</a>
+          </li>
+          <li [acl]="{ ability: ['zhanghao-data0'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/zhanghao/zhanghao-data" [queryParams]="{ shareFlag: OPT_SHARE_NONE }">账号信息管理</a>
+          </li>
+        </ul>
+      </li>
+      <!-- </ng-container> -->
+
+      <li
+        [acl]="{ ability: ['zhanghao-config', 'dagl_admin'], mode: 'allOf' }"
+        nz-submenu
+        nzTitle="账号配置管理"
+        nzIcon="setting"
+        nzOpen
+      >
+        <ul>
+          <li [acl]="{ ability: ['zhanghao-option-config'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/zhanghao/zhanghao-option-config">字段选项配置 </a>
+          </li>
+          <li [acl]="{ ability: ['zhanghao-field-define'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/zhanghao/zhanghao-field-define">填报字段配置</a>
+          </li>
+          <li [acl]="{ ability: ['zhanghao-template-place'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/zhanghao/zhanghao-template-place">导入模板配置</a>
+          </li>
+          <li [acl]="{ ability: ['zhanghao-template-post'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/zhanghao/zhanghao-template-post">岗位模板配置</a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- <ng-container *aclIf="['dagl_admin', 'dagl_post']"> -->
+      <li [acl]="{ ability: ['zhanghao-stat'] }" nz-submenu nzTitle="统计分析" nzIcon="line-chart" nzOpen>
+        <ul>
+          <li [acl]="{ ability: ['zhanghao-option-stat-for-post'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/zhanghao/zhanghao-option-stat-for-post">标签统计</a>
+          </li>
+        </ul>
+      </li>
+      <!-- </ng-container> -->
+    </ul>
+  </nz-sider>
+  <nz-content>
+    <div class="inner-content" [ngStyle]="{ width: content_width + 'px' }" style="background: white">
+      <router-outlet></router-outlet>
+    </div>
+  </nz-content>
+</nz-layout>

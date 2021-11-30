@@ -1,0 +1,71 @@
+<nz-layout>
+  <nz-content style="background-color: white">
+    <div nz-row [nzGutter]="[16,24]" style="margin-left: 20px">
+      <div nz-col class="gutter-row" nzSpan="24" style="margin-top: 20px">
+        统计时间
+        <nz-range-picker
+          [nzShowTime]="{ nzHideDisabledOptions: true, nzFormat: 'HH:mm:ss' }"
+          [(ngModel)]="tongJiTime"
+          (nzOnOk)="timeOK(tongJiTime)"
+          style="margin-right: 10px"
+        ></nz-range-picker>
+        <button nz-button nzType="primary" (click)="timeOK(tongJiTime)">确定</button>
+        <button nz-button nzType="primary" [nzLoading]="loading" (click)="exportData()">下载</button>
+      </div>
+      <nz-divider></nz-divider>
+
+      <div nz-col nzSpan="24" *ngFor="let data of listOfData; index as i">
+
+        <div class="stats-title-tags">{{data.name}}</div>
+        <nz-table style="margin-top: 15px" #colSpanTable [nzData]="data.data" nzBordered nzShowPagination="false">
+          <thead>
+          <tr>
+            <th>事件二级分类</th>
+            <th>事件合计</th>
+            <th>事件名称</th>
+            <th>对象合计</th>
+            <th>对象类型</th>
+            <th>手段合计</th>
+            <th>处置手段</th>
+            <th>典型样本</th>
+            <th>流水号</th>
+            <th>处置数量</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let da of colSpanTable.data;index as i">
+            <ng-container [ngSwitch]="i">
+              <ng-container>
+                <td *ngIf="da.classifyName2_rowspan !== 0"
+                    [rowSpan]="da.classifyName2_rowspan">{{da.classifyName2}}</td>
+                <td *ngIf="da.name_rowspan !== 0" [rowSpan]="da.name_rowspan">{{da.name_cnt}}</td>
+                <td *ngIf="da.name_rowspan !== 0" [rowSpan]="da.name_rowspan">{{da.name}}</td>
+                <td *ngIf="da.objectName_rowspan !== 0" [rowSpan]="da.objectName_rowspan">{{da.objectName_cnt}}</td>
+                <td *ngIf="da.objectName_rowspan !== 0" [rowSpan]="da.objectName_rowspan"> {{da.objectName}}</td>
+                <td *ngIf="da.chuzhiName_rowspan !== 0" [rowSpan]="da.chuzhiName_rowspan">{{da.chuzhiName_cnt}}</td>
+                <td *ngIf="da.chuzhiName_rowspan !== 0" [rowSpan]="da.chuzhiName_rowspan">{{da.chuzhiName}}</td>
+                <td>{{da.yangbenContent}}</td>
+                <td>{{da.seqNo}}</td>
+                <td>{{da.chuzhiCnt}}</td>
+              </ng-container>
+            </ng-container>
+          </tr>
+          </tbody>
+          <tfoot>
+          <tr>
+            <th>总计</th>
+            <th colspan="9">{{data.cnt}}</th>
+          </tr>
+          </tfoot>
+        </nz-table>
+        <nz-divider></nz-divider>
+      </div>
+      <div nz-col nzSpan="24">
+        <nz-spin [nzSpinning]="isSpinning" nzTip="Loading..."></nz-spin>
+      </div>
+      <div nz-col nzSpan="24">
+        <nz-empty *ngIf="listOfData.length === 0 && !isSpinning"></nz-empty>
+      </div>
+    </div>
+  </nz-content>
+</nz-layout>

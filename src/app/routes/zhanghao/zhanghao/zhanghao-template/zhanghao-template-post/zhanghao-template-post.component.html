@@ -1,0 +1,55 @@
+<nz-collapse >
+  <ng-container *ngFor="let item of listOfAllPost;  let i = index" >
+    <nz-collapse-panel [nzHeader]="headerContent"  nzActive="false" nzShowArrow="true" [nzExtra]="extraTemplateEdit">
+
+      <ng-template #headerContent>
+
+            {{ item.postName }}
+
+            <span *ngIf="item.templatePosts.length">
+              <nz-badge [nzCount]="item.templatePosts.length"  [nzStyle]="{ backgroundColor: '#f50' }">
+                   <nz-tag [nzColor]="'blue'">模板</nz-tag>
+              </nz-badge>
+            </span>
+
+      </ng-template>
+
+      <ng-template #extraTemplateEdit>
+
+        <app-zhanghao-post-config-setting [parent]="this" [postItem]="item" [onWaitSearch]="waitSearch">
+        </app-zhanghao-post-config-setting>
+
+      </ng-template>
+
+
+      <nz-collapse>
+        <ng-container *ngFor="let templatePost of item.templatePosts;  let j = index" >
+          <nz-collapse-panel  [nzHeader]="templatePost.templatePlace.name" nzActive="true" nzShowArrow="true" [nzExtra]="extraTemplateDel">
+
+            <ng-container *ngIf="templatePost.templatePlace.zhanghaoTemplatePlaceFields.length>0" >
+              <nz-card>
+                <div nz-row>
+                  <div *ngFor="let it of templatePost.templatePlace.zhanghaoTemplatePlaceFields" nz-col nzMd="3">
+                    <label >{{ it.fieldName }} </label>
+                  </div>
+                </div>
+              </nz-card>
+            </ng-container>
+
+            <ng-template #extraTemplateDel>
+              <button nz-button nzType="primary" nzDanger  (click)="$event.stopPropagation();del(templatePost.templatePlace.id,item)" nzSize="small">
+                删除
+              </button>
+            </ng-template>
+
+          </nz-collapse-panel>
+        </ng-container>
+      </nz-collapse>
+
+
+    </nz-collapse-panel>
+  </ng-container>
+
+</nz-collapse>
+
+

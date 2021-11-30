@@ -1,0 +1,158 @@
+<nz-card>
+  <app-zhanghao-data-modal-import
+    [parent]="this"
+    [postId]="postId"
+    [userId]="userId"
+    [onWaitSearch]="waitSearch"
+  ></app-zhanghao-data-modal-import>
+  <button style="margin-bottom: 20px" nz-button nzType="primary" (click)="search()">刷新</button>
+
+  <div class="back-from" *ngIf="from">
+    <button nz-button nzSize="large" nzType="link" (click)="backFrom($event)">
+      <i nz-icon>
+        <svg
+          t="1609330251187"
+          class="icon"
+          viewBox="0 0 1024 1024"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          p-id="22536"
+          width="32"
+          height="32"
+        >
+          <path
+            d="M512 1024c-281.6 0-512-230.4-512-512s230.4-512 512-512 512 230.4 512 512-230.4 512-512 512z"
+            fill="#F46A6A"
+            p-id="22537"
+          ></path>
+          <path
+            d="M366.153143 262.509714l-5.046857 4.169143-120.246857 120.32 120.246857 120.246857a36.571429 36.571429 0 0 0 55.954285-46.665143l-4.242285-5.046857-31.890286-32.036571h223.670857a90.258286 90.258286 0 0 1 9.216 180.077714l-9.216 0.512H325.558857a36.571429 36.571429 0 0 0-6.582857 72.557714l6.582857 0.585143h279.04a163.401143 163.401143 0 0 0 11.702857-326.436571l-11.702857-0.365714-223.670857-0.073143 31.890286-31.890286a36.571429 36.571429 0 0 0 4.242285-46.665143l-4.242285-5.12a36.571429 36.571429 0 0 0-46.665143-4.169143z"
+            fill="#FFFFFF"
+            p-id="22538"
+          ></path>
+        </svg>
+      </i>
+    </button>
+  </div>
+
+  <nz-table
+    #rowSelectionTable
+    nzBordered
+    nzShowSizeChanger
+    [nzFrontPagination]="false"
+    [nzLoading]="this.loading"
+    [nzTotal]="total"
+    [nzData]="listOfAllData"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+    (nzPageIndexChange)="search()"
+    (nzPageSizeChange)="search()"
+    (nzCurrentPageDataChange)="currentPageDataChange($event)"
+  >
+    <thead>
+      <tr>
+        <th [nzAlign]="'center'">序号</th>
+        <th [nzAlign]="'center'">导入批次</th>
+        <th style="width: 150px" [nzAlign]="'center'">导入文件</th>
+        <th style="width: 100px" [nzAlign]="'center'" *ngIf="currentSys === 'dt'">来源</th>
+        <th [nzAlign]="'center'">处理进度</th>
+        <th [nzAlign]="'center'">处理结果</th>
+        <th [nzAlign]="'center'">导入总数量</th>
+        <th [nzAlign]="'center'">成功导入数量</th>
+        <th [nzAlign]="'center'">操作时间</th>
+        <th [nzAlign]="'center'">描述</th>
+        <th [nzAlign]="'center'">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+        <td [nzAlign]="'center'">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td [nzAlign]="'center'">
+          <a
+            routerLink="/zhanghao/zhanghao-data"
+            [queryParams]="{
+              batchNumber: data.batchNumber,
+              from: 'batchImport',
+              adminFlag: 0,
+              shareFlag: this.postId === data.postId ? 0 : -1
+            }"
+          >
+            {{ data.batchNumber }}
+          </a>
+        </td>
+        <td>
+          <!-- 导入文件 -->
+          {{ data.fileName }}
+        </td>
+        <td *ngIf="currentSys === 'dt'">
+          <!-- 来源 -->
+          {{ data.sourceFlag === 1 ? '石墨同步' : '人工导入' }}
+        </td>
+        <td>
+          <nz-progress
+            *ngIf="data.importProcess.statusFlag === 0"
+            [nzPercent]="data.importProcess.percent"
+            nzSize="small"
+            nzStatus="active"
+          ></nz-progress>
+          <nz-progress
+            *ngIf="data.importProcess.statusFlag === 2"
+            [nzPercent]="data.importProcess.percent"
+            nzSize="small"
+            nzStatus="exception"
+          ></nz-progress>
+          <nz-progress
+            *ngIf="data.importProcess.statusFlag === 1"
+            [nzPercent]="data.importProcess.percent"
+            nzSize="small"
+          ></nz-progress>
+        </td>
+        <td [nzAlign]="'center'" *ngIf="data.resultStatus == 0">待处理</td>
+        <td [nzAlign]="'center'" *ngIf="data.resultStatus == 1">处理中</td>
+        <td [nzAlign]="'center'" *ngIf="data.resultStatus == 2">完成</td>
+        <td [nzAlign]="'center'" *ngIf="data.resultStatus == 3"><span style="color: red">异常</span></td>
+        <td [nzAlign]="'center'" *ngIf="data.resultStatus == 4"><span style="color: red">处理超时</span></td>
+        <td [nzAlign]="'center'">{{ data.totalCnt }}</td>
+        <td [nzAlign]="'center'">{{ data.successCnt }}</td>
+        <td [nzAlign]="'center'">{{ data.updatedTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+
+        <td [nzAlign]="'left'">
+          <span *ngIf="data.resultStatus == 2 && data.totalCnt != data.successCnt">
+            <ellipsis lines="1" tooltip> 导入信息见详情 </ellipsis>
+          </span>
+          <span *ngIf="data.resultStatus != 2">
+            <ellipsis lines="1" tooltip>
+              {{ data.resultMark }}
+            </ellipsis>
+          </span>
+        </td>
+
+        <td [nzAlign]="'center'">
+          <span *ngIf="data.resultStatus == 2">
+            <a
+              nz-tooltip
+              nzTooltipTitle="导入详情"
+              style="margin-right: 10px; color: #52c41a"
+              routerLink="../zhanghao-data-import-detail"
+              [queryParams]="{ importLogId: data.id, postId: postId }"
+            >
+              <i nz-icon nzType="edit" nzTheme="outline"></i>
+            </a>
+          </span>
+
+          <span>
+            <a style="margin-right: 10px; color: red" (click)="del(data.id)">
+              <i nz-icon nzType="close" nzTheme="outline"></i>
+            </a>
+          </span>
+
+          <span *ngIf="data.resultStatus == 2 && data.totalCnt != data.successCnt">
+            <a style="margin-right: 10px" (click)="downloadErrorData(data.id)">
+              <i nz-icon nzType="vertical-align-bottom" nzTheme="outline" nz-tooltip nzTooltipTitle="异常信息下载"></i>
+            </a>
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-card>

@@ -1,0 +1,30 @@
+<button nz-button type="button" nzType="primary" style="margin-right: 10px;" (click)="showModal()"><i nz-icon
+    nzType="file-excel"></i>事件导出</button>
+
+<nz-modal [(nzVisible)]="isVisible" nzTitle="事件导出" nzOkText="导出" [nzOkLoading]="isOkLoading" nzCancelText="取消"
+  (nzOnCancel)="handleCancel()" (nzOnOk)="export()" [nzOkLoading]="isOkLoading" [nzWidth]="800">
+
+  <ng-container *ngIf="fieldList.length > 0">
+    <nz-card nzTitle="请选择导出项">
+      <div nz-row>
+        <div nz-col nzMd="6">
+          <label nz-checkbox ngModel="true" disabled>事件名称 </label>
+        </div>
+        <div nz-col nzMd="6">
+          <label nz-checkbox ngModel="true" disabled="true">事件分类 </label>
+        </div>
+      </div>
+      <div nz-row>
+        <div *ngFor="let it of fieldList" nz-col nzMd="6">
+          <label nz-checkbox [(ngModel)]="it.checked">{{ it.fieldName }} </label>
+        </div>
+      </div>
+
+    </nz-card>
+  </ng-container>
+
+  <ng-container *ngIf="fieldList.length === 0">
+    <h3>请先配置导入模板字段</h3>
+  </ng-container>
+
+</nz-modal>

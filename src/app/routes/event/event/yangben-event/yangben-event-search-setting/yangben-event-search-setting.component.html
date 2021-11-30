@@ -1,0 +1,18 @@
+<button nz-button nzType="link" (click)="showModal()">
+  <i nz-icon nzType="filter" nzTheme="outline"></i>设置过滤字段
+</button>
+
+<nz-modal [(nzVisible)]="isVisible" [nzTitle]="'设置过滤字段'" nzOkText="确定" nzCancelText="取消" (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()" [nzOkLoading]="isOkLoading" [nzWidth]="800">
+  <div nz-row>
+    <ng-container *ngIf="fieldList.length > 0">
+      <div *ngFor="let it of fieldList" nz-col nzMd="6">
+        <label nz-checkbox [(ngModel)]="it.checked">{{ it.fieldName }} </label>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="fieldList.length === 0">
+      <h3>请先配置导入模板字段</h3>
+    </ng-container>
+  </div>
+</nz-modal>

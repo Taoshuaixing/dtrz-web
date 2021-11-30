@@ -1,0 +1,43 @@
+<button nz-button style="margin-right: 10px" nzType="primary" nzType="primary" (click)="showModal()">
+  <i nz-icon nzType="plus"></i>
+  新建日志
+</button>
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="日志模板选择"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  [nzWidth]="800"
+>
+  <div>
+    <div nz-row [nzGutter]="8">
+      <ng-container *ngFor="let data of templateList">
+        <div nz-col [nzSpan]="8" (click)="toDetail(data)">
+          <nz-card
+            nzType="inner"
+            nzHoverable
+            [nzTitle]="data.templateName"
+            [nzExtra]="extraTemplate"
+            style="height: 180px"
+          >
+            <b>标题内容：</b>
+            <span
+              ><ellipsis lines="3" tooltip>{{ data.content }}</ellipsis></span
+            >
+          </nz-card>
+        </div>
+
+        <ng-template #extraTemplate>
+          <nz-tag *ngIf="data.duty === '0'" [nzColor]="'#CBCBCB'">通用</nz-tag>
+          <nz-tag *ngIf="data.duty === 'm'" [nzColor]="'#87d068'">白班</nz-tag>
+          <nz-tag *ngIf="data.duty === 'n'" [nzColor]="'#fa8c16'">夜班</nz-tag>
+        </ng-template>
+      </ng-container>
+    </div>
+  </div>
+
+  <div *nzModalFooter>
+    <button nz-button nzType="primary" (click)="handleCancel()">关闭</button>
+  </div>
+</nz-modal>

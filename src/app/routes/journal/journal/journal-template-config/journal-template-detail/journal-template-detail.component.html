@@ -1,0 +1,274 @@
+<nz-breadcrumb class="breadcrumb">
+  <nz-breadcrumb-item *ngFor="let data of breadcrumbs">
+    {{ data.name }}
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+
+<nz-card>
+  <form nz-form [formGroup]="validateForm" (ngSubmit)="submit()">
+    <nz-card>
+      <nz-form-item>
+        <nz-form-label [nzSm]="2" [nzXs]="24" nzRequired nzFor="templateName">模板名称</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="请输入模板名称">
+          <input nz-input formControlName="templateName" [(ngModel)]="templateName" placeholder="请输入模板名称" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSm]="2" [nzXs]="24" nzFor="duty">班次</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <nz-radio-group [(ngModel)]="duty" [ngModelOptions]="{ standalone: true }">
+            <label nz-radio nzValue="0">通用</label>
+            <label nz-radio nzValue="m">白班</label>
+            <label nz-radio nzValue="n">夜班</label>
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSm]="2" [nzXs]="24" nzFor="sortType">标题</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <nz-radio-group [(ngModel)]="sortType" [ngModelOptions]="{ standalone: true }">
+            <label nz-radio nzValue="0">整体序号</label>
+            <label nz-radio nzValue="1">章节序号</label>
+            <label nz-radio nzValue="2">无序号</label>
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSm]="2" [nzXs]="24" nzFor="quotationFlag">是否包含双引号</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <nz-radio-group [(ngModel)]="quotationFlag" [ngModelOptions]="{ standalone: true }">
+            <label nz-radio [nzValue]="1">是</label>
+            <label nz-radio [nzValue]="0">否</label>
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSm]="2" [nzXs]="24" nzFor="yangbenCntFlag">是否含样本数量</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <nz-radio-group [(ngModel)]="yangbenCntFlag" [ngModelOptions]="{ standalone: true }">
+            <label nz-radio [nzValue]="1">是</label>
+            <label nz-radio [nzValue]="0">否</label>
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSm]="2" [nzXs]="24" nzFor="templateSummary">摘要</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <simple-tiny
+            [html]="templateSummary"
+            [setItemObject]="templateSummaryObj"
+            setItemAttr="richTextSummary"
+            (editorOk)="callbackEmitter($event)"
+          ></simple-tiny>
+        </nz-form-control>
+      </nz-form-item>
+    </nz-card>
+
+    <ng-container *ngFor="let control of listOfControl; let i = index">
+      <nz-row>
+        <div nz-col nzSpan="16">
+          <nz-card *ngIf="!control.isInclude2Level">
+            <nz-form-item>
+              <nz-form-label [nzSm]="2" [nzXs]="24">一级标题</nz-form-label>
+
+              <nz-form-control [nzSm]="13" [nzXs]="24">
+                <nz-input-group [nzAddOnAfter]="addOnAfterTemplate">
+                  <input
+                    type="text"
+                    nz-input
+                    [(ngModel)]="control.contentTitle"
+                    [ngModelOptions]="{ standalone: true }"
+                  />
+                </nz-input-group>
+
+                <ng-template #addOnAfterTemplate>
+                  <nz-select
+                    [(ngModel)]="control.contentType"
+                    [ngModelOptions]="{ standalone: true }"
+                    style="width: 110px"
+                    nzPlaceHolder="请选择"
+                    (ngModelChange)="change(control, -1)"
+                  >
+                    <nz-option *ngFor="let sub of contentTypeList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+                  </nz-select>
+                </ng-template>
+              </nz-form-control>
+
+              <nz-form-control [nzSm]="12" [nzXs]="24" style="margin-left: 20px">
+                <nz-checkbox-group
+                  [(ngModel)]="control.checkOptions"
+                  [ngModelOptions]="{ standalone: true }"
+                  [nzDisabled]="control.checkBoxDisabled"
+                ></nz-checkbox-group>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item *ngIf="control.item.showFlag">
+              <nz-form-label [nzSm]="3" [nzXs]="24" nzFor="fieldTypeValue">数据源</nz-form-label>
+              <nz-form-control [nzSm]="19" [nzXs]="24">
+                <nz-tree-select
+                  nzPlaceHolder="事件分类"
+                  [ngModelOptions]="{ standalone: true }"
+                  [nzExpandedKeys]="expandEventClassifyKeys"
+                  [(ngModel)]="control.item.eventClassifyId"
+                  [nzShowSearch]="true"
+                  [nzDropdownStyle]="{ 'max-height': '300px' }"
+                  [nzNodes]="eventClassifyNodes"
+                  style="width: 205px"
+                >
+                </nz-tree-select>
+
+                <nz-select
+                  nzAllowClear
+                  nzShowSearch
+                  [(ngModel)]="control.item.eventTemplateId"
+                  [ngModelOptions]="{ standalone: true }"
+                  style="width: 205px; margin-left: 10px"
+                  nzPlaceHolder="事件模板"
+                >
+                  <nz-option *ngFor="let sub of eventTemplateList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+                </nz-select>
+
+                <nz-cascader
+                  nzAllowClear
+                  [ngModelOptions]="{ standalone: true }"
+                  style="width: 205px; margin-left: 10px"
+                  [nzOptions]="eventTagList"
+                  [(ngModel)]="control.item.eventTags"
+                  nzShowSearch
+                  nzPlaceHolder="事件标签"
+                ></nz-cascader>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-card>
+
+          <nz-card *ngIf="control.isInclude2Level">
+            <nz-form-item>
+              <nz-form-label [nzSm]="2" [nzXs]="24">一级标题</nz-form-label>
+              <nz-form-control [nzSm]="10" [nzXs]="24">
+                <input
+                  type="text"
+                  nz-input
+                  [(ngModel)]="control.contentTitle"
+                  [ngModelOptions]="{ standalone: true }"
+                />
+              </nz-form-control>
+            </nz-form-item>
+
+            <ng-container *ngFor="let child of control.children; let j = index">
+              <nz-form-item>
+                <nz-form-label [nzSm]="3" [nzXs]="24">标题内容</nz-form-label>
+
+                <nz-form-control [nzSm]="12" [nzXs]="24">
+                  <nz-input-group [nzAddOnAfter]="addOnAfterTemplate">
+                    <input
+                      type="text"
+                      nz-input
+                      [(ngModel)]="child.contentTitle"
+                      [ngModelOptions]="{ standalone: true }"
+                    />
+                  </nz-input-group>
+
+                  <ng-template #addOnAfterTemplate>
+                    <nz-select
+                      [(ngModel)]="child.contentType"
+                      [ngModelOptions]="{ standalone: true }"
+                      style="width: 110px"
+                      nzPlaceHolder="请选择"
+                      (ngModelChange)="change(control, j)"
+                    >
+                      <nz-option
+                        *ngFor="let sub of contentTypeList"
+                        [nzValue]="sub.id"
+                        [nzLabel]="sub.name"
+                      ></nz-option>
+                    </nz-select>
+                  </ng-template>
+                </nz-form-control>
+
+                <nz-form-control [nzSm]="12" [nzXs]="24" style="margin-left: 20px">
+                  <nz-checkbox-group
+                    [(ngModel)]="child.checkOptions"
+                    [ngModelOptions]="{ standalone: true }"
+                    [nzDisabled]="child.checkBoxDisabled"
+                    style="margin-right: 20px"
+                  ></nz-checkbox-group>
+
+                  <nz-divider nzType="vertical"></nz-divider>
+                  <a nz-button nzType="link" (click)="addField2Level(control, j, $event)"
+                    ><i nz-icon nzType="plus"></i
+                  ></a>
+                  <a nz-button nzType="link" [disabled]="j === 0 && control.children.length === 1">
+                    <i nz-icon nzType="minus" (click)="removeField2Level(control, j, $event)"></i
+                  ></a>
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item *ngIf="child.item.showFlag">
+                <nz-form-label [nzSm]="3" [nzXs]="24" nzFor="fieldTypeValue">数据源</nz-form-label>
+                <nz-form-control [nzSm]="19" [nzXs]="24">
+                  <nz-tree-select
+                    nzPlaceHolder="事件分类"
+                    [ngModelOptions]="{ standalone: true }"
+                    [nzExpandedKeys]="expandEventClassifyKeys"
+                    [(ngModel)]="child.item.eventClassifyId"
+                    [nzShowSearch]="true"
+                    [nzDropdownStyle]="{ 'max-height': '300px' }"
+                    [nzNodes]="eventClassifyNodes"
+                    style="width: 205px"
+                  >
+                  </nz-tree-select>
+
+                  <nz-select
+                    nzAllowClear
+                    nzShowSearch
+                    [(ngModel)]="child.item.eventTemplateId"
+                    [ngModelOptions]="{ standalone: true }"
+                    style="width: 205px; margin-left: 10px"
+                    nzPlaceHolder="事件模板"
+                  >
+                    <nz-option
+                      *ngFor="let sub of eventTemplateList"
+                      [nzValue]="sub.id"
+                      [nzLabel]="sub.name"
+                    ></nz-option>
+                  </nz-select>
+
+                  <nz-cascader
+                    nzAllowClear
+                    [ngModelOptions]="{ standalone: true }"
+                    style="width: 205px; margin-left: 10px"
+                    [nzOptions]="eventTagList"
+                    [(ngModel)]="child.item.eventTags"
+                    nzShowSearch
+                    nzPlaceHolder="事件标签"
+                  ></nz-cascader>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-divider nzDashed></nz-divider>
+            </ng-container>
+          </nz-card>
+        </div>
+        <div nz-col style="display: flex; align-items: center">
+          <a nz-button nzType="link" (click)="addField(i, true, $event)"><i nz-icon nzType="plus"></i>含二级</a>
+          <a nz-button nzType="link" (click)="addField(i, false, $event)"><i nz-icon nzType="plus"></i>不含二级</a>
+          <a nz-button nzType="link" [disabled]="i === 0 && listOfControl.length === 1">
+            <i nz-icon nzType="minus" (click)="removeField(control, $event)"></i
+          ></a>
+        </div>
+      </nz-row>
+    </ng-container>
+
+    <nz-form-item>
+      <nz-form-control [nzOffset]="7" [nzSpan]="12">
+        <button nz-button nzType="primary">提交</button>
+        <button nz-button nzType="default" (click)="back()">返回</button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-card>

@@ -1,0 +1,75 @@
+<nz-card>
+  <nz-table
+    #rowSelectionTable
+    nzBordered
+    nzShowSizeChanger
+    [nzData]="listOfAllData"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+    (nzCurrentPageDataChange)="currentPageDataChange($event)"
+  >
+    <thead>
+      <tr>
+        <!--      <th-->
+        <!--        nzWidth="50px"-->
+        <!--        nzLeft="0px"-->
+        <!--        nzShowCheckbox-->
+        <!--        [(nzChecked)]="isAllDisplayDataChecked"-->
+        <!--        [nzIndeterminate]="isIndeterminate"-->
+        <!--        (nzCheckedChange)="checkAll($event)"-->
+        <!--      ></th>-->
+        <th [nzAlign]="'center'" nzWidth="50px">序号</th>
+        <th [nzAlign]="'center'" nzWidth="60px">班次</th>
+        <th [nzAlign]="'center'" nzWidth="150px">日志名称</th>
+        <th [nzAlign]="'center'" nzWidth="150px">所属模板名称</th>
+        <th [nzAlign]="'center'" nzWidth="320px">日志内容</th>
+        <th [nzAlign]="'center'" nzWidth="60px">状态</th>
+        <th [nzAlign]="'center'" nzWidth="120px">数据来源</th>
+        <th [nzAlign]="'center'" nzWidth="120px">创建时间</th>
+        <th [nzAlign]="'center'" nzWidth="110px">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+        <!--      <td-->
+        <!--        nzWidth="60px"-->
+        <!--        nzLeft="0px"-->
+        <!--        nzShowCheckbox-->
+        <!--        [(nzChecked)]="mapOfCheckedId[data.id]"-->
+        <!--        (nzCheckedChange)="refreshStatus()"-->
+        <!--      ></td>-->
+        <td [nzAlign]="'center'">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td [nzAlign]="'center'">
+          <span *ngIf="data.duty == 'm'"><nz-tag [nzColor]="'#87d068'">白班</nz-tag></span>
+          <span *ngIf="data.duty == 'n'"><nz-tag [nzColor]="'#fa8c16'">夜班</nz-tag></span>
+        </td>
+        <td [nzAlign]="'center'">
+          <ellipsis lines="1" tooltip>{{ data.journalName }}</ellipsis>
+        </td>
+        <td [nzAlign]="'center'">{{ data.template.templateName }}</td>
+        <td [nzAlign]="'center'">
+          <ellipsis lines="1" tooltip>{{ data.content }}</ellipsis>
+        </td>
+        <td [nzAlign]="'center'">
+          <span *ngIf="data.step == 1"><nz-tag [nzColor]="'#9eb9ff'">编辑中</nz-tag></span>
+          <span *ngIf="data.step == 2"><nz-tag [nzColor]="'#d4bffa'">排版中</nz-tag></span>
+          <span *ngIf="data.step == 3"><nz-tag [nzColor]="'#fabdde'">已完成</nz-tag></span>
+        </td>
+        <td [nzAlign]="'center'">
+          <span *ngIf="data.importFlag == 0">正常录入</span>
+          <span *ngIf="data.importFlag == 1">一键导入</span>
+        </td>
+        <td [nzAlign]="'center'">{{ data.createdTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td [nzAlign]="'center'">
+          <a (click)="edit(data)">
+            <i nz-icon nzType="edit" nzTheme="outline"></i>
+          </a>
+
+          <a (click)="del(data.id)" style="margin-left: 20px">
+            <i nz-icon nzType="delete" nzTheme="outline"></i>
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-card>

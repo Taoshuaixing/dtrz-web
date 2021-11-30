@@ -1,0 +1,14 @@
+.form-group {
+  margin: 20px;
+  margin-left: 110px;
+}
+.nz-radio {
+  display: block;
+}
+.tip {
+  margin: 5px 0;
+  padding: 3px 7px;
+  background-color: #ecf8ff;
+  border-left: 5px solid #50bfff;
+  border-radius: 4px;
+}

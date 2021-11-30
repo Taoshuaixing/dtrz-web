@@ -1,0 +1,26 @@
+<button nz-button nzType="primary" (click)="$event.stopPropagation();showModal()"
+        style="margin-right: 8px;" [nzSize]="btnSize">
+  <span>{{ btnName }}</span>
+</button>
+
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="btnName"
+  nzOkText="保存"
+  nzCancelText="取消"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  [nzWidth]="800"
+>
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <nz-form-control nzErrorTip="名称不能为空">
+        <textarea rows="10" nz-input formControlName="inputName"
+                  placeholder="请输入名称列表，格式如下：（一行默认为一个名称）&#13;&#10;示例名称1&#13;&#10;示例名称2&#13;&#10;示例名称3"
+                  nzSize="default"
+                  [(ngModel)]="inputName"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>

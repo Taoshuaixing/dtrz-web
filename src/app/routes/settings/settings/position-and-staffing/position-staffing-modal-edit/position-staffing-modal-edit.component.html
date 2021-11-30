@@ -1,0 +1,11 @@
+<div>
+    <span (click)="showModal()">编辑</span>
+    <nz-modal [(nzVisible)]="isVisible" nzTitle="编辑" nzOkText="确定" nzCancelText="取消" (nzOnCancel)="handleCancel()"
+        [nzWidth]="500" (nzOnOk)="handleOk()" [nzOkLoading]="isOkLoading">
+        <div class="page-header__title ng-star-inserted" style="font-size: 16px;">
+            <span style="margin-right: 10px;">
+                <input [(ngModel)]="newPostName" nz-input nzSize="default" style="width: 200px" />
+            </span>
+        </div>
+    </nz-modal>
+</div>

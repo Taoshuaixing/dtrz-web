@@ -1,0 +1,146 @@
+<nz-layout>
+  <nz-sider nzWidth="180px" nzTheme="light">
+    <nz-anchor [nzAffix]="true" [nzOffsetTop]="130">
+      <ng-container *ngFor="let item of listOfAllData">
+        <nz-link *ngIf="!item.parent && !item.targetTable" [nzHref]="'#a' + item.id" [nzTitle]="item.name"></nz-link>
+      </ng-container>
+    </nz-anchor>
+  </nz-sider>
+  <nz-content>
+    <nz-collapse>
+      <ng-container *ngFor="let item of listOfAllData; let i = index">
+        <nz-collapse-panel
+          *ngIf="!item.parent && !item.targetTable"
+          [nzHeader]="item.name"
+          nzActive="true"
+          nzShowArrow="true"
+        >
+          <a [id]="'a' + item.id"></a>
+          <div style="margin-bottom: 10px">
+            <div nz-row [nzGutter]="18">
+              <div nz-col class="gutter-row" [nzSpan]="7">
+                <div class="inner-box">
+                  <nz-input-group [nzSuffix]="inputClearTplName">
+                    <input type="text" nz-input [(ngModel)]="item.searchName" placeholder="请输入名称" />
+                  </nz-input-group>
+                  <ng-template #inputClearTplName>
+                    <i
+                      nz-icon
+                      class="ant-input-clear-icon"
+                      nzTheme="fill"
+                      nzType="close-circle"
+                      *ngIf="item.searchName"
+                      (click)="item.searchName = null"
+                    ></i>
+                  </ng-template>
+                </div>
+              </div>
+              <div nz-col class="gutter-row" [nzSpan]="10">
+                <div class="inner-box">
+                  <button
+                    style="margin-right: 10px"
+                    nz-button
+                    type="submit"
+                    [nzType]="'primary'"
+                    [nzLoading]="loading"
+                    (click)="getData_one(item)"
+                  >
+                    检索
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <nz-table
+            #rowSelectionTable
+            nzBordered
+            nzShowSizeChanger
+            [nzData]="item.children"
+            [nzFrontPagination]="false"
+            [nzLoading]="loading"
+            [nzTotal]="item.total"
+            [(nzPageIndex)]="item.pageIndex"
+            [(nzPageSize)]="item.pageSize"
+            (nzPageIndexChange)="getData_one(item)"
+            (nzPageSizeChange)="getData_one(item, true)"
+          >
+            <thead>
+              <tr>
+                <th [nzAlign]="'center'">序号</th>
+                <th [nzAlign]="'center'">名称</th>
+                <th [nzAlign]="'center'">当前岗位数量</th>
+                <th [nzAlign]="'center'">分享他岗数量</th>
+                <th [nzAlign]="'center'">共享我的数量</th>
+                <th [nzAlign]="'center'">编辑时间</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+                <td [nzAlign]="'center'">{{ i + 1 + (item.pageIndex - 1) * item.pageSize }}</td>
+                <td [nzAlign]="'center'">{{ data.name }}</td>
+                <td [nzAlign]="'center'">
+                  <!-- 当前岗 -->
+                  <a
+                    *ngIf="data.yangbenCnt > 0"
+                    routerLink="/yangben/yangben-data"
+                    [queryParams]="{
+                      shareFlag: 0,
+                      optionId: data.id,
+                      fieldId: item.field?.id,
+                      fieldType: item.field?.fieldType,
+                      from: 'option'
+                    }"
+                  >
+                    {{ data.yangbenCnt }}
+                  </a>
+
+                  <span *ngIf="data.yangbenCnt === 0">0</span>
+                </td>
+                <td [nzAlign]="'center'">
+                  <!-- 分享他岗 -->
+                  <a
+                    *ngIf="data.shareOtherCnt > 0"
+                    routerLink="/yangben/yangben-data"
+                    [queryParams]="{
+                      shareFlag: 1,
+                      optionId: data.id,
+                      fieldId: item.field?.id,
+                      fieldType: item.field?.fieldType,
+                      from: 'option',
+                      adminFlag: adminFlag
+                    }"
+                  >
+                    {{ data.shareOtherCnt }}
+                  </a>
+
+                  <span *ngIf="data.shareOtherCnt === 0">0</span>
+                </td>
+                <td [nzAlign]="'center'">
+                  <!-- 共享我的 -->
+                  <a
+                    *ngIf="data.shareMeCnt > 0"
+                    routerLink="/yangben/yangben-data"
+                    [queryParams]="{
+                      shareFlag: 2,
+                      optionId: data.id,
+                      fieldId: item.field?.id,
+                      fieldType: item.field?.fieldType,
+                      from: 'option',
+                      adminFlag: adminFlag
+                    }"
+                  >
+                    {{ data.shareMeCnt }}
+                  </a>
+
+                  <span *ngIf="data.shareMeCnt === 0">0</span>
+                </td>
+                <td [nzAlign]="'center'">{{ data.createdTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </nz-collapse-panel>
+      </ng-container>
+    </nz-collapse>
+  </nz-content>
+</nz-layout>

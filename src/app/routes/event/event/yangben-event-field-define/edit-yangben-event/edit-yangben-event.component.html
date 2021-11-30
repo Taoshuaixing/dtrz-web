@@ -1,0 +1,65 @@
+<nz-card>
+  <nz-breadcrumb class="breadcrumb">
+    <nz-breadcrumb-item *ngFor="let data of breadcrumbs">
+      {{ data.name }}
+    </nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <nz-content>
+    <form nz-form [formGroup]="validateForm">
+
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="fieldName">字段名称</nz-form-label>
+        <nz-form-control [nzSm]="12" [nzXs]="24" nzErrorTip="请输入字段名称">
+          <input nz-input formControlName="fieldName" [(ngModel)]="fieldName" />
+          <span style="color: #999999">注：请输入一个符合阅读习惯的短名字,最多30个字符,不能是系统字段,且不能与已有的自定义字段重名</span>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired  nzFor="fieldType">字段类型</nz-form-label>
+        <nz-form-control [nzSm]="12" [nzXs]="24" nzErrorTip="请选择字段类型">
+          <nz-select
+            [nzDisabled]="isDisabled"
+            formControlName="fieldType"
+            nzAllowClear
+            nzPlaceHolder="请选择字段类型"
+            [(ngModel)]="fieldType"
+            (ngModelChange)="change()"
+          >
+            <nz-option *ngFor="let option of listOfFieldType" [nzLabel]="option.label" [nzValue]="option.value">
+            </nz-option>
+          </nz-select>
+
+        </nz-form-control>
+      </nz-form-item>
+
+
+      <nz-form-item  *ngIf="showFlag">
+        <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="fieldTypeValue">字段值选择</nz-form-label>
+        <nz-form-control [nzSm]="10" [nzXs]="24">
+          <nz-select
+            [nzDisabled]="isDisabled"
+            formControlName="fieldTypeValue"
+            nzAllowClear
+            nzPlaceHolder="请选择字段值"
+            [(ngModel)]="fieldTypeValue"
+          >
+            <nz-option *ngFor="let option of listOfFieldTypeValues" [nzLabel]="option.label" [nzValue]="option.value">
+            </nz-option>
+          </nz-select>
+          <span style="color: #999999">注：该字段仅在字段类型为下拉列表时显示</span>
+        </nz-form-control>
+      </nz-form-item>
+
+
+      <nz-form-item>
+        <nz-form-control nz-col [nzOffset]="6" [nzSpan]="12">
+          <button nz-button nzType="primary" [disabled]="loading" (click)="submit()">提交</button>
+          <button nz-button nzType="default" (click)="back()">取消</button>
+        </nz-form-control>
+      </nz-form-item>
+
+    </form>
+  </nz-content>
+</nz-card>

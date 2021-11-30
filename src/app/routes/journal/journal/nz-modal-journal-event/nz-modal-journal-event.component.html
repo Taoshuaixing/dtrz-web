@@ -1,0 +1,182 @@
+<button nz-button nzType="primary" (click)="showModal('', 0)"></button>
+
+<nz-drawer
+  [(nzVisible)]="isVisible"
+  [nzTitle]="'事件选择'"
+  nzOkText="确定"
+  nzCancelText="取消"
+  (nzOnClose)="cancel()"
+  [nzClosable]="true"
+  [nzMask]="true"
+  [nzWidth]="1000"
+  [nzFooter]="footerTpl"
+>
+  <form nz-form class="search__form">
+    <div nz-row class="row">
+      <div nz-col nzMd="8">
+        <nz-form-item>
+          <nz-form-label>事件分类</nz-form-label>
+          <nz-form-control>
+            <nz-tree-select
+              [ngModelOptions]="{ standalone: true }"
+              [nzExpandedKeys]="expandEventClassifyKeys"
+              [(ngModel)]="eventClassifyId"
+              [nzShowSearch]="true"
+              [nzDropdownStyle]="{ 'max-height': '300px' }"
+              [nzNodes]="eventClassifyNodes"
+              style="width: 220px"
+            >
+            </nz-tree-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzMd="8">
+        <nz-form-item>
+          <nz-form-label>事件模板</nz-form-label>
+          <nz-form-control>
+            <nz-select
+              nzAllowClear
+              nzShowSearch
+              [(ngModel)]="eventTemplateId"
+              [ngModelOptions]="{ standalone: true }"
+              style="width: 220px"
+            >
+              <nz-option *ngFor="let sub of eventTemplateList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzMd="8">
+        <nz-form-item>
+          <nz-form-label>事件标签</nz-form-label>
+          <nz-form-control>
+            <nz-cascader
+              [ngModelOptions]="{ standalone: true }"
+              style="width: 220px"
+              [nzOptions]="eventTagList"
+              [(ngModel)]="eventTags"
+              nzShowSearch
+            >
+            </nz-cascader>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row class="row">
+      <div nz-col nzMd="8">
+        <nz-form-item>
+          <nz-form-label>创建时间</nz-form-label>
+          <nz-form-control>
+            <nz-range-picker [(ngModel)]="searchTimeRange" name="createTime" style="width: 220px"></nz-range-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzMd="8">
+        <nz-form-item>
+          <nz-form-label>事件名称</nz-form-label>
+          <nz-form-control>
+            <input nz-input [(ngModel)]="searchEventName" name="eventName" style="width: 220px"/>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzMd="8">
+        <button nz-button (click)="search(true)" [nzType]="'primary'">搜索</button>
+        <button nz-button nzType="primary" nzDanger (click)="reset()">重填</button>
+      </div>
+    </div>
+  </form>
+
+  <nz-content>
+    <nz-table
+      #rowEventTable
+      nzShowSizeChanger
+      [nzData]="eventList"
+      [nzFrontPagination]="false"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [(nzPageIndex)]="pageIndex"
+      [(nzPageSize)]="pageSize"
+      (nzPageIndexChange)="search()"
+      (nzPageSizeChange)="search(true)"
+    >
+      <thead>
+      <tr>
+        <th style="width: 50px"></th>
+        <th style="width: 50px"></th>
+        <th style="width: 100px">序号</th>
+        <th [nzAlign]="'center'" style="width: 500px">事件名称</th>
+        <th [nzAlign]="'center'" style="width: 200px">发生时间</th>
+      </tr>
+      </thead>
+      <tbody>
+
+      <ng-container *ngFor="let item of rowEventTable.data; let i = index">
+        <nz-spin *ngIf="item.yangbenloading"></nz-spin>
+        <tr>
+          <td
+            [nzAlign]="'left'"
+            [nzShowExpand]="detail.withYangben === 1 && item.yangbenCnt > 0 "
+            (nzExpandChange)="onExpandChange(item, $event)"
+          ></td>
+          <td [nzAlign]="'left'">
+            <label nz-checkbox [(ngModel)]="item.checked" (ngModelChange)="eventCheckBox(item, $event)"></label>
+          </td>
+          <td>
+            <span>{{ i + 1 + (pageIndex - 1) * pageSize }} </span>
+          </td>
+          <td [nzAlign]="'left'">
+            <ellipsis lines="1" tooltip>{{ item.name }}</ellipsis>
+          </td>
+
+          <td [nzAlign]="'center'">
+            <span>{{ item.createdTime | date: 'yyyy-MM-dd HH:mm:ss' }} </span>
+          </td>
+        </tr>
+
+        <tr [nzExpand]="expandSet.has(item)">
+          <td>
+            <nz-card style="width: 900px">
+              <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton" style="margin-bottom: 15px">
+                <input type="text" nz-input placeholder="样本选择" [(ngModel)]="item.yangbenSearchValue"/>
+              </nz-input-group>
+              <ng-template #suffixIconButton>
+                <button nz-button nzType="primary" nzSearch (click)="yangbenSearch(item)" [nzLoading]="item.yangbenSearchloading">检索</button>
+              </ng-template>
+
+              <div style="overflow-y: auto; overflow-x: hidden; height: 300px">
+                <nz-tree
+                  [nzData]="item.yangbenNodes"
+                  nzCheckable
+                  nzMultiple
+                  [nzSearchValue]="item.yangbenSearchValue"
+                  (nzClick)="nzEvent(item, $event)"
+                  (nzCheckBoxChange)="nzEvent(item, $event)"
+                  [nzTreeTemplate]="nzTreeTemplate"
+                >
+                </nz-tree>
+              </div>
+
+              <ng-template #nzTreeTemplate let-node let-origin="origin">
+                <ellipsis lines="1" length="50" tooltip>{{ node.title }}</ellipsis>
+              </ng-template>
+            </nz-card>
+          </td>
+        </tr>
+      </ng-container>
+      </tbody>
+    </nz-table>
+  </nz-content>
+  <ng-template #footerTpl>
+    <div nz-row>
+      <span nz-col [nzOffset]="6" [nzSpan]="18">
+        <button nz-button nzType="primary" [disabled]="loading" (click)="submit()">确定</button>
+        <button nz-button nzType="default" [disabled]="loading" (click)="cancel()">关闭</button>
+      </span>
+    </div>
+  </ng-template>
+</nz-drawer>

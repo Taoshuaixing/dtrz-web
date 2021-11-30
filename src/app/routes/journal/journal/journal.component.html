@@ -1,0 +1,51 @@
+<nz-layout>
+  <nz-sider class="menu-sidebar" nzCollapsible [nzWidth]="sidebar_width + 'px'" nzBreakpoint="md" [nzTrigger]="null">
+    <ul nz-menu nzMode="inline">
+      <li [acl]="{ ability: ['journal-submitted', 'dagl_admin'], mode: 'allOf' }" nz-menu-item nzMatchRouter>
+        <a routerLink="/journal/journal-submitted" [queryParams]="{ adminFlag: 1 }">
+          <i nz-icon nzType="search"></i>日志综合查询</a
+        >
+      </li>
+
+      <li [acl]="{ ability: ['journal-manage'] }" nz-submenu nzTitle="日志管理" nzIcon="setting" nzOpen>
+        <ul>
+          <li [acl]="{ ability: ['journal-report'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/journal/journal-report">日志填写 </a>
+          </li>
+          <li [acl]="{ ability: ['journal-drafts'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/journal/journal-drafts">草稿箱</a>
+          </li>
+          <li [acl]="{ ability: ['journal-submitted0'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/journal/journal-submitted" [queryParams]="{ adminFlag: 0 }">历史日志</a>
+          </li>
+        </ul>
+      </li>
+
+      <li [acl]="{ ability: ['journal-template-manage'] }" nz-submenu nzTitle="模板管理" nzIcon="setting" nzOpen>
+        <ul>
+          <li [acl]="{ ability: ['journal-template-config'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/journal/journal-template-config">模板配置 </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- <ng-container *aclIf="['dagl_admin', 'dagl_post']"> -->
+      <li [acl]="{ ability: ['journal-share-manage'] }" nz-submenu nzTitle="日志共享管理" nzIcon="share-alt" nzOpen>
+        <ul>
+          <li [acl]="{ ability: ['journal-share1'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/journal/journal-share" [queryParams]="{ shareFlag: OPT_SHARE_OTHER }">分享他岗</a>
+          </li>
+          <li [acl]="{ ability: ['journal-share2'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/journal/journal-share" [queryParams]="{ shareFlag: OPT_SHARE_ME }">共享我的</a>
+          </li>
+        </ul>
+      </li>
+      <!-- </ng-container> -->
+    </ul>
+  </nz-sider>
+  <nz-content>
+    <div class="inner-content" [ngStyle]="{ width: content_width + 'px' }" style="background: white">
+      <router-outlet></router-outlet>
+    </div>
+  </nz-content>
+</nz-layout>

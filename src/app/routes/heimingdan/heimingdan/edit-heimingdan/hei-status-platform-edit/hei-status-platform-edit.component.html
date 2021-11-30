@@ -1,0 +1,152 @@
+<a (click)="showModal()"><i nz-icon [nzType]="'setting'" style="width: 5%"></i></a>
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="dialogTitle"
+  nzOkText="确定"
+  nzCancelText="取消"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  style="max-width: 800px;"
+  [nzWidth]="800"
+>
+  <!-- 条件过滤 -->
+  <form nz-form [formGroup]="searchForm">
+    <nz-form-item>
+      <app-common-input-modal
+        [onBeforeSave]="check"
+        [inputName]=""
+        [selectedId]="0"
+        btnName="添加"
+        (editorOk)="callbackEmitter($event, null)"
+      >
+      </app-common-input-modal>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control [nzSm]="20" [nzXs]="24">
+        <input
+          nzAllowClear
+          formControlName="searchName"
+          nz-input
+          [(ngModel)]="searchName"
+          style="width: 200px;margin-right: 10px;"
+        />
+        <button nz-button nzType="primary" nzType="primary" (click)="itmeSearch()">
+          过滤
+        </button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+  <!-- 平台列表 -->
+  <nz-table
+    *ngIf="isOpenStatus === 'heiPlatform'"
+    #rowSelectionTable
+    nzShowSizeChanger
+    [nzData]="listHeiPlatform"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+  >
+    <thead>
+      <tr>
+        <th [nzAlign]="'center'">序号</th>
+        <th [nzAlign]="'center'">平台名称</th>
+        <th [nzAlign]="'center'">编辑时间</th>
+        <th [nzAlign]="'center'">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+        <td [nzAlign]="'center'">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td [nzAlign]="'center'">{{ data.name }}</td>
+        <td [nzAlign]="'center'">{{ data.updatedTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td [nzAlign]="'center'">
+          <app-common-input-modal
+            btnName="编辑"
+            [onBeforeSave]="check"
+            [inputName]="data.name"
+            [selectedId]="data.id"
+            (editorOk)="callbackEmitter($event, data)"
+          >
+          </app-common-input-modal>
+          <button nz-button nzType="primary" nzDanger   (click)="del(data.id)">删除</button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <!-- 状态列表 -->
+  <nz-table
+    *ngIf="isOpenStatus === 'heiStatus'"
+    #rowSelectionTable
+    nzShowSizeChanger
+    [nzData]="listHeiStatus"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+  >
+    <thead>
+      <tr>
+        <th [nzAlign]="'center'">序号</th>
+        <th [nzAlign]="'center'">状态名称</th>
+        <th [nzAlign]="'center'">编辑时间</th>
+        <th [nzAlign]="'center'">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+        <td [nzAlign]="'center'">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td [nzAlign]="'center'">{{ data.name }}</td>
+        <td [nzAlign]="'center'">{{ data.updatedTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td [nzAlign]="'center'">
+          <app-common-input-modal
+            btnName="编辑"
+            [onBeforeSave]="check"
+            [inputName]="data.name"
+            [selectedId]="data.id"
+            (editorOk)="callbackEmitter($event, data)"
+          >
+          </app-common-input-modal>
+          <button nz-button nzType="primary" nzDanger   (click)="del(data.id)">删除</button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <!-- 打击方式列表 -->
+  <nz-table
+    *ngIf="isOpenStatus === 'heiStrikeMode'"
+    #rowSelectionTable
+    nzShowSizeChanger
+    [nzData]="listHeiStrikeMode"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+  >
+    <thead>
+      <tr>
+        <th [nzAlign]="'center'">序号</th>
+        <th [nzAlign]="'center'">状态名称</th>
+        <th [nzAlign]="'center'">编辑时间</th>
+        <th [nzAlign]="'center'">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+        <td [nzAlign]="'center'">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td [nzAlign]="'center'">{{ data.name }}</td>
+        <td [nzAlign]="'center'">{{ data.updatedTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td [nzAlign]="'center'">
+          <app-common-input-modal
+            btnName="编辑"
+            [onBeforeSave]="check"
+            [inputName]="data.name"
+            [selectedId]="data.id"
+            (editorOk)="callbackEmitter($event, data)"
+          >
+          </app-common-input-modal>
+          <button nz-button nzType="primary" nzDanger   (click)="del(data.id)">删除</button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-modal>

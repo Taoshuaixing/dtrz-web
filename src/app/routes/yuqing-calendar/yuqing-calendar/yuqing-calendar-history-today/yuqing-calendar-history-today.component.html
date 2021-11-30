@@ -1,0 +1,38 @@
+<nz-card nzTitle="历史上的今天" [nzExtra]="extraTemplate">
+  <nz-tabset>
+    <nz-tab *ngFor="let tab of classifyList" [nzTitle]="tab.eventClassifyName" (nzClick)="tabTo(tab)">
+      <app-timeline [resultData]="resultData" [parent]="this" [onMore]="callbackOnMore"></app-timeline>
+    </nz-tab>
+  </nz-tabset>
+
+  <ng-template #extraTemplate>
+    <nz-select
+      nzMode="multiple"
+      nzAllowClear
+      nzShowSearch
+      [(ngModel)]="templateIds"
+      (ngModelChange)="change($event)"
+      style="width: 300px; margin-right: 10px"
+      nzPlaceHolder="事件模板"
+    >
+      <nz-option *ngFor="let sub of eventTemplateList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+    </nz-select>
+
+    <nz-select
+      nzAllowClear
+      nzShowSearch
+      [(ngModel)]="postChangeFlag"
+      (ngModelChange)="change($event)"
+      style="width: 120px; margin-right: 10px"
+      nzPlaceHolder="事件来源"
+    >
+      <nz-option *ngFor="let sub of eventMapList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+    </nz-select>
+
+    <nz-date-picker
+      [(ngModel)]="date1"
+      (ngModelChange)="onChange($event)"
+      [nzDisabledDate]="disabledDate"
+    ></nz-date-picker>
+  </ng-template>
+</nz-card>

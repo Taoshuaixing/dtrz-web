@@ -1,0 +1,50 @@
+<nz-card nzTitle="未来舆情" [nzExtra]="extraTemplate">
+  <nz-tabset>
+    <nz-tab *ngFor="let tab of classifyList" [nzTitle]="tab.eventClassifyName" (nzClick)="tabTo(tab)">
+      <app-timeline [resultData]="resultData" [parent]="this" [onMore]="callbackOnMore"></app-timeline>
+    </nz-tab>
+  </nz-tabset>
+
+  <ng-template #extraTemplate>
+    <nz-select
+      nzMode="multiple"
+      nzAllowClear
+      nzShowSearch
+      [(ngModel)]="templateIds"
+      (ngModelChange)="onChange($event)"
+      style="width: 300px; margin-right: 10px"
+      nzPlaceHolder="事件模板"
+    >
+      <nz-option *ngFor="let sub of eventTemplateList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+    </nz-select>
+
+    <nz-select
+      nzAllowClear
+      nzShowSearch
+      [(ngModel)]="postChangeFlag"
+      (ngModelChange)="onChange($event)"
+      style="width: 120px; margin-right: 10px"
+      nzPlaceHolder="事件来源"
+    >
+      <nz-option *ngFor="let sub of eventMapList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+    </nz-select>
+
+    <nz-range-picker
+      [nzFormat]="dateFormat"
+      [(ngModel)]="dateRange"
+      (ngModelChange)="dateRangeOnChange($event)"
+      [nzDisabledDate]="disabledDate"
+      style="margin-right: 10px"
+    ></nz-range-picker>
+
+    <nz-radio-group style="margin-right: 30px" [(ngModel)]="nzButtonValue">
+      <label nz-radio-button nzValue="all" (click)="quickSearch('all')">全部</label>
+      <label nz-radio-button nzValue="week" (click)="quickSearch('week')">近一周</label>
+      <label nz-radio-button nzValue="month" (click)="quickSearch('month')">近一月</label>
+      <label nz-radio-button nzValue="year" (click)="quickSearch('year')">近一年</label>
+    </nz-radio-group>
+
+    <app-nz-modal-event-update-detail [parent]="this" [selectDate]="selectDate" btnName="添加" [recUuid]="">
+    </app-nz-modal-event-update-detail>
+  </ng-template>
+</nz-card>

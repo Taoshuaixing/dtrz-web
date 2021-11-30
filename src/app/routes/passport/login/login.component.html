@@ -1,0 +1,39 @@
+<div *ngIf="loginUrl === ''" nz-row style="background: white; width: 400px; height: 360px">
+  <form nz-form [formGroup]="form" role="form" style="width: 320px; margin-left: 40px">
+    <nz-tabset
+      [nzAnimated]="false"
+      class="tabs"
+      [nzCentered]="true"
+      (nzSelectChange)="switch($event)"
+      style="margin-top: 30px"
+    >
+      <nz-tab [nzTitle]="tmptitle">
+        <ng-template #tmptitle>
+          <h2>{{ systemName }}</h2>
+        </ng-template>
+
+        <nz-alert *ngIf="error" [nzType]="'error'" [nzMessage]="error" [nzShowIcon]="true" class="mb-lg"></nz-alert>
+        <nz-form-item style="margin-top: 20px">
+          <nz-form-control [nzErrorTip]="'请输入用户名!'">
+            <nz-input-group nzSize="large" nzPrefixIcon="user">
+              <input nz-input formControlName="userName" placeholder="请输入用户名" />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-control [nzErrorTip]="'请输入密码!'">
+            <nz-input-group nzSize="large" nzPrefixIcon="lock">
+              <input nz-input type="password" formControlName="password" placeholder="请输入密码" />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-tab>
+    </nz-tabset>
+
+    <nz-form-item>
+      <button nz-button nzType="primary" nzSize="large" (click)="submit()" [nzLoading]="http.loading" nzBlock>
+        登录
+      </button>
+    </nz-form-item>
+  </form>
+</div>

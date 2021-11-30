@@ -1,0 +1,22 @@
+
+.field-row {
+  margin-bottom: 30px;
+}
+
+.field-row label {
+  font-weight: bold;
+  text-align: right;
+}
+
+.ant-select {
+  width: 320px;
+}
+.field-row input {
+  width: 320px;
+}
+
+.field-row textarea {
+  min-height: 100px;
+  width: 500px;
+}
+

@@ -1,0 +1,28 @@
+::ng-deep .ant-table-thead > tr > th {
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 500;
+  text-align: left;
+
+  /* background: #fafafa; */
+
+  /* border-bottom: 1px solid #e8e8e8; */
+  transition: background 0.3s ease;
+}
+th {
+  background-color: #ececec;
+}
+.area-head {
+  margin-bottom: 20px;
+}
+.area-filter {
+  float: right;
+  margin-right: 20px;
+}
+.area-count {
+  margin-right: 20px;
+}
+
+.add-oneLevel {
+  width: 400px;
+  margin-bottom: 10px;
+}

@@ -1,0 +1,27 @@
+
+<a class="head-example" (click)="showModal()"><i nz-icon [nzType]="'setting'" style="width: 8%;height: 8%;"></i></a>
+
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="'模板选项配置'"
+  nzOkText="确定"
+  nzCancelText="取消"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  style="max-width: 800px;"
+  [nzWidth]="800"
+>
+
+  <nz-transfer
+    [nzListStyle]="{ 'width.px': 350, 'height.px': 320 }"
+    [nzDataSource]="list"
+    nzShowSearch
+    [nzFilterOption]="filterOption"
+    (nzSearchChange)="search($event)"
+    (nzSelectChange)="select($event)"
+    (nzChange)="change($event)"
+  >
+  </nz-transfer>
+
+</nz-modal>

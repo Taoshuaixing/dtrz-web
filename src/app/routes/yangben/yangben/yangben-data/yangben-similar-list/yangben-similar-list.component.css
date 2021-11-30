@@ -1,0 +1,9 @@
+.label {
+  margin-right: 10px;
+}
+
+.detail-item {
+  margin-bottom: 5px;
+  padding: 5px;
+  border-bottom: gray dotted 1px;
+}

@@ -1,0 +1,17 @@
+
+:host ::ng-deep .ant-layout-header {
+  height: 48px;
+  padding-left: 25px;
+  padding-right: 25px;
+  margin-bottom: 64px;
+  color: rgba(0, 0, 0, 0.85);
+  line-height: 48px;
+  background: white;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+nz-content {
+  background: white;
+  color: #fff;
+}

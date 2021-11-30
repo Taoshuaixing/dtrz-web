@@ -1,0 +1,79 @@
+<nz-drawer
+  [(nzVisible)]="isVisible"
+  [nzTitle]="'相似样本数据列表'"
+  nzOkText="确定"
+  nzCancelText="取消"
+  (nzOnClose)="handleCancel()"
+  [nzClosable]="true"
+  [nzMask]="true"
+  [nzWidth]="900"
+>
+  <nz-content>
+
+    <nz-table
+      #rowSelectionTable
+      nzShowSizeChanger
+      [nzData]="dataList"
+      [nzFrontPagination]="false"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [(nzPageIndex)]="pageIndex"
+      [(nzPageSize)]="pageSize"
+      (nzPageIndexChange)="search()" (nzPageSizeChange)="search(true)"
+    >
+      <thead>
+      <tr>
+        <th style="width: 50px;"></th>
+        <th style="width: 100px;">序号</th>
+        <th [nzAlign]="'center'" style="width: 350px;">标题及内容</th>
+        <th [nzAlign]="'center'" style="width: 100px;">相似度</th>
+        <!-- <th [nzAlign]="'center'" style="width: 200px;">样本发布时间及发布账号</th> -->
+        <th [nzAlign]="'center'" style="width: 200px;">发布时间</th>
+      </tr>
+      </thead>
+      <tbody>
+      <ng-container *ngFor="let item of rowSelectionTable.data;  let i = index">
+        <tr>
+          <td  [nzAlign]="'left'" style="width: 50px;" [nzShowExpand]="true" (nzExpandChange)="onExpandChange(item.data, $event)">
+          </td>
+          <td>
+            <span>{{ i + 1 + (pageIndex - 1) * pageSize }} </span>
+          </td>
+          <td [nzAlign]="'left'" >
+           
+            <ellipsis  lines="2" tooltip>
+              <div><b>{{item.fieldInfo.title}}</b></div>
+              <div>{{ item.fieldInfo.content }}</div>
+            </ellipsis>
+          </td>
+
+          <td [nzAlign]="'center'" >
+            
+            <span style="color: red">{{ item.fieldInfo.similar }} </span>
+            <nz-tag *ngIf="item.fieldInfo.useFlag===1" [nzColor]="'#2db7f5'">已选用</nz-tag>
+          </td>
+
+          <td [nzAlign]="'center'" >
+            <span>{{ item.fieldInfo.createdTime | date: 'yyyy-MM-dd HH:mm:ss' }} {{userName}}</span>
+          </td>
+        </tr>
+
+        <tr [nzExpand]="expandSet.has(item.data)">
+          <td style="width: 800px;">
+            <nz-card>
+              <ng-container *ngFor="let fieldInfo of fieldInfoList">
+                <div class="detail-item">
+                  <strong class="label">{{fieldInfo.fieldName}}:</strong>
+                  {{ fieldInfo.fieldVal }}
+                </div>
+              </ng-container>
+
+            </nz-card>
+          </td>
+        </tr>
+      </ng-container>
+      </tbody>
+    </nz-table>
+  </nz-content>
+</nz-drawer>
+

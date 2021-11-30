@@ -1,0 +1,46 @@
+<button nz-button nzType="link" (click)="showModal()">
+    <i nz-icon nzType="ordered-list" nzTheme="outline"></i>设置显示字段
+  </button>
+  
+  <nz-modal [(nzVisible)]="isVisible" [nzTitle]="'设置显示字段'" nzOkText="确定" nzCancelText="取消" (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOk()" [nzOkLoading]="isOkLoading" [nzWidth]="1000">
+    <div nz-row>
+      <!-- <nz-card [nzBordered]="false"> -->
+        <div nz-card-grid [ngStyle]="{ width: '65%' }">
+          <!-- <h3>可选字段</h3> -->
+
+          <!-- 基于模板展示 -->
+        <!-- <nz-card nzType="inner" *ngFor="let item of placeList" [nzTitle]="item.name" >
+
+            <div nz-row style="margin: 10px;">
+            <div *ngFor="let it of item.zhanghaoFieldDefines" nz-col nzMd="8">
+                <label nz-checkbox [(ngModel)]="it.checked" (change)="chkField(it)" (click)="chkField(it)">{{ it.fieldName }}
+                </label>
+            </div>
+            </div>
+        </nz-card> -->
+
+        <!-- 基于该岗下的所有字段展示 -->
+        <div nz-row style="margin: 10px;">
+          <div *ngFor="let it of fieldList" nz-col nzMd="8">
+              <label nz-checkbox [(ngModel)]="it.checked" (change)="chkField(it)" (click)="chkField(it)">{{ it.fieldName }}
+              </label>
+          </div>
+          </div>
+
+        </div>
+        <div nz-card-grid [ngStyle]="{ width: '35%' }">
+          <!-- <h3></h3> -->
+          <nz-card nzType="inner"  nzTitle="当前选定的字段">
+          <ul class="container" dragula="DRAGULA_FACTS" [(dragulaModel)]="checkedList">
+            <li *ngFor="let item of checkedList" style="margin: 5px;">
+              <nz-tag>{{ item.fieldName }}</nz-tag><button nz-button nzType="link" (click)="deleteItem(item)">
+                <i nz-icon nzType="close" nzTheme="outline"></i>
+              </button>
+            </li>
+          </ul>
+        </nz-card>
+        </div>
+      <!-- </nz-card> -->
+    </div>
+  </nz-modal>

@@ -1,0 +1,107 @@
+<nz-layout>
+  <nz-sider nzTheme="dark" [nzWidth]="230" class="fix-height">
+    <div  >
+      <nz-spin [nzSpinning]="loading">
+        <ul nz-menu nzMode="inline" nzTheme="dark" class="nav">
+          <li nzMatchRouter nz-menu-item *ngFor="let item of showClassifyList; let i = index">
+            <div nz-row [nzGutter]="8">
+              <div nz-col [nzSpan]="20">
+                <a
+                  style="margin-right: 5px"
+                  routerLink="event-classify-timeline"
+                  [queryParams]="{
+                    searchMonth: searchMonth,
+                    classifyId: classifyId,
+                    classifyId2: item.id,
+                    startDateFieldId: this.startDateFieldId
+                  }"
+                >
+                  <ellipsis lines="1">{{ item.eventClassifyName }}</ellipsis>
+                </a>
+              </div>
+
+              <div nz-col [nzSpan]="4">
+                <nz-badge
+                  class="cnt-right"
+                  nzStandalone
+                  *ngIf="item.eventCnt > 0"
+                  [nzCount]="item.eventCnt"
+                  [nzStyle]="{ backgroundColor: '#ff8e6e', boxShadow: '0 0 0 0' }"
+                ></nz-badge>
+                <nz-badge
+                  class="cnt-right"
+                  nzStandalone
+                  *ngIf="item.eventCnt === 0"
+                  nzShowZero
+                  [nzStyle]="{ backgroundColor: '#bfbfbf', boxShadow: '0 0 0 0' }"
+                  [nzCount]="0"
+                ></nz-badge>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </nz-spin>
+    </div>
+  </nz-sider>
+
+  <nz-content style="background: white;  overflow-x: auto; overflow-y: hidden">
+    <table>
+      <tr>
+        <td valign="top" style="width: 705px">
+          <div class="fix-height"><router-outlet></router-outlet></div>
+        </td>
+
+        <td valign="top">
+          <nz-card [nzExtra]="extraTemplate">
+            <div [ngStyle]="{ width: '270px', borderRadius: '4px' }">
+              <nz-calendar
+                [nzFullscreen]="false"
+                (nzSelectChange)="selectChange($event)"
+                [nzDisabledDate]="disabledDate"
+                [(ngModel)]="selectDate"
+              >
+                <ng-container *nzDateCell="let date">
+                  <ng-container *ngIf="this.dayList.indexOf(date.getDate()) >= 0">
+                    <div style="border-bottom: solid 1px rgb(255, 0, 119)"></div>
+                  </ng-container>
+                </ng-container>
+              </nz-calendar>
+            </div>
+
+            <div [ngStyle]="{ width: '270px', borderRadius: '4px' }">
+              <g2-pie
+                [hasLegend]="false"
+                title=""
+                subTitle="分类统计"
+                [total]="total"
+                [data]="classifyPieData"
+                height="280"
+              ></g2-pie>
+            </div>
+
+            <ng-template #extraTemplate>
+              <nz-button-group style="margin-top: 5px">
+                <button nz-button nzType="link" title=" 上月" (click)="selectChange(getLast(), true)">
+                  <i nz-icon nzType="left" nzTheme="outline"></i>
+                </button>
+
+                <nz-date-picker
+                  nzMode="month"
+                  [(ngModel)]="selectDate"
+                  (ngModelChange)="selectChange($event, true)"
+                  [nzAllowClear]="false"
+                  style="width: 95px"
+                  [nzDisabledDate]="disabledDate1"
+                >
+                </nz-date-picker>
+                <button [disabled]="next" nz-button nzType="link" title="下月" (click)="selectChange(getNext(), true)">
+                  <i nz-icon nzType="right" nzTheme="outline"></i>
+                </button>
+              </nz-button-group>
+            </ng-template>
+          </nz-card>
+        </td>
+      </tr>
+    </table>
+  </nz-content>
+</nz-layout>

@@ -1,0 +1,22 @@
+<ul nz-menu nzMode="inline" class="sider-menu">
+  <li nz-submenu nzOpen nzIcon="user" nzTitle="人物分类">
+    <ul>
+      <li nz-menu-item nzSelected (click)="onSelect('')">全部</li>
+      <li *ngFor="let type of types"
+          nz-menu-item (click)="onSelect(type)" >
+<!--        <i nz-icon nzType="delete"  nzTheme="outline"></i>-->
+        {{type.name}}
+      </li>
+      <li *ngIf="addFlg">
+        <input [(ngModel)]="newType" nz-input placeholder="添加新分类名称" nzSize="default" style="width: 150px"/>
+        <button nz-button nzType="primary" (click)="addType()"
+                style="margin-top: 8px;width: 120px;left: 50px;" >确认</button>
+      </li>
+      <button *ngIf="!addFlg" nz-button nzType="primary" (click)="addFlg=true"
+              style="margin-top: 8px;width: 120px;left: 50px;" >
+        <i nz-icon class="anticon anticon-plus">
+      </i>添加分类</button>
+    </ul>
+  </li>
+
+</ul>

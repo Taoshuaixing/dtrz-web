@@ -1,0 +1,390 @@
+<nz-layout>
+
+  <nz-sider [nzWidth]="240">
+    <div>
+      <nz-card nzTitle="主题检索">
+        <nz-input-group [nzSuffix]="suffixIcon">
+          <input type="text" nz-input placeholder="Search" [(ngModel)]="themesSearchValue" />
+        </nz-input-group>
+        <ng-template #suffixIcon>
+          <i nz-icon nzType="search"></i>
+        </ng-template>
+        <div style="overflow-y: auto;overflow-x: hidden;height: 300px;">
+          <nz-tree
+            [nzData]="themesNodes"
+            [nzSelectedKeys]="themesActivated"
+            [nzSearchValue]="themesSearchValue"
+            (nzClick)="nzEvent('themes',$event)"
+            (nzExpandChange)="nzExpandChange($event)"
+            (nzSearchValueChange)="nzEvent(null,$event)"
+          >
+          </nz-tree>
+        </div>
+      </nz-card>
+
+    </div>
+
+    <div>
+      <nz-card nzTitle="指令检索" >
+
+        <nz-input-group [nzSuffix]="suffixIcon">
+          <input type="text" nz-input placeholder="Search" [(ngModel)]="instructSearchValue" />
+        </nz-input-group>
+        <ng-template #suffixIcon>
+          <i nz-icon nzType="search"></i>
+        </ng-template>
+
+        <div style="overflow-y: auto;overflow-x: hidden;height: 300px;">
+          <nz-tree
+            [nzData]="instructNodes"
+            [nzSelectedKeys]="instructActivated"
+            [nzSearchValue]="instructSearchValue"
+            (nzClick)="nzEvent('instruct',$event)"
+            (nzSearchValueChange)="instructSearch()"
+          >
+          </nz-tree>
+        </div>
+
+      </nz-card>
+    </div>
+
+  </nz-sider>
+
+  <nz-content>
+    <nz-card [nzBordered]="false">
+
+      <form nz-form  class="search__form" style="margin-bottom: 10px">
+
+        <div nz-row [nzGutter]="{ xs: 8, sm: 8, md: 8, lg: 24, xl: 48, xxl: 48 }" >
+          <div  nz-col nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label>关键词</nz-form-label>
+              <nz-form-control>
+                <input
+                  nz-input
+                  [(ngModel)]="searchKeyword"
+                  name="keyword"
+                  [ngModelOptions]="{standalone: true}"
+                />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div  nz-col nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label>管控类型</nz-form-label>
+              <nz-form-control>
+                <nz-select
+                  nzAllowClear
+                  nzShowSearch
+                  [(ngModel)]="controlType"
+                  (ngModelChange)="onChange($event)"
+                  [ngModelOptions]="{standalone: true}"
+                >
+                  <nz-option *ngFor="let sub of controlTypeList" [nzValue]="sub.name" [nzLabel]="sub.name"></nz-option>
+                </nz-select>
+
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div  nz-col nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label>操作用户</nz-form-label>
+              <nz-form-control>
+                <nz-select
+                  nzAllowClear
+                  nzShowSearch
+                  [(ngModel)]="userId"
+                  (ngModelChange)="onChange($event)"
+                  [ngModelOptions]="{standalone: true}"
+                >
+                  <nz-option *ngFor="let sub of userList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+        </div>
+
+        <div nz-row [nzGutter]="{ xs: 8, sm: 8, md: 8, lg: 24, xl: 48, xxl: 48 }" >
+          <div  nz-col nzSm="24" nzMd="16">
+            <nz-form-item>
+              <nz-form-label>创建时间</nz-form-label>
+              <nz-form-control>
+                <nz-range-picker
+                  [nzFormat]="dateFormat"
+                  [(ngModel)]="dateRange"
+                  (ngModelChange)="dateRangeOnChange($event)"
+                  [ngModelOptions]="{standalone: true}"
+                  style="margin-right: 10px"
+                ></nz-range-picker>
+
+                <nz-radio-group style="margin-right: 30px" [(ngModel)]="nzButtonValue" [ngModelOptions]="{standalone: true}">
+                  <label nz-radio-button nzValue="all" (click)="quickSearch('all')">自定义</label>
+                  <label nz-radio-button nzValue="day3" (click)="quickSearch('3')">近三天</label>
+                  <label nz-radio-button nzValue="day7" (click)="quickSearch('7')">近七天</label>
+                </nz-radio-group>
+              </nz-form-control>
+            </nz-form-item>
+
+          </div>
+
+          <div  nz-col nzSm="24" nzMd="8">
+            <nz-form-item>
+              <nz-form-label>是否过期</nz-form-label>
+              <nz-form-control>
+                <nz-checkbox-group [(ngModel)]="checkOptions" [ngModelOptions]="{standalone: true}"></nz-checkbox-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+        </div>
+
+
+        <div  nz-row [nzGutter]="{ xs: 8, sm: 8, md: 8, lg: 24, xl: 48, xxl: 48 }">
+          <div  nz-col  style="margin-bottom: 20px;">
+            <div *ngIf="themesActivatedNode || instructActivatedNode ">
+              <span>筛选条件：</span>
+              <nz-tag [nzColor]="'orange'" *ngIf="themesActivatedNode " nzMode="closeable" (nzOnClose)="onClose('themes')">{{themesActivatedNode.title}}</nz-tag>
+              <nz-tag [nzColor]="'orange'" *ngIf="instructActivatedNode " nzMode="closeable" (nzOnClose)="onClose('instruct')">{{instructActivatedNode.title}}</nz-tag>
+              &nbsp;
+
+            </div>
+            <div *ngIf="!themesActivatedNode && !instructActivatedNode ">&nbsp;</div>
+          </div>
+
+
+        </div>
+
+        <div nz-row [nzGutter]="{ xs: 8, sm: 8, md: 8, lg: 24, xl: 48, xxl: 48 }" >
+          <div  nz-col nzSm="24" nzMd="16">
+            <button *ngIf="showType === 'rule'" nz-button nzType="primary" (click)="ruleExport()">规则导出</button>
+          </div>
+
+          <div  nz-col nzSm="24" nzMd="8" class="text-right">
+
+            <button *ngIf="showType === 'rule'" nz-button nzType="primary" style="margin-right: 10px" (click)="search(true)">检索</button>
+            <button *ngIf="showType === 'list'" nz-button nzType="primary" style="margin-right: 10px" (click)="searchList(true)">检索</button>
+
+            <button nz-button (click)="resetSe()" class="mx-sm" style="margin-right: 20px">重置</button>
+
+            <app-nz-modal-keyword-edit  [parent]="this" [onPage]="callPage" btnName="添加">
+            </app-nz-modal-keyword-edit>
+
+          </div>
+
+        </div>
+
+      </form>
+
+    <nz-tabset>
+      <nz-tab *ngFor="let tab of tabs" [nzTitle]="titleTemplate" (nzClick)="tabTo(tab)">
+        <ng-template #titleTemplate><i nz-icon [nzType]="tab.icon"></i>{{ tab.name }}</ng-template>
+        <div *ngIf="showType === 'rule'">
+          <div nz-row class="row">
+            <div nz-col nzMd="16" style="margin-bottom: 10px">
+            </div>
+
+            <div nz-col nzMd="8" class="text-right">
+              <span class="search-total">共计 <span style="color: red">{{ ruleSearchList.total }} </span>条数据</span>
+            </div>
+          </div>
+
+          <nz-table
+            #rowSelectionTable
+            nzShowSizeChanger
+            nzBordered
+            [nzData]="ruleOfAllData"
+            [nzFrontPagination]="false"
+            [nzLoading]="loading"
+            [nzTotal]="ruleSearchList.total"
+            [(nzPageIndex)]="ruleSearchList.page"
+            [(nzPageSize)]="ruleSearchList.limit"
+            [nzPageSizeOptions]="[10, 20, 30, 40, 50, 100, 200]"
+            [nzScroll]="{ x: tableWidth + 'px', y: '450px' }"
+            (nzPageIndexChange)="search()"
+            (nzPageSizeChange)="search(true)"
+            (nzCurrentPageDataChange)="currentPageDataChange($event)"
+          >
+            <thead (nzSortOrderChange)="sort($event)">
+            <tr>
+              <th
+                nzWidth="60px"
+                nzLeft="0px"
+                nzShowCheckbox
+                [(nzChecked)]="isAllDisplayDataChecked"
+                [nzIndeterminate]="isIndeterminate"
+                (nzCheckedChange)="checkAll($event)"
+              ></th>
+              <th [nzAlign]="'center'" nzWidth="65px" nzLeft="60px">序号</th>
+              <th [nzAlign]="'center'" nzWidth="120px" >关键词1</th>
+              <th [nzAlign]="'center'" nzWidth="120px" >关键词2</th>
+              <th [nzAlign]="'center'" nzWidth="120px" >关键词3</th>
+              <th [nzAlign]="'center'" nzWidth="120px" >去除词</th>
+              <th [nzAlign]="'center'" nzWidth="120px" >管控类型</th>
+              <th [nzAlign]="'center'" nzWidth="120px" >管控时间</th>
+              <th [nzAlign]="'center'" nzWidth="120px" >主题名称</th>
+              <th [nzAlign]="'center'" nzWidth="120px" >指令名称</th>
+              <th [nzAlign]="'center'" nzWidth="120px" >操作用户</th>
+              <th [nzAlign]="'center'" nzWidth="100px" nzRight="0px">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+              <td
+                nzWidth="60px"
+                nzLeft="0px"
+                nzShowCheckbox
+                [(nzChecked)]="mapOfCheckedId[data.id]"
+                (nzCheckedChange)="refreshStatus()"
+              ></td>
+              <td [nzAlign]="'center'" nzWidth="65px" nzLeft="60px">{{ i + 1 + (ruleSearchList.page - 1) * ruleSearchList.limit }} </td>
+
+              <td [nzAlign]="'center'" nzWidth="120px" >
+                {{ data.addWord_1 }}
+              </td>
+              <td [nzAlign]="'center'" nzWidth="120px" >
+                {{ data.addWord_2 }}
+              </td>
+              <td [nzAlign]="'center'" nzWidth="120px" >
+                {{ data.addWord_3 }}
+              </td>
+              <td [nzAlign]="'center'" nzWidth="120px" >
+                {{ data.delWord_1 }}
+              </td>
+              <td [nzAlign]="'center'" nzWidth="120px" >
+                {{ data.controlType }}
+              </td>
+              <td [nzAlign]="'center'" nzWidth="120px">
+                <ellipsis lines="1" tooltip>
+                  <span *ngIf="data.controlBeginDate && data.controlEndDate"> {{ data.controlBeginDate | date: 'yyyy-MM-dd' }}  至  {{ data.controlEndDate | date: 'yyyy-MM-dd' }} </span>
+                </ellipsis>
+              </td>
+              <td [nzAlign]="'center'" nzWidth="120px" >
+                {{ data.themesName }}
+              </td>
+              <td [nzAlign]="'center'" nzWidth="120px" >
+                {{ data.instructName }}
+              </td>
+              <td [nzAlign]="'center'" nzWidth="120px" >
+                {{ data.createUserName }}
+              </td>
+              <td [nzAlign]="'center'" nzWidth="100px" nzRight="0px">
+                <ng-container >
+
+                  <a style="margin-right: 20px" (click)="showEdit(data.id)">
+                    <i nz-icon nzType="edit" nzTheme="outline"></i>
+                  </a>
+
+                  <a (click)="delete(data.id)" style="color: red">
+                    <i nz-icon nzType="close" nzTheme="outline"></i>
+                  </a>
+                </ng-container>
+
+              </td>
+            </tr>
+            </tbody>
+          </nz-table>
+        </div>
+
+        <div *ngIf="showType === 'list'">
+          <div nz-row class="row">
+            <div nz-col nzMd="16" style="margin-bottom: 10px">
+            </div>
+            <div nz-col nzMd="8" class="text-right">
+              <span class="search-total">共计 <span style="color: red">{{ listSearchList.total }}</span> 条数据</span>
+            </div>
+          </div>
+
+          <nz-table
+            #rowSelectionTable
+            nzShowSizeChanger
+            nzBordered
+            [nzData]="listOfAllData"
+            [nzFrontPagination]="false"
+            [nzLoading]="loading"
+            [nzTotal]="listSearchList.total"
+            [(nzPageIndex)]="listSearchList.page"
+            [(nzPageSize)]="listSearchList.limit"
+            [nzPageSizeOptions]="[10, 20, 30, 40, 50, 100, 200]"
+            [nzScroll]="{ x: tableWidth + 'px', y: '450px' }"
+            (nzPageIndexChange)="searchList()"
+            (nzPageSizeChange)="searchList(true)"
+            (nzCurrentPageDataChange)="currentPageDataChange($event)"
+          >
+            <thead (nzSortOrderChange)="sort($event)">
+            <tr>
+<!--              <th-->
+<!--                nzWidth="60px"-->
+<!--                nzLeft="0px"-->
+<!--                nzShowCheckbox-->
+<!--                [(nzChecked)]="isAllDisplayDataChecked"-->
+<!--                [nzIndeterminate]="isIndeterminate"-->
+<!--                (nzCheckedChange)="checkAll($event)"-->
+<!--              ></th>-->
+              <th [nzAlign]="'center'" nzWidth="60px" nzLeft="0">序号</th>
+              <th [nzAlign]="'center'" nzWidth="180px" nzShowSort [nzSortFn]="true" nzColumnKey="word">关键词</th>
+              <th [nzAlign]="'center'" nzWidth="120px" nzShowSort [nzSortFn]="true" nzColumnKey="controlBeginDate">
+                生效时间
+              </th>
+              <th [nzAlign]="'center'" nzWidth="120px" nzShowSort [nzSortFn]="true" nzColumnKey="controlEndDate">
+                失效时间
+              </th>
+              <th [nzAlign]="'center'" nzWidth="120px" >管控类型</th>
+              <th [nzAlign]="'center'" nzWidth="120px" nzShowSort [nzSortFn]="true" nzColumnKey="createTime">
+                录入时间
+              </th>
+              <th [nzAlign]="'center'" nzWidth="120px" >操作用户</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+<!--              <td-->
+<!--                nzWidth="60px"-->
+<!--                nzLeft="0px"-->
+<!--                nzShowCheckbox-->
+<!--                [(nzChecked)]="mapOfCheckedId[data.id]"-->
+<!--                (nzCheckedChange)="refreshStatus()"-->
+<!--              ></td>-->
+              <td [nzAlign]="'center'" nzWidth="60px" nzLeft="0">{{ i + 1 + (listSearchList.page - 1) * listSearchList.limit }}</td>
+              <td [nzAlign]="'center'" nzWidth="180px" > {{data.word}} </td>
+
+              <ng-container *ngIf="data.rule.controlEndDate !='永久'">
+                <td [nzAlign]="'center'" nzWidth="120px">
+                  <ellipsis lines="1" tooltip>{{ data.rule.controlBeginDate | date: 'yyyy-MM-dd' }}</ellipsis>
+                </td>
+                <td [nzAlign]="'center'" nzWidth="120px" >
+                  <ellipsis lines="1" tooltip>{{ data.rule.controlEndDate | date: 'yyyy-MM-dd' }}</ellipsis>
+                </td>
+              </ng-container>
+
+              <ng-container *ngIf="data.rule.controlEndDate ==='永久'">
+                <td [nzAlign]="'center'" nzWidth="120px">
+                </td>
+                <td [nzAlign]="'center'" nzWidth="120px" >
+                  {{ data.rule.controlEndDate}}
+                </td>
+              </ng-container>
+
+
+              <td [nzAlign]="'center'" nzWidth="120px" > {{data.rule.controlType}}  </td>
+              <td [nzAlign]="'center'" nzWidth="120px" >
+                <ellipsis lines="1" tooltip>{{ data.createTime | date: 'yyyy-MM-dd HH:mm:ss' }}</ellipsis>
+              </td>
+              <td [nzAlign]="'center'" nzWidth="120px" > {{data.createUserName}}  </td>
+            </tr>
+            </tbody>
+          </nz-table>
+        </div>
+
+
+      </nz-tab>
+    </nz-tabset>
+    </nz-card>
+
+    <app-nz-modal-keyword-edit  [parent]="this"  [onPage]="callPage"  #editDrawer>
+    </app-nz-modal-keyword-edit>
+  </nz-content>
+
+</nz-layout>

@@ -1,0 +1,74 @@
+<button nz-button style="margin-right: 10px" nzType="primary" nzType="primary" (click)="showModal()">
+  <i nz-icon nzType="upload"></i>
+  账号导入
+</button>
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="账号导入"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  [nzWidth]="800"
+>
+  <nz-card nzTitle="1、准备需求">
+    <ul>
+      <li>导入数量个数需要小于1000</li>
+      <li>所有允许导入的需求字段请参考模板</li>
+      <li>需求字段不符合规则，则整条不予以导入</li>
+      <li>导入模板的第一列必须包含序号</li>
+    </ul>
+
+    <nz-divider
+      nzOrientation="left"
+      nzDashed
+      nzText="若无导入模板，请先下载导入模板"
+      style="color: red; font-size: 15px"
+    >
+    </nz-divider>
+
+    <div nz-row>
+      <div *ngFor="let it of templatePostList" nz-col nzMd="8">
+        <button nz-button nzType="link" (click)="downloadTemplate(it.templatePlace)">
+          <i nz-icon nzType="file-excel"></i>{{ it.templatePlace.name }}
+        </button>
+      </div>
+    </div>
+  </nz-card>
+
+  <nz-card nzTitle="2、上传数据文件">
+    <ul>
+      <li>目前支持的文件类型为.xls、*.xlsx、*.zip</li>
+      <li>
+        <p>
+          zip压缩格式的压缩内容为上传数据的Excel文件以及对应的附件,
+          Excel中的【文件名】需要和附件名保持一致，若一条记录有多个文件则多个文件之间使用“;”隔开,目录结构如下：
+        </p>
+        <div>
+          <span style="margin-left: 5px">|---zhanghao_20210311.xlsx</span> <br />
+          <span style="margin-left: 5px">|--- file</span> <br />
+          <span style="margin-left: 40px">|--- xxx.jpg </span><br />
+          <span style="margin-left: 40px">|--- yyyy.jpg</span> <br />
+          <span style="margin-left: 40px">|--- zzzz.jpg</span>
+        </div>
+      </li>
+    </ul>
+    <nz-divider nzDashed></nz-divider>
+
+    <nz-upload
+      class="upload-list-inline"
+      [nzAction]="actionUrl"
+      [nzData]="{ postId: postId, userId: userId }"
+      [nzLimit]="1"
+      [nzShowUploadList]="showUploadList"
+      (nzChange)="uploadChange($event)"
+      [nzBeforeUpload]="beforeUpload"
+      [nzDisabled]="this.uploadLoading"
+    >
+      <button nz-button nzType="link"><i nz-icon nzType="upload"></i>账号导入</button>
+    </nz-upload>
+  </nz-card>
+
+  <div *nzModalFooter>
+    <button nz-button nzType="primary" (click)="handleCancel()">关闭</button>
+  </div>
+</nz-modal>

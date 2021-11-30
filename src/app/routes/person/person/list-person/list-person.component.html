@@ -1,0 +1,88 @@
+<page-header fixed [title]="''">
+
+    <div class="text-center">
+      <nz-input-group nzSearch nzSize="large" [nzAddOnAfter]="addOnAfterBtn" style="width: 520px;">
+        <input
+          type="text"
+          nz-input
+          placeholder="请输入"
+          (change)="getData($event, 'keyword')"
+          [(ngModel)]="search.keyword"
+        />
+        <ng-template #addOnAfterBtn>
+          <button nz-button nzType="primary" nzSize="large" nzSearch (click)="getData($event, 'keyword')">搜索</button>
+        </ng-template>
+      </nz-input-group>
+    </div>
+
+    <div class="text-right">
+      <span class="search-total">共 {{ search.total }} 人</span>
+      <label nz-checkbox [(ngModel)]="allChecked" (ngModelChange)="selectAll()">全选</label>
+      <button *ngIf="adminFlag ===1" nz-button nzType="primary" (click)="downLoad('doc')"><i nz-icon nzType="file-word"></i>Word下载</button>
+      <button *ngIf="adminFlag ===1" nz-button nzType="primary" (click)="downLoad('pdf')" style="background-color: #ff7a45;border: #ff7a45;">
+        <i nz-icon nzType="file-pdf"></i>Pdf下载
+      </button>
+      <button (click)="deleteUser()" nz-button nzType="danger">
+        <i nz-icon nzType="delete"  nzTheme="outline"></i>  删除
+      </button>
+      <app-edit-person-base [category]="0" [nzType]="'link'" (editorOk)="getEmitter($event)"> </app-edit-person-base>
+    </div>
+
+</page-header>
+
+<nz-card>
+  <nz-layout style="margin: 20px;">
+    <nz-sider nzWidth="300px" nzTheme="light">
+      <app-type-tree
+        (addType)="addType($event)"
+        (alter)="alter($event)"
+        (deleteId)="confirm($event)"
+        (selected)="selectedNode($event, 'type')"
+        [activedNode]="initactived"
+        [nodes]="treeDatas"
+      ></app-type-tree>
+    </nz-sider>
+    <nz-content>
+      <nz-list
+        style="width:100%"
+        [nzLoading]="loading"
+        [nzDataSource]="data"
+        [nzRenderItem]="item"
+        [nzGrid]="{ gutter: 24, xxl: 3, xl: 4, lg: 6, md: 12, sm: 24, xs: 24 }"
+        [nzPagination]="pagination"
+      >
+        <ng-template #item let-item>
+          <nz-list-item>
+            <nz-card *ngIf="item === null" nzHoverable>
+              <app-edit-person-base [nzType]="'dashed'" [category]="search.type" (editorOk)="getEmitter($event)">
+              </app-edit-person-base>
+            </nz-card>
+
+            <nz-card nzHoverable *ngIf="item !== null" [nzCover]="coverTpl">
+              <nz-card-meta [nzTitle]="nzTitle"></nz-card-meta>
+            </nz-card>
+            <ng-template #nzTitle>
+              <label nz-checkbox [(ngModel)]="item.checked" title="{{ item.title }}"> {{ item.title }} </label>
+            </ng-template>
+
+            <ng-template #coverTpl>
+              <div class="img-responsive" (click)="imgClick(item)">
+                <img *ngIf="item?.avatarId" class="a-img" alt="{{ item.title }}" [src]="imgsrc + item?.avatarId" />
+                <img *ngIf="!item?.avatarId" class="a-img" alt="{{ item.title }}" [src]="'./assets/photo.svg'" />
+              </div>
+            </ng-template>
+          </nz-list-item>
+        </ng-template>
+        <ng-template #pagination>
+          <nz-pagination
+            [(nzPageIndex)]="search.page"
+            [nzTotal]="search.total"
+            [(nzPageSize)]="search.limit"
+            [nzHideOnSinglePage]="true"
+            (nzPageIndexChange)="onPageIndexChange($event)"
+          ></nz-pagination>
+        </ng-template>
+      </nz-list>
+    </nz-content>
+  </nz-layout>
+</nz-card>

@@ -1,0 +1,118 @@
+<nz-layout>
+  <nz-sider class="menu-sidebar" nzCollapsible [nzWidth]="sidebar_width + 'px'" nzBreakpoint="md" [nzTrigger]="null">
+    <ul nz-menu nzMode="inline">
+      <li [acl]="{ ability: ['yangben-data-1'], mode: 'allOf' }" nz-menu-item nzMatchRouter>
+        <a routerLink="/yangben/yangben-data" [queryParams]="{ shareFlag: OPT_SHARE_QUERY }">
+          <i nz-icon nzType="search"></i>样本综合查询</a
+        >
+      </li>
+      <ng-container *aclIf="['dagl_admin', 'dagl_post']">
+        <li [acl]="{ ability: ['yangben-manage'] }" nz-submenu nzTitle="样本管理" nzIcon="appstore" nzOpen>
+          <ul>
+            <li [acl]="{ ability: ['yangben-data-import'] }" nz-menu-item nzMatchRouter>
+              <a routerLink="/yangben/yangben-data-import">样本导入管理</a>
+            </li>
+            <li [acl]="{ ability: ['yangben-data0'] }" nz-menu-item nzMatchRouter>
+              <a routerLink="/yangben/yangben-data" [queryParams]="{ shareFlag: OPT_SHARE_NONE }">样本信息管理</a>
+            </li>
+          </ul>
+        </li>
+      </ng-container>
+
+      <li
+        [acl]="{ ability: ['yangben-config', 'dagl_admin'], mode: 'allOf' }"
+        nz-submenu
+        nzTitle="样本配置管理"
+        nzIcon="setting"
+        nzOpen
+      >
+        <ul>
+          <li [acl]="{ ability: ['yangben-option-config'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/yangben/yangben-option-config">字段选项配置 </a>
+          </li>
+          <li [acl]="{ ability: ['yangben-field-define'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/yangben/yangben-field-define">填报字段配置</a>
+          </li>
+          <li [acl]="{ ability: ['yangben-template-place'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/yangben/yangben-template-place">导入模板配置</a>
+          </li>
+          <li [acl]="{ ability: ['yangben-template-post'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/yangben/yangben-template-post">岗位模板配置</a>
+          </li>
+        </ul>
+      </li>
+
+      <ng-container *aclIf="['dagl_admin', 'dagl_post']">
+        <li [acl]="{ ability: ['yangben-share'] }" nz-submenu nzTitle="样本共享管理" nzIcon="share-alt" nzOpen>
+          <ul>
+            <li [acl]="{ ability: ['yangben-data1'] }" nz-menu-item nzMatchRouter>
+              <a routerLink="/yangben/yangben-data" [queryParams]="{ shareFlag: OPT_SHARE_OTHER }">分享他岗</a>
+            </li>
+            <li [acl]="{ ability: ['yangben-data2'] }" nz-menu-item nzMatchRouter>
+              <a routerLink="/yangben/yangben-data" [queryParams]="{ shareFlag: OPT_SHARE_ME }">共享我的</a>
+            </li>
+          </ul>
+        </li>
+      </ng-container>
+
+      <ng-container *aclIf="['dagl_admin', 'dagl_post']">
+        <li [acl]="{ ability: ['yangben-stat-post'] }" nz-submenu nzTitle="统计分析" nzIcon="line-chart" nzOpen>
+          <ul>
+            <li [acl]="{ ability: ['yangben-option-stat-for-post'] }" nz-menu-item nzMatchRouter>
+              <ng-container *ngIf="currentSys === 'dt'">
+                <!-- 大厅系统 -->
+                <a routerLink="/yangben/yangben-option-stat-for-post-dt"> 标签统计</a>
+              </ng-container>
+              <ng-container *ngIf="currentSys !== 'dt'">
+                <!-- 非大厅系统 -->
+                <a routerLink="/yangben/yangben-option-stat-for-post">标签统计</a>
+              </ng-container>
+            </li>
+            <li [acl]="{ ability: ['yangben-option-stat-for-post'] }" nz-menu-item nzMatchRouter>
+              <ng-container *ngIf="currentSys === 'dt'">
+                <!-- 大厅系统 -->
+                <a routerLink="/yangben/yangben-data-stat"> 数据统计</a>
+              </ng-container>
+            </li>
+          </ul>
+        </li>
+      </ng-container>
+
+      <li
+        [acl]="{ ability: ['yangben-select-manage', 'dagl_editor'], mode: 'allOf' }"
+        nz-submenu
+        nzTitle="样本选用管理"
+        nzIcon="select"
+        nzOpen
+      >
+        <ul>
+          <li [acl]="{ ability: ['yangben-selection-unselected'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/yangben/yangben-selection" [queryParams]="{ selectFlag: 'unselected' }">待选用样本</a>
+          </li>
+          <li [acl]="{ ability: ['yangben-selection-selected'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/yangben/yangben-selection" [queryParams]="{ selectFlag: 'selected' }">已选用样本</a>
+          </li>
+        </ul>
+      </li>
+
+      <li
+        [acl]="{ ability: ['yangben-stat-wenzi', 'dagl_editor'], mode: 'allOf' }"
+        nz-submenu
+        nzTitle="统计分析"
+        nzIcon="line-chart"
+        nzOpen
+      >
+        <ul>
+          <li [acl]="{ ability: ['yangben-option-stat-for-wenzi'] }" nz-menu-item nzMatchRouter>
+            <a routerLink="/yangben/yangben-option-stat-for-wenzi">标签统计</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-content>
+    <div class="inner-content" [ngStyle]="{ width: content_width + 'px' }" style="background: white">
+      <router-outlet></router-outlet>
+    </div>
+  </nz-content>
+</nz-layout>

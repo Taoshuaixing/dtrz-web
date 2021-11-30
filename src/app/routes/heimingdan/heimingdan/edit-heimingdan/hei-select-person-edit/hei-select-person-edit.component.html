@@ -1,0 +1,76 @@
+<a (click)="showModal()"><i nz-icon [nzType]="'setting'" style="width: 5%"></i></a>
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="'请选择或添加重点人'"
+  nzOkText="确定"
+  nzCancelText="取消"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  style="max-width: 800px;"
+  [nzWidth]="800"
+>
+  <!-- 条件过滤 -->
+  <form nz-form [formGroup]="searchForm">
+    <nz-form-item>
+      <app-common-input-modal
+        [onBeforeSave]="check"
+        [inputName]=""
+        [selectedId]="0"
+        btnName="添加"
+        (editorOk)="callbackEmitter($event, null)"
+      >
+      </app-common-input-modal>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control [nzSm]="20" [nzXs]="24">
+        <input
+          nzAllowClear
+          formControlName="searchName"
+          nz-input
+          [(ngModel)]="searchName"
+          style="width: 200px;margin-right: 10px;"
+        />
+        <button nz-button nzType="primary" nzType="primary" (click)="itmeSearch()">
+          过滤
+        </button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+  <!-- 重点人列表 -->
+  <nz-table
+    #rowSelectionTable
+    nzShowSizeChanger
+    [nzData]="listHeiPerson"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+  >
+    <thead>
+      <tr>
+        <th [nzAlign]="'center'">序号</th>
+        <th [nzAlign]="'center'">重点人</th>
+        <!-- <th [nzAlign]="'center'">编辑时间</th> -->
+        <th [nzAlign]="'center'">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+        <td [nzAlign]="'center'">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td [nzAlign]="'center'">{{ data.personName }}</td>
+        <td [nzAlign]="'center'">
+          <button nz-button nzType="primary" nzDanger   (click)="selectPerson(data)" style="margin-right: 10px;">选择</button>
+          <app-common-input-modal
+            btnName="编辑"
+            [onBeforeSave]="check"
+            [inputName]="data.personName"
+            [selectedId]="data.id"
+            (editorOk)="callbackEmitter($event, data)"
+          >
+          </app-common-input-modal>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-modal>

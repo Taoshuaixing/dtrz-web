@@ -1,0 +1,46 @@
+<nz-collapse style="background: white">
+    <nz-collapse-panel nzHeader="岗位账户" nzActive="true" nzShowArrow="true">
+        <div class="area-head">
+            <app-nz-modal-position-and-account [parentPostId]="postId" (editorOk)="getEditorEmitter($event)"
+                btnName="添加账户">
+            </app-nz-modal-position-and-account>
+        </div>
+        <nz-table #rowSelectionTableAccount nzShowSizeChanger [(nzData)]="listOfAccount" [nzFrontPagination]="false"
+            [nzLoading]="loading" [nzTotal]="total_account" [(nzPageIndex)]="pageIndex_account"
+            [(nzPageSize)]="pageSize_account" (nzPageIndexChange)="getData_account()"
+            (nzPageSizeChange)="getData_account(true)">
+            <thead>
+                <tr>
+                    <th [nzAlign]="'center'">账户</th>
+                    <th [nzAlign]="'center'">权限</th>
+                    <th [nzAlign]="'center'">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let data of rowSelectionTableAccount.data">
+                    <td [nzAlign]="'center'">{{ data.userName }}</td>
+                    <td [nzAlign]="'center'">
+                        <!-- <span *ngFor="let role of data.roles">{{ role.roleName }} </span> -->
+                        <ng-container *ngFor="let role of data.roles">
+                            <nz-tag [nzColor]="'blue'" *ngIf="role.sysCode==='zxtj'">
+                                {{role.sysCode}} {{ role.roleName}}
+                            </nz-tag>
+                            <nz-tag [nzColor]="'green'" *ngIf="role.sysCode==='dagl'">
+                                {{role.sysCode}} {{ role.roleName}}
+                            </nz-tag>
+                        </ng-container>
+
+                    </td>
+
+                    <td [nzAlign]="'center'">
+                        <app-nz-modal-position-and-account btnName="修改" (editorOk)="getEditorEmitter($event)"
+                            [users]="data">
+                        </app-nz-modal-position-and-account>
+                        <button nz-button type="primary" nzType="danger" (click)="delete_account(data.id)">删除</button>
+                    </td>
+                </tr>
+            </tbody>
+        </nz-table>
+    </nz-collapse-panel>
+
+</nz-collapse>

@@ -1,0 +1,104 @@
+<!--<a style=" margin-right: 30px"  (click)="showModal()" *ngIf="btnName==='编辑'">-->
+<!--  <i  nz-icon nzType="edit" nzTheme="outline"></i>-->
+<!--</a>-->
+<!--<a style=" margin-right: 30px"  (click)="showModal()" *ngIf="btnName==='修改'">-->
+<!--  <i  nz-icon nzType="edit" nzTheme="outline"></i>-->
+<!--</a>-->
+<a style=" margin-right: 30px"  (click)="showModal('')" *ngIf="btnName==='添加'">
+  <i  nz-icon nzType="plus" nzTheme="outline"></i><span>{{ btnName }}</span>
+</a>
+
+<nz-drawer
+  [(nzVisible)]="isVisible"
+  [nzTitle]="'编辑事件数据'"
+  nzOkText="确定"
+  nzCancelText="取消"
+  (nzOnClose)="cancel()"
+  [nzClosable]="true"
+  [nzMask]="true"
+  [nzWidth]="800"
+  [nzFooter]="footerTpl"
+>
+  <nz-content>
+    <nz-content>
+      <nz-card style="width: 100%">
+        <div class="field-row" nz-row nzGutter="16">
+          <label nz-col [nzSm]="6" [nzXs]="24" required="true">事件名称
+            <span style="color: red">*</span>
+          </label>
+          <span nz-col [nzSm]="12" [nzXs]="24">
+            <input  nz-input [(ngModel)]="eventName" />
+          </span>
+        </div>
+
+        <div class="field-row" nz-row nzGutter="16">
+          <label nz-col [nzSm]="6" [nzXs]="24" required="true">事件分类</label>
+          <span nz-col [nzSm]="12" [nzXs]="24">
+
+             <nz-tree-select
+               [nzExpandedKeys]="expandEventClassifyKeys"
+               [(ngModel)]="eventClassifyId"
+               [nzShowSearch]="true"
+               [nzDropdownStyle]="{ 'max-height': '300px' }"
+               [nzNodes]="eventClassifyNodes"
+             >
+            </nz-tree-select>
+          </span>
+        </div>
+
+        <div class="field-row" nz-row nzGutter="16">
+          <label nz-col [nzSm]="6" [nzXs]="24" required="true">是否关联专项统计</label>
+          <span nz-col [nzSm]="12" [nzXs]="24">
+
+            <nz-select  nzAllowClear [(ngModel)]="eventStatId">
+              <nz-option *ngFor="let sub of eventStatList" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+            </nz-select>
+
+          </span>
+        </div>
+
+
+
+        <div  class="field-row" nz-row nzGutter="16" *ngFor="let item of fieldList">
+          <label nz-col [nzSm]="6" [nzXs]="24">
+            {{ item.fieldName }}
+            <span *ngIf="item.fixName==='startDate'" style="color: red">*</span>
+          </label>
+
+          <span nz-col [nzSm]="12" [nzXs]="24">
+          <input *ngIf="item.fieldType === 1" nz-input [(ngModel)]="item.val" />
+
+          <textarea nz-input *ngIf="item.fieldType === 2" [(ngModel)]="item.valMulti"
+                    ></textarea>
+
+          <nz-date-picker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"  *ngIf="item.fieldType === 3" [(ngModel)]="item.valDate"></nz-date-picker>
+
+          <nz-input-number *ngIf=" item.fieldType === 4 && item.fixName === 'sensitivity'" [(ngModel)]="item.valNum" [nzStep]="1" nzMin="0" nzMax="100"></nz-input-number>
+          <nz-input-number *ngIf=" item.fieldType === 4 && !(item.fixName === 'sensitivity')" [(ngModel)]="item.valNum" [nzStep]="1" ></nz-input-number>
+
+          <nz-select *ngIf="item.fieldType === 5" nzAllowClear nzShowSearch [(ngModel)]="item.valId">
+            <nz-option *ngFor="let sub of item.targetTableData" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+          </nz-select>
+
+          <nz-select *ngIf="item.fieldType === 6" nzAllowClear nzShowSearch nzMode="multiple" [(ngModel)]="item.valIdMulti">
+            <nz-option *ngFor="let sub of item.targetTableData" [nzValue]="sub.id" [nzLabel]="sub.name"></nz-option>
+          </nz-select>
+        </span>
+        </div>
+
+      </nz-card>
+    </nz-content>
+  </nz-content>
+
+  <ng-template #footerTpl>
+    <div nz-row>
+      <nz-spin *ngIf="loading"></nz-spin>
+      <span nz-col [nzOffset]="6" [nzSpan]="18">
+            <button nz-button nzType="primary" [disabled]="loading" (click)="submit()">保存</button>
+            <button nz-button nzType="default" [disabled]="loading" (click)="cancel()">关闭</button>
+            <button *ngIf="btnName==='修改'" nz-button nzType="link"  [disabled]="isFirst || loading" (click)="getData('previous')"><i nz-icon nzType="arrow-up"></i>上一条</button>
+            <button *ngIf="btnName==='修改'" nz-button nzType="link" [disabled]="isLast || loading" (click)="getData('next')"><i nz-icon nzType="arrow-down"></i>下一条</button>
+          </span>
+    </div>
+  </ng-template>
+</nz-drawer>

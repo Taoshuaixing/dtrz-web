@@ -1,0 +1,36 @@
+<button nz-button (click)="showModal()" [class.big]="nzType !== 'link'" [nzType]="nzType">
+  <i nz-icon nzType="plus"></i>
+  添加人物
+</button>
+
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="人物基本信息"
+  nzOkText="继续填写详情"
+  nzCancelText="取消"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  [nzWidth]="600"
+>
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="title">人物名称</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="人物名称不能为空">
+        <input nz-input formControlName="title" [(ngModel)]="title" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="avatar">头像</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="">
+        <app-avatar-uploader
+          (uploaderChange)="onUploaderChange($event)"
+          [baseUrl]="baseUrl"
+          [fileList]="fileList"
+          [subUrl]="subUrl"
+        ></app-avatar-uploader>
+        <label style="font-size: smaller">图片大小在2M内</label>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>

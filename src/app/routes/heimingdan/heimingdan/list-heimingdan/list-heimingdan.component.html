@@ -1,0 +1,230 @@
+<page-header fixed [title]="''"></page-header>
+
+<nz-card [nzBordered]="false">
+  <form nz-form  (ngSubmit)="getData(true)" class="search__form">
+    <div nz-row [nzGutter]="{ xs: 8, sm: 8, md: 8, lg: 24, xl: 48, xxl: 48 }">
+      <div nz-col nzMd="6" nzSm="24">
+        <nz-form-item>
+          <nz-form-label nzFor="no">重点人</nz-form-label>
+          <nz-form-control>
+            <input nz-input [(ngModel)]="search.personName" name="personName" placeholder="请输入重点人名称" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzMd="6" nzSm="24">
+        <nz-form-item>
+          <nz-form-label nzFor="no">账号昵称</nz-form-label>
+          <nz-form-control>
+            <input nz-input [(ngModel)]="search.nickName" name="no" placeholder="请输入账号昵称" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzMd="6" nzSm="24">
+        <nz-form-item>
+          <nz-form-label nzFor="no">打击方式</nz-form-label>
+          <nz-form-control>
+            <nz-select [nzPlaceHolder]="'请选择打击方式'" [nzShowSearch]="true" [(ngModel)]="search.strikeMode"
+              name="strikeMode" nzAllowClear>
+              <nz-option *ngFor="let option of listOfStrikeMode" [nzLabel]="option.label" [nzValue]="option.value">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzMd="6" nzSm="24">
+        <nz-form-item>
+          <nz-form-label nzFor="no">平台</nz-form-label>
+          <nz-form-control>
+            <nz-select [nzPlaceHolder]="'请选择平台'" [nzShowSearch]="true" [(ngModel)]="search.platform" name="platform"
+              nzAllowClear>
+              <nz-option *ngFor="let option of listOfPlatform" [nzLabel]="option.label" [nzValue]="option.value">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row [nzGutter]="{ xs: 8, sm: 8, md: 8, lg: 24, xl: 48, xxl: 48 }">
+      <div nz-col nzMd="6" nzSm="24">
+        <nz-form-item>
+          <nz-form-label nzFor="no">身份证</nz-form-label>
+          <nz-form-control>
+            <input nz-input [(ngModel)]="search.registerCardID" name="registerCardID" placeholder="请输入注册身份证号码" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzMd="6" nzSm="24">
+        <nz-form-item>
+          <nz-form-label nzFor="no">注册人姓名</nz-form-label>
+          <nz-form-control>
+            <input nz-input [(ngModel)]="search.registerName" name="registerName" placeholder="请输入注册人姓名" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzMd="6" nzSm="24">
+        <nz-form-item>
+          <nz-form-label nzFor="no">注册手机</nz-form-label>
+          <nz-form-control>
+            <input nz-input [(ngModel)]="search.registerTel" name="registerTel" placeholder="请输入注册手机号码" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzMd="6" nzSm="24">
+        <nz-form-item>
+          <nz-form-label nzFor="no">状态</nz-form-label>
+          <nz-form-control>
+            <nz-select [nzPlaceHolder]="'请选择状态'" [nzShowSearch]="true" [(ngModel)]="search.status" name="status"
+              nzAllowClear>
+              <nz-option *ngFor="let option of listOfStatus" [nzLabel]="option.label" [nzValue]="option.value">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row [nzGutter]="{ xs: 8, sm: 8, md: 8, lg: 24, xl: 48, xxl: 48 }">
+      <div nz-col nzMd="6" nzSm="24">
+        <nz-form-item>
+          <nz-form-label nzFor="no">关闭时间</nz-form-label>
+          <nz-form-control>
+            <nz-range-picker [(ngModel)]="search.closeTime" name="closeTime"></nz-range-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzMd="6" nzSm="24">
+        <nz-form-item>
+          <nz-form-label nzFor="no">纳入黑名单时间</nz-form-label>
+          <nz-form-control>
+            <nz-range-picker [(ngModel)]="search.blackTime" name="blackTime"></nz-range-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzMd="6" nzSm="24">
+        <nz-switch name="highLightFlag" [(ngModel)]="highLightFlag" nzCheckedChildren="高亮" nzUnCheckedChildren="关闭"
+          style="margin-right: 21px;">
+        </nz-switch>
+        <button nz-button type="submit" [nzType]="'primary'" [nzLoading]="loading">查询</button>
+        <button nz-button (click)="reset()" class="mx-sm">重置</button>
+      </div>
+    </div>
+  </form>
+  <div nz-row [nzGutter]="{ xs: 8, sm: 8, md: 8, lg: 24, xl: 48, xxl: 48 }">
+    <div nz-col nzMd="8" nzSm="24">
+      <div nz-row>
+        <div nz-col nzMd="24" nzSm="24">
+          <span>
+            <nz-upload class="upload-list-inline" [nzAction]="actionUrl" [nzLimit]="1"
+              [nzShowUploadList]="showUploadList" (nzChange)="uploadChange($event)" [nzBeforeUpload]="beforeUpload"
+              [nzDisabled]="this.loading">
+              <button nz-button><i nz-icon nzType="upload"></i><span>导入重点人</span></button>
+            </nz-upload>
+
+            <i style="margin-left: 10px;" nz-icon nz-tooltip [nzTooltipTitle]="titleTemplate" nzTooltipPlacement="right"
+              nzType="question-circle" nzTheme="outline"></i>
+          </span>
+
+          <ng-template #titleTemplate>
+            <div>
+              <div>上传说明</div>
+              <hr />
+              <ol>
+                <li>上传的文件类型为.xlsx</li>
+                <li>上传的文件样式与下载的文件一致</li>
+                <li>通过【重点人+账号昵称+账号英文ID+账号数字ID】判断是否需要导入，若存在将不再导入</li>
+              </ol>
+            </div>
+          </ng-template>
+          <!-- [nzFileType]="'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel'" -->
+        </div>
+      </div>
+    </div>
+    <div nz-col nzMd="4" nzSm="24"></div>
+    <div nz-col nzMd="12" nzSm="24">
+      <div class="text-right">
+        <span class="search-total">共 {{ personCnt }} 人</span>
+        <span class="search-total">共 {{ total }} 条记录</span>
+        <button  *ngIf="adminFlag ===1" style="margin-left: 10px" nz-button nzType="primary" nzType="primary" [disabled]="loading"
+          (click)="download($event)">
+          <i nz-icon nzType="file-excel"></i>Excel下载
+        </button>
+        <button [disabled]="loading" (click)="deletePersonList()" nz-button nzType="primary" nzDanger  >
+          <i nz-icon nzType="delete"  nzTheme="outline"></i> 删除
+        </button>
+        <button [disabled]="loading" (click)="addPerson()" nz-button nzType="link">
+          <i nz-icon nzType="plus"></i>添加黑名单
+        </button>
+      </div>
+    </div>
+  </div>
+</nz-card>
+
+<nz-card>
+  <nz-table #rowSelectionTable nzBordered nzShowSizeChanger [nzData]="dataList" [nzFrontPagination]="false"
+    [nzLoading]="loading" [nzTotal]="total" [(nzPageIndex)]="pageIndex" [(nzPageSize)]="pageSize"
+    (nzCurrentPageDataChange)="currentPageDataChange($event)" [nzScroll]="{ x: '2400px', y:'600px' }"
+    (nzPageIndexChange)="getData()" (nzPageSizeChange)="getData(true)"
+   
+    >
+
+    <thead (nzSortOrderChange)="sort($event)" >
+      <tr>
+        <th nzWidth="50px" nzLeft="0px" nzShowCheckbox [(nzChecked)]="isAllDisplayDataChecked"
+          [nzIndeterminate]="isIndeterminate" (nzCheckedChange)="checkAll($event)"></th>
+        <th [nzAlign]="'center'" nzWidth="80px" nzLeft="50px">序号</th>
+        <th [nzAlign]="'center'" nzWidth="120px" nzLeft="130px">重点人</th>
+        <th [nzAlign]="'center'" nzWidth="150px" nzShowSort [nzSortFn]="true" nzColumnKey="nickName">账号昵称</th>
+        <th [nzAlign]="'center'" nzWidth="120px">账号英文ID</th>
+        <th [nzAlign]="'center'" nzWidth="120px">账号数字ID</th>
+        <th [nzAlign]="'center'" nzWidth="120px" nzShowSort [nzSortFn]="true" nzColumnKey="heiPlatform">平台</th>
+        <th [nzAlign]="'center'" nzWidth="180px" nzShowSort [nzSortFn]="true" nzColumnKey="closeTime">关闭时间</th>
+        <th [nzAlign]="'center'" nzWidth="120px" nzShowSort [nzSortFn]="true" nzColumnKey="heiStatus">状态</th>
+        <th [nzAlign]="'center'" nzWidth="120px" nzShowSort [nzSortFn]="true" nzColumnKey="heiStrikeMode">打击方式</th>
+        <th [nzAlign]="'center'" nzWidth="180px">注册时间</th>
+        <th [nzAlign]="'center'" nzWidth="110px">注册手机号</th>
+        <th [nzAlign]="'center'" nzWidth="110px">注册人姓名</th>
+        <th [nzAlign]="'center'" nzWidth="150px">注册身份证号</th>
+        <th [nzAlign]="'center'" nzWidth="120px">注册设备ID</th>
+        <th [nzAlign]="'center'" nzWidth="180px" nzShowSort [nzSortFn]="true" nzColumnKey="blackTime">纳入黑名单时间</th>
+        <th [nzAlign]="'center'" nzWidth="100px">备注</th>
+        <th [nzAlign]="'center'" nzWidth="200px" nzRight="0px">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+        <td nzWidth="50px" nzLeft="0px" nzShowCheckbox [(nzChecked)]="mapOfCheckedId[data.id]"
+          (nzCheckedChange)="refreshStatus()"></td>
+        <td [nzAlign]="'center'" nzWidth="80px" nzLeft="50px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td [nzAlign]="'center'" nzWidth="100px" nzLeft="130px" [attr.rowspan]="data.rowspan" *ngIf="!data.hideflag">
+          <!-- <a routerLink="../edit" [queryParams]="{ personId: data.id, searchListStr: searchListStr }">
+                        {{data.personName}}</a> -->
+          {{ data.personName }}
+        </td>
+        <td [nzAlign]="'center'" nzWidth="100px">
+          <ellipsis *ngIf="highLightFlag===false" lines="1" tooltip>{{ data.nickName }}</ellipsis>
+          <span *ngIf="highLightFlag===true" [innerHTML]="data.nickName | highlightPipe: search.nickName"></span>
+        </td>
+        <td [nzAlign]="'center'" nzWidth="100px">{{ data.accountEnID }}</td>
+        <td [nzAlign]="'center'" nzWidth="100px">{{ data.accountNumID }}</td>
+        <td [nzAlign]="'center'" nzWidth="100px">{{ data?.heiPlatform?.name }}</td>
+        <td [nzAlign]="'center'" nzWidth="100px">{{ data.closeTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td [nzAlign]="'center'" nzWidth="100px">{{ data?.heiStatus?.name }}</td>
+        <td [nzAlign]="'center'" nzWidth="100px">{{ data?.strikeMode?.name }}</td>
+        <td [nzAlign]="'center'" nzWidth="100px">{{ data.registerTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td [nzAlign]="'center'" nzWidth="100px">{{ data.registerTel }}</td>
+        <td [nzAlign]="'center'" nzWidth="100px">{{ data.registerName }}</td>
+        <td [nzAlign]="'center'" nzWidth="100px">{{ data.registerCardID }}</td>
+        <td [nzAlign]="'center'" nzWidth="100px">{{ data.registerEquipmentID }}</td>
+        <td [nzAlign]="'center'" nzWidth="100px">{{ data.blackTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td [nzAlign]="'center'" nzWidth="100px">{{ data.mark }}</td>
+        <td [nzAlign]="'center'" nzWidth="200px" nzRight="0px">
+          <button nz-button nzType="primary" nzSize="small" (click)="updatePerson(data.id)">
+            编辑
+          </button>
+          <button nz-button nzType="primary" nzDanger   nzSize="small" (click)="deletePerson(data.id)">
+            删除
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-card>

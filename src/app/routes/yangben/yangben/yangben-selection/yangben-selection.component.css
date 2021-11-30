@@ -1,0 +1,63 @@
+.area-head {
+  float: right;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+.ant-layout-header {
+  background: white !important;
+}
+.row {
+  margin-bottom: 5px;
+}
+
+.label-item {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.search-total {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.sider-menu {
+  height: 100%;
+  border-right: 0;
+}
+
+.inner-layout {
+  padding: 0 24px 24px;
+}
+
+nz-breadcrumb {
+  margin: 16px 0;
+}
+
+nz-content {
+  background: #fff;
+}
+
+.img-responsive {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+}
+
+.img-responsive img {
+  width: 100%;
+  height: 100%;
+}
+
+:host ::ng-deep .ant-list {
+  padding-left: 10px;
+}
+
+.back-from {
+  position: fixed;
+  right: 5px;
+  top: 278px;
+  z-index: 2147483640;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}

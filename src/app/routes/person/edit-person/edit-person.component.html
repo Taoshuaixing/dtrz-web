@@ -1,0 +1,152 @@
+<page-header fixed [title]="person.title" [action]="action">
+  <ng-template #action>
+    <ng-container>
+      <div class="d-flex align-items-center mb-lg">
+        <button (click)="deleteUser()" nz-button nzType="primary" nzDanger style="margin-right: 15px">
+          <i nz-icon nzType="delete" nzTheme="outline"></i> 删除
+        </button>
+        <!--          <a [href]="linkUrl+'/#/person/readonly-detail/'+person.id">-->
+        <button (click)="show()" nz-button nzType="primary" style="margin-right: 15px">
+          <i nz-icon nzType="eye"></i>展示
+        </button>
+        <!--          </a>-->
+        <button (click)="save()" nz-button nzType="primary" style="background-color: #2894ff; margin-right: 15px">
+          <i nz-icon nzType="save"></i>保存
+        </button>
+        <button (click)="closeWin()" nz-button nzType="dashed"><i nz-icon nzType="step-backward"></i>返回</button>
+      </div>
+    </ng-container>
+  </ng-template>
+</page-header>
+<nz-card>
+  <nz-layout>
+    <nz-layout class="inner-layout">
+      <nz-content>
+        <nz-spin [nzSpinning]="loading" [nzTip]="'正在处理数据...'">
+          <nz-card>
+            <nz-layout>
+              <!-- 第一行 包含 基本信息、头像、分类-->
+              <div nz-row [nzGutter]="[8, 8]">
+                <!-- 第一行的第一列 包含 基本信息、分类 -->
+                <div nz-col [nzSpan]="19">
+                  <div nz-row [nzGutter]="[8]">
+                    <nz-card nzTitle="基本信息" [nzBordered]="false" class="mb-lg">
+                      <nz-row [nzGutter]="[8]">
+                        <nz-col [nzSpan]="12" *ngFor="let item of userKeyValues" style="margin-bottom: 2px">
+                          <nz-row [nzGutter]="[8]">
+                            <nz-col [nzSpan]="1">
+                              <a (click)="editItem(item)">
+                                <i nz-icon nzType="edit"></i>
+                              </a>
+                            </nz-col>
+                            <nz-col [nzSpan]="8">
+                              <label *ngIf="!item.isEdit">{{ item.label }}:</label>
+                              <input *ngIf="item.isEdit" nz-input [(ngModel)]="item.label" (blur)="blurItem(item)" />
+                            </nz-col>
+                            <nz-col [nzSpan]="9">
+                              <input *ngIf="item.type === 'string'" nz-input [(ngModel)]="item.val" />
+                              <!-- <input *ngIf="item.type==='radio'" nz-input [(ngModel)]="item.val" /> -->
+                              <!-- <nz-form-control> -->
+                              <nz-radio-group
+                                *ngIf="item.type === 'radio'"
+                                [(ngModel)]="item.val"
+                                style="height: 28px; margin-top: 4px"
+                              >
+                                <label nz-radio *ngFor="let it of item.items" [nzValue]="it">{{ it }}</label>
+                              </nz-radio-group>
+                              <!-- </nz-form-control> -->
+                              <nz-date-picker
+                                *ngIf="item.type === 'date'"
+                                [(ngModel)]="item.val"
+                                (ngModelChange)="onChangeDate($event, item)"
+                              ></nz-date-picker>
+                            </nz-col>
+                            <nz-col [nzSpan]="1">
+                              <a nz-popconfirm nzPopconfirmTitle="是否要删除此行？" (nzOnConfirm)="delItem(item)">
+                                <i nz-icon nzType="close"></i>
+                              </a>
+                            </nz-col>
+                          </nz-row>
+                        </nz-col>
+                      </nz-row>
+                      <nz-row>
+                        <button nz-button nzType="primary" style="margin-top: 8px; width: 150px" (click)="addItem()">
+                          <i nz-icon class="anticon anticon-plus"> </i>添加自定义项
+                        </button>
+                      </nz-row>
+                    </nz-card>
+                  </div>
+                  <div nz-row [nzGutter]="8">
+                    <div nz-col [nzSpan]="16">
+                      <nz-card nzTitle="所属类别" [nzBordered]="false" class="mb-lg">
+                        <nz-checkbox-group [(ngModel)]="checkOptionsOne" (ngModelChange)="updateCategory()">
+                        </nz-checkbox-group>
+                      </nz-card>
+                    </div>
+                  </div>
+                </div>
+                <div nz-col [nzSpan]="1"></div>
+                <!-- 第一行的第二列 头像 -->
+                <div nz-col [nzSpan]="4">
+                  <div>
+                    <app-avatar-uploader
+                      (uploaderChange)="onUploaderChange($event)"
+                      *ngIf="!person.avatar?.id"
+                      [baseUrl]="baseUrl"
+                      [subUrl]="subUrl"
+                    ></app-avatar-uploader>
+                    <label *ngIf="!person.avatar?.id" style="font-size: smaller">图片大小在2M内</label>
+                    <app-avatar-uploader
+                      (uploaderChange)="onUploaderChange($event)"
+                      *ngIf="person.avatar?.id && uploadFlg"
+                      [fileList]="[{ url: imgsrc + person.avatar.id }]"
+                      [baseUrl]="baseUrl"
+                      [subUrl]="subUrl"
+                    >
+                    </app-avatar-uploader>
+                    <div *ngIf="person.avatar?.id && !uploadFlg">
+                      <nz-card nzHoverable [nzCover]="cover">
+                        <ng-template #cover>
+                          <img alt="{{ imgsrc + person.avatar.id }}" src="{{ imgsrc + person.avatar.id }}" />
+                        </ng-template>
+                        <nz-card-meta [nzTitle]="person.title" [nzDescription]="''">
+                          <ng-template #nzTitle>
+                            <!--                      <a (click)="msg.success('标题：' + item2.id)">{{ item2.title }}</a>-->
+                          </ng-template>
+                        </nz-card-meta>
+                      </nz-card>
+                      <div>
+                        <button (click)="uploadFlg = true" nz-button nzType="primary">修改图片</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div nz-row [nzGutter]="8">
+                <nz-card nzTitle="主要经历" [nzBordered]="false" class="mb-lg">
+                  <div>
+                    <ckeditor [(ngModel)]="person.brief" [editor]="Editor" [disabled]="isDisabled" [config]="config">
+                    </ckeditor>
+                  </div>
+                </nz-card>
+              </div>
+              <div nz-row [nzGutter]="8">
+                <nz-card nzTitle="代表性有害文章/评论/著作" [nzBordered]="false" class="mb-lg">
+                  <div>
+                    <ckeditor
+                      [(ngModel)]="person.contentHtml"
+                      [editor]="Editor"
+                      [disabled]="isDisabled"
+                      [config]="config_body"
+                    >
+                    </ckeditor>
+                  </div>
+                </nz-card>
+              </div>
+            </nz-layout>
+          </nz-card>
+        </nz-spin>
+      </nz-content>
+    </nz-layout>
+  </nz-layout>
+</nz-card>

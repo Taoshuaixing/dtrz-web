@@ -1,0 +1,49 @@
+<nz-layout>
+  <nz-sider class="menu-sidebar" nzCollapsible [nzWidth]="sidebar_width + 'px'" nzBreakpoint="md" [nzTrigger]="null">
+    <ul nz-menu nzMode="inline">
+<!--      <li [acl]="{ ability: ['yangben-data-1', 'dagl_admin'], mode: 'allOf' }" nz-menu-item nzMatchRouter>-->
+<!--        <a routerLink="/event/yangben-event" [queryParams]="{ eventTemplateId: 0 }">-->
+<!--          <i nz-icon nzType="search"></i>事件综合查询</a-->
+<!--        >-->
+<!--      </li>-->
+
+      <li
+        [acl]="{ ability: ['yangben-event-config', 'dagl_admin'], mode: 'allOf' }"
+        nz-submenu
+        nzTitle="事件配置管理"
+        nzIcon="setting"
+        nzOpen
+      >
+        <ul>
+          <li nz-menu-item nzMatchRouter><a routerLink="/event/yangben-event-field-define">事件字段配置</a></li>
+          <li nz-menu-item nzMatchRouter><a routerLink="/event/yangben-event-template-place">事件模板配置</a></li>
+          <li nz-menu-item nzMatchRouter><a routerLink="/event/configuration-event-management">事件分类管理</a></li>
+        </ul>
+      </li>
+
+
+      <ng-container>
+        <li [acl]="{ ability: ['yangben-event-manage'] }" nz-submenu nzTitle="事件管理" nzIcon="star" nzOpen>
+          <ul>
+            <li [acl]="{ ability: ['yangben-event-import'] }" nz-menu-item nzMatchRouter>
+              <a routerLink="/event/yangben-event-import">事件导入管理</a>
+            </li>
+
+            <ng-container *ngFor="let menu of menus">
+              <li [acl]="{ ability: ['yangben-event'] }" nz-menu-item nzMatchRouter>
+                <a routerLink="/event/yangben-event" [queryParams]="{ eventTemplateId: menu.value }">
+                  {{ menu.title }}
+                </a>
+              </li>
+            </ng-container>
+          </ul>
+        </li>
+      </ng-container>
+    </ul>
+  </nz-sider>
+  <nz-content>
+    <div class="inner-content" [ngStyle]="{ width: content_width + 'px' }" style="background: white">
+      <router-outlet></router-outlet>
+    </div>
+  </nz-content>
+</nz-layout>

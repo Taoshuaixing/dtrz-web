@@ -1,0 +1,12 @@
+<button nz-button nzType="primary" (click)="$event.stopPropagation();showModal()" style="margin-right: 8px;" nzSize="small">
+  <span>配置</span>
+</button>
+
+<nz-modal [(nzVisible)]="isVisible" [nzTitle]="'岗位模板配置'" nzOkText="确定" nzCancelText="取消" (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()" [nzOkLoading]="isOkLoading" [nzWidth]="800">
+  <div nz-row>
+    <div *ngFor="let it of fieldList" nz-col nzMd="6">
+      <label nz-checkbox [(ngModel)]="it.checked">{{ it.name }} </label>
+    </div>
+  </div>
+</nz-modal>

@@ -1,0 +1,113 @@
+<!--<p>预制拦截和封堵</p>-->
+<nz-layout style="background: white">
+  <nz-content>
+    <nz-row>
+      <app-sort-modal [sortItems]="arr" [sortFieldName]="'eventClassifyName'" (emitter)="sortEmitter($event)">
+      </app-sort-modal>
+    </nz-row>
+
+    <nz-row nzGutter="16">
+      <nz-col nzLg="5" nzMd="12" nzSm="24">
+        <h4>二级分类</h4>
+      </nz-col>
+
+      <nz-col nzLg="18" nzMd="12" nzSm="24">
+        <h4>三级分类</h4>
+      </nz-col>
+    </nz-row>
+
+    <nz-divider style="margin-top: 10px"></nz-divider>
+
+    <div *ngFor="let one of arr">
+      <!-- <nz-card [nzBordered]="true"> -->
+      <!-- 数据行 -->
+      <nz-row nzGutter="16" nzJustify>
+        <!-- 二级分类 -->
+        <nz-col nzLg="5" nzMd="12" nzSm="24">
+          <span
+            >{{ one.eventClassifyName }}
+            <a nz-dropdown nzTrigger="click" class="drop-down-a" [nzDropdownMenu]="menu">
+              <i nz-icon nzType="down"></i>
+            </a>
+            <nz-dropdown-menu #menu="nzDropdownMenu">
+              <ul nz-menu>
+                <li>
+                  <app-nz-modal-async-classification
+                    [actionClassifyName]="one.eventClassifyName"
+                    [classifiLevel]="one.classifyLevel"
+                    [classifiId]="one.id"
+                    [isAdd]="false"
+                    [classifiParentId]="one.parent?.id"
+                    nz-menu-item
+                    (hide_emitter)="getEmitter($event)"
+                  >
+                  </app-nz-modal-async-classification>
+                </li>
+                <li nz-menu-item (click)="deleteClassifiLevel(one.id)">删除</li>
+              </ul>
+            </nz-dropdown-menu>
+          </span>
+        </nz-col>
+
+        <!-- 三级 -->
+        <nz-col nzLg="18" nzMd="12" nzSm="24" nzSpan="12">
+          <!-- <div *ngFor="let two of one.children"> -->
+          <span *ngFor="let two of one.children" class="col-span">
+            {{ two.eventClassifyName }}
+            <a nz-dropdown nzTrigger="click" class="drop-down-a" [nzDropdownMenu]="menu">
+              <i nz-icon nzType="down"></i>
+            </a>
+            <nz-dropdown-menu #menu="nzDropdownMenu">
+              <ul nz-menu>
+                <li>
+                  <!-- 三级修改 -->
+                  <app-nz-modal-async-classification
+                    [actionClassifyName]="two.eventClassifyName"
+                    [classifiLevel]="two.classifyLevel"
+                    [classifiId]="two.id"
+                    [classifiParentId]="one.id"
+                    [isAdd]="false"
+                    nz-menu-item
+                    (hide_emitter)="getEmitter($event)"
+                  >
+                  </app-nz-modal-async-classification>
+                </li>
+                <li nz-menu-item (click)="deleteClassifiLevel(two.id)">删除</li>
+              </ul>
+            </nz-dropdown-menu>
+          </span>
+          <!-- </div> -->
+          <!-- 三级添加 -->
+          <app-nz-modal-async-classification
+            [classifiLevel]="3"
+            [classifiParentId]="one.id"
+            btnName="添加"
+            [isAdd]="true"
+            (hide_emitter)="getEmitter($event)"
+          >
+          </app-nz-modal-async-classification>
+          <app-sort-modal
+            [sortItems]="one.children"
+            [sortFieldName]="'eventClassifyName'"
+            (emitter)="sortEmitter($event)"
+          >
+          </app-sort-modal>
+        </nz-col>
+
+        <!-- 分割线 -->
+        <nz-divider style="margin-bottom: 40px"></nz-divider>
+      </nz-row>
+      <!-- </nz-card> -->
+    </div>
+    <nz-spin *ngIf="loading"></nz-spin>
+    <!-- 二级添加 -->
+    <app-nz-modal-async-classification
+      [classifiLevel]="2"
+      [isAdd]="true"
+      btnName="添加二级分类"
+      [classifiParentId]="secondParentid"
+      (hide_emitter)="getEmitter($event)"
+    >
+    </app-nz-modal-async-classification>
+  </nz-content>
+</nz-layout>

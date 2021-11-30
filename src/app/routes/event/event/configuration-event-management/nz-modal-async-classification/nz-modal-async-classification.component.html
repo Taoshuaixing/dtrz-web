@@ -1,0 +1,38 @@
+<span *ngIf="isAdd === false" (click)="showModal()">
+  编辑
+</span>
+
+<button
+  *ngIf="isAdd && classifiLevel === 1"
+  nz-button
+  nzType="primary"
+  style="margin-left: 20px;"
+  (click)="showModal()"
+>
+  <!-- 一级 -->
+  <span>{{ btnName }}</span>
+</button>
+
+<button *ngIf="isAdd && classifiLevel === 2" nz-button nzType="primary" nzSize="small" (click)="showModal()">
+  <!-- 二级 -->
+  <span>{{ btnName }}</span>
+</button>
+
+<a *ngIf="isAdd && classifiLevel === 3" nzType="primary" nzSize="small" (click)="showModal()">
+  <!-- 三级 -->
+  <i nz-icon nzType="plus" nzTheme="outline"></i><span>{{ btnName }}</span>
+</a>
+
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="编辑"
+  nzOkText="确定"
+  nzCancelText="取消"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  style="max-width: 500px;"
+  [nzWidth]="500"
+>
+  <input nz-input placeholder="分类名称" nzSize="default" [(ngModel)]="actionClassifyName" />
+</nz-modal>

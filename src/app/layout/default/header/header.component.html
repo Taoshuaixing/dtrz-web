@@ -1,0 +1,49 @@
+<div class="alain-default__header-logo logo">
+  <!-- <a [routerLink]="['/']" class="alain-default__header-logo-link"> -->
+  <h2>{{ systemName }}</h2>
+  <!-- </a> -->
+</div>
+
+<div class="alain-default__nav-wrap menu-list">
+  <ul nz-menu nzMode="horizontal" nzTheme="dark" (nzClick)="checkSelected($event)">
+    <li [acl]="{ ability: ['person'] }" nzMatchRouter nz-menu-item>
+      <a [routerLink]="['/person/list']"> 人物列表 </a>
+    </li>
+    <li [acl]="{ ability: ['website'] }" nzMatchRouter nz-menu-item>
+      <a [routerLink]="['/website/list']"> 重点网站 </a>
+    </li>
+    <li [acl]="{ ability: ['heimingdan'] }" nzMatchRouter nz-menu-item>
+      <a [routerLink]="['/heimingdan/list']"> 黑名单</a>
+    </li>
+
+    <li [acl]="{ ability: ['yangben'] }" nzMatchRouter nz-menu-item>
+      <a [routerLink]="['/yangben']"> 样本管理 </a>
+    </li>
+
+    <li [acl]="{ ability: ['event'] }" nzMatchRouter nz-menu-item>
+      <a routerLink="/event/yangben-event" [queryParams]="{ eventTemplateId: 0 }"> 事件管理 </a>
+    </li>
+
+    <li [acl]="{ ability: ['yuqing-calendar'] }" nzMatchRouter nz-menu-item>
+      <a [routerLink]="['/yuqing-calendar']"> 舆情日历 </a>
+    </li>
+
+    <li [acl]="{ ability: ['keyword'] }" nzMatchRouter nz-menu-item>
+      <a [routerLink]="['/keyword']"> 关键词 </a>
+    </li>
+
+    <li [acl]="{ ability: ['zhanghao'] }" nzMatchRouter nz-menu-item>
+      <a [routerLink]="['/zhanghao']"> 账号 </a>
+    </li>
+
+    <li [acl]="{ ability: ['journal'] }" nzMatchRouter nz-menu-item>
+      <a [routerLink]="['/journal']"> 日志 </a>
+    </li>
+  </ul>
+
+  <ul class="alain-default__nav">
+    <li class="hidden-mobile">
+      <header-user></header-user>
+    </li>
+  </ul>
+</div>

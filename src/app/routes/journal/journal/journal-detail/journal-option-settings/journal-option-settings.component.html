@@ -1,0 +1,88 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  [nzTitle]="dialogTitle"
+  nzOkText="关闭"
+  [nzCancelText]="null"
+  (nzOnOk)="handleOk()"
+  (nzOnCancel)="handleCancel()"
+  [nzOkLoading]="isOkLoading"
+  [nzWidth]="1000"
+>
+  <!-- 条件过滤 -->
+  <form nz-form [formGroup]="searchForm">
+    <nz-form-item>
+      <app-common-input-modal
+        [onBeforeSave]="check"
+        [inputName]=""
+        [selectedId]="0"
+        [btnName]=btnName
+        (editorOk)="callbackEmitter($event, null)"
+      >
+      </app-common-input-modal>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control [nzSm]="20" [nzXs]="24">
+        <input
+          nzAllowClear
+          formControlName="contentTitle"
+          nz-input
+          placeholder="标题内容"
+          [(ngModel)]="contentTitle"
+          style="width: 200px; margin-right: 10px"
+        />
+        <input
+          nzAllowClear
+          formControlName="searchName"
+          nz-input
+          placeholder="选项内容"
+          [(ngModel)]="searchName"
+          style="width: 200px; margin-right: 10px"
+        />
+        <button nz-button nzType="primary" nzType="primary" (click)="itmeSearch()">过滤</button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+  <nz-table #rowSelectionTable nzShowSizeChanger [nzData]="list" [(nzPageIndex)]="pageIndex" [(nzPageSize)]="pageSize">
+    <thead>
+    <tr>
+      <th [nzAlign]="'center'" style="width: 60px">默认</th>
+      <th [nzAlign]="'center'">序号</th>
+      <th [nzAlign]="'center'" [nzWidth]="100">标题内容</th>
+      <th [nzAlign]="'center'" [nzWidth]="400">选项内容</th>
+      <!-- <th [nzAlign]="'center'">编辑时间</th> -->
+      <th [nzAlign]="'center'">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of rowSelectionTable.data; let i = index">
+      <td [nzAlign]="'center'" style="width: 60px">
+        <label nz-checkbox [(ngModel)]="data.defaultChecked" (ngModelChange)="updateDefultVal(data)"></label>
+      </td>
+      <td [nzAlign]="'center'">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+      <td [nzAlign]="'center'">
+        <ellipsis lines="1" tooltip>{{ data.contentTitle }}</ellipsis>
+      </td>
+      <td [nzAlign]="'center'">
+        <ellipsis lines="1" tooltip>{{ data.itemContent }}</ellipsis>
+      </td>
+      <!-- <td [nzAlign]="'center'">{{ data.updatedTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td> -->
+      <td [nzAlign]="'center'">
+        <button nz-button nzDanger (click)="selectContent(data.itemContent, type)" style="margin-right: 10px">
+          选择
+        </button>
+        <app-common-input-modal
+          btnName="编辑"
+          [onBeforeSave]="check"
+          [inputName]="data.itemContent"
+          [selectedId]="data.id"
+          (editorOk)="callbackEmitter($event, data)"
+        >
+        </app-common-input-modal>
+        <button nz-button nzType="primary" nzDanger (click)="del(data.id)">删除</button>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-modal>
